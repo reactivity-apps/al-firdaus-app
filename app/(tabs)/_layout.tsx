@@ -20,7 +20,7 @@ export default function TabLayout() {
         <Tabs.Screen 
             name="index" 
             options={{ 
-                title: 'Announcements',
+                headerShown: false,
                 tabBarIcon: ({ color, focused}) => (
                     <Ionicons name={focused ? 'list-circle' : 'list-circle-outline' } color={color} size={24} />
                 )
@@ -29,7 +29,7 @@ export default function TabLayout() {
         <Tabs.Screen 
             name="itinerary" 
             options={{ 
-                title: 'Itinerary',
+                headerShown: false,
                 tabBarIcon: ({ color, focused}) => (
                     <Ionicons name={focused ? 'airplane' : 'airplane-outline' } color={color} size={24} />
                 )
