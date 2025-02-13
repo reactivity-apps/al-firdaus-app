@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
 import BackButton from "@/components/BackButton";
+import { addDoc, collection } from "firebase/firestore"; 
+import { db } from "@/firebase/clientApp";
+import { get_today } from "@/common/utils";
 
 type NotificationFormData = {
   title: String;
@@ -9,6 +12,8 @@ type NotificationFormData = {
 }
 
 export default function CreateAnnouncement() {
+  const [loading, setLoading] = useState(false);
+  const [alert, setAlert] = useState("");
   const { control, handleSubmit, watch } = useForm({
     defaultValues: {
       title: "",
@@ -18,9 +23,23 @@ export default function CreateAnnouncement() {
 
   const message = watch("message"); // Watch message length
 
-  const onSubmit = (data: NotificationFormData) => {
-    // Alert.alert("Notification Sent", `Title: ${data.title}\nMessage: ${data.message}`);
-    console.log(`Title: ${data.title}\nMessage: ${data.message}`);
+  const onSubmit = async (data: NotificationFormData) => {
+    setLoading(true);
+
+    try {
+      await addDoc(collection(db, "announcements"), {
+        title: data.title.trim(),
+        message: data.message.trim(),
+        createdAt: get_today()  
+      });
+        
+      setAlert("Successfully created announcement!");
+    } catch (error) {
+      console.log(`Error occured when creating announcement: ` + error);
+      setAlert("Error occured when creating announcement! Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -61,20 +80,19 @@ export default function CreateAnnouncement() {
               value={value}
               onChangeText={onChange}
               multiline
-              maxLength={150}
-            />
-          )}
-        />
+              maxLength={150} />
+          )} />
         <Text style={styles.charCount}>{message.length}/150</Text>
 
         {/* Submit Button */}
         <TouchableOpacity style={styles.button} onPress={handleSubmit(onSubmit)}>
-          <Text style={styles.buttonText}>Send Notification</Text>
+          <Text style={styles.buttonText}>{(loading) ? "Loading" : "Send Announcement"}</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
