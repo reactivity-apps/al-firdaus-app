@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, FlatList, ScrollView } from "react-native";
+import { View, Text, StyleSheet, FlatList, ScrollView, TouchableOpacity } from "react-native";
 import BackButton from "@/components/BackButton";
 import { collection, getDocs, Timestamp } from "firebase/firestore";
 import { db } from "@/firebase/clientApp";
 import { formatRelativeDate } from "@/common/utils";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 type Announcement = {
   title: string;
@@ -33,7 +34,7 @@ export default function ManageAnnouncements() {
 
 
   return (
-    <ScrollView>
+    <ScrollView style={styles.scrollView}>
       <View style={styles.container}>
         <BackButton route={"/admin"} />
         <Text style={styles.header}>Announcements</Text>
@@ -49,11 +50,16 @@ export default function ManageAnnouncements() {
                   const isLast = index === announcements.length - 1;
                   return (
                     <View key={index} style={[styles.item, isLast && styles.lastItem]}>
-                      <View style={styles.itemHeader}>
-                        <Text style={styles.itemTitle}>{item.title}</Text>
-                        <Text style={styles.itemTime}>{formatRelativeDate(item.date)}</Text>
+                      <View style={styles.itemContent}>
+                        <View style={styles.itemHeader}>
+                          <Text style={styles.itemTitle}>{item.title}</Text>
+                          <Text style={styles.itemTime}>{formatRelativeDate(item.date)}</Text>
+                        </View>
+                        <Text style={styles.itemMessage}>{item.message}</Text>
                       </View>
-                      <Text style={styles.itemMessage}>{item.message}</Text>
+                      <TouchableOpacity style={styles.editIconContainer}>
+                        <Ionicons name="information-circle-outline" size={25} color="#000" />
+                      </TouchableOpacity>
                     </View>
                   );
                 }}
@@ -68,9 +74,11 @@ export default function ManageAnnouncements() {
 }
 
 const styles = StyleSheet.create({
+  scrollView: {
+    backgroundColor: "#F7F7F7", 
+  },
   container: {
     flex: 1,
-    backgroundColor: "#F7F7F7",
     padding: 20,
     paddingTop: 40,
   },
@@ -93,9 +101,21 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   item: {
-    padding: 20,
+    flexDirection: "row",
     borderBottomWidth: 1,
     borderBottomColor: "#CDCBCB",
+  },
+  itemContent: {
+    width: "90%",
+    padding: 20,
+    borderRightWidth: 1,
+    borderRightColor: "#CDCBCB",
+  },
+  editIconContainer: {
+    width: "10%",
+    padding: 20,
+    justifyContent: "center",
+    alignItems: "center"
   },
   lastItem: {
     borderBottomWidth: 0, // Removes bottom border for the last item
