@@ -1,40 +1,15 @@
-import React from "react";
-import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity } from "react-native";
+import { formatRelativeDate } from "@/common/utils";
+import { db } from "@/firebase/clientApp";
+import { collection, getDocs, Timestamp } from "firebase/firestore";
+import React, { useEffect, useState } from "react";
+import { View, Text, StyleSheet, FlatList } from "react-native";
 
 // Define the type for announcements
 interface Announcement {
-  id: string;
   title: string;
   message: string;
-  date: string;
-  imageUrl?: string; // Optional
-  link?: string; // Optional
+  date: Timestamp;
 }
-
-// Placeholder announcement data
-const announcements: Announcement[] = [
-  {
-    id: "announcement1",
-    title: "Heading to Makkah Tomorrow",
-    message:
-      "Hello all, we will be heading to Makkah tomorrow on the coach. Please be ready by noon so we can arrive there on-time inshaAllah!",
-    date: "2025-02-05T08:25:00Z",
-  },
-  {
-    id: "announcement2",
-    title: "Heading to Makkah Tomorrow",
-    message:
-      "Hello all, we will be heading to Makkah tomorrow on the coach. Please be ready by noon so we can arrive there on-time inshaAllah!",
-    date: "2025-02-05T08:25:00Z",
-  },
-  {
-    id: "announcement3",
-    title: "Heading to Makkah Tomorrow",
-    message:
-      "Hello all, we will be heading to Makkah tomorrow on the coach. Please be ready by noon so we can arrive there on-time inshaAllah!",
-    date: "2025-02-05T08:25:00Z",
-  },
-];
 
 // Announcement item component
 const AnnouncementItem: React.FC<Announcement> = ({ title, message, date }) => (
@@ -45,22 +20,45 @@ const AnnouncementItem: React.FC<Announcement> = ({ title, message, date }) => (
         <Text style={styles.announcementTitle}>{title}</Text>
         <Text style={styles.announcementMessage}>{message}</Text>
       </View>
-      <Text style={styles.announcementTime}>{new Date(date).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</Text>
+      <Text style={styles.announcementTime}>{formatRelativeDate(date)}</Text>
     </View>
   </View>
 );
 
 export default function ItineraryScreen() {
+  const [announcements, setAnnouncements] = useState<Array<Announcement>>([]);
+
+  useEffect(() => {
+    const getAnnouncements = async () => {
+      try {
+        const data = await getDocs(collection(db, "announcements"));
+        const announcementsList: Array<Announcement> = data.docs.map((item) => ({
+          title: item.get("title"),
+          message: item.get("message"),
+          date: item.get("createdAt"),
+        }));
+        setAnnouncements(announcementsList);
+      } catch (error) {
+        console.log(`Error fetching announcements: ${error}`);
+      }
+    };
+
+    getAnnouncements();
+  }, []); 
+
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Announcements</Text>
-      <Text style={styles.subHeader}>All Announcements</Text>
-      <FlatList
-        data={announcements}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <AnnouncementItem {...item} />}
-        ListFooterComponent={<Text style={styles.footerText}>End of announcements!</Text>}
-      />
+      {announcements.length ? 
+        <>
+          <Text style={styles.subHeader}>All Announcements</Text>
+          <FlatList
+            data={announcements}
+            renderItem={({ item }) => <AnnouncementItem {...item} />}
+            ListFooterComponent={<Text style={styles.footerText}>End of announcements!</Text>}
+          />
+        </>
+      : <Text style={styles.footerText}>No announcements yet!</Text>}
     </View>
   );
 }
