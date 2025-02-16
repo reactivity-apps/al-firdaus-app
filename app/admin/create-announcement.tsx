@@ -1,45 +1,50 @@
 import React, { useState } from "react";
-import { useForm, Controller } from "react-hook-form";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
 import BackButton from "@/components/BackButton";
-import { addDoc, collection } from "firebase/firestore"; 
+import { addDoc, collection, getDocs } from "firebase/firestore"; 
 import { db } from "@/firebase/clientApp";
 import { get_today } from "@/common/utils";
 
-type NotificationFormData = {
-  title: String;
-  message: String;
-}
-
 export default function CreateAnnouncement() {
   const [loading, setLoading] = useState(false);
-  const [alert, setAlert] = useState("");
-  const { control, handleSubmit, watch } = useForm({
-    defaultValues: {
-      title: "",
-      message: "",
-    },
+  const [alert, setAlert] = useState({
+    type: "",
+    message: ""
+  });
+  const [values, setValues] = useState({
+    title: "",
+    message: "",
   });
 
-  const message = watch("message"); // Watch message length
-
-  const onSubmit = async (data: NotificationFormData) => {
+  const onSubmit = async () => {
     setLoading(true);
 
-    try {
-      await addDoc(collection(db, "announcements"), {
-        title: data.title.trim(),
-        message: data.message.trim(),
+    const timeout = new Promise((_, reject) => {
+      setTimeout(() => reject("Network request timed out."), 10000);
+    });
+
+    // Requests times out after 10 seconds
+    await Promise.race([ 
+      addDoc(collection(db, "announcements"), {
+        title: values.title.trim(),
+        message: values.message.trim(),
         createdAt: get_today()  
-      });
-        
-      setAlert("Successfully created announcement!");
-    } catch (error) {
-      console.log(`Error occured when creating announcement: ` + error);
-      setAlert("Error occured when creating announcement! Please try again.");
-    } finally {
-      setLoading(false);
-    }
+      }),
+      timeout
+    ]).then(() => {
+      setAlert({
+        type: "Success",
+        message: "Successfully created announcement!"
+      })
+    }).catch((error) => {
+      console.log(`Error occured when creating announcement: ${error}`);
+      setAlert({
+        type: "Error",
+        message: `Error occured when creating announcement. Please try again!` 
+      })
+    });
+
+    setLoading(false);
   };
 
   return (
@@ -48,44 +53,41 @@ export default function CreateAnnouncement() {
 
       <Text style={styles.header}>Create Announcement</Text>
       <Text style={styles.subHeader}>Use this form to create new announcements. These announcements will appear on the Announcements page and will be sent to users as a notification.</Text>
+
+
+      {alert.message && <View style={(alert.type == "Success") ? styles.successAlertContainer : styles.errorAlertContainer}>
+        <Text style={styles.alert}>{alert.message}</Text>
+      </View>}
+
       <View style={styles.formContainer}>
-        {/* Title Input */}
         <Text style={styles.label}>Title</Text>
-        <Controller
-          control={control}
-          name="title"
-          rules={{ required: "Title is required" }}
-          render={({ field: { onChange, value } }) => (
-            <TextInput
-              style={styles.input}
-              placeholder="Enter title"
-              placeholderTextColor="grey"
-              value={value}
-              onChangeText={onChange}
-            />
-          )}
-        />
-
-        {/* Message Input */}
+        <TextInput
+          style={styles.input}
+          placeholder="Enter title"
+          placeholderTextColor="grey"
+          onChange={(e) => {
+            setValues({
+              ...values,
+              title: e.nativeEvent.text
+            })
+         }}/>
+        
         <Text style={styles.label}>Message</Text>
-        <Controller
-          control={control}
-          name="message"
-          rules={{ required: "Message is required", maxLength: 150 }}
-          render={({ field: { onChange, value } }) => (
-            <TextInput
-              style={styles.textArea}
-              placeholder="Enter message (max 150 characters)"
-              placeholderTextColor="grey"
-              value={value}
-              onChangeText={onChange}
-              multiline
-              maxLength={150} />
-          )} />
-        <Text style={styles.charCount}>{message.length}/150</Text>
+        <TextInput
+          style={styles.textArea}
+          placeholder="Enter message (max 150 characters)"
+          placeholderTextColor="grey"
+          onChange={(e) => {
+            setValues({
+              ...values,
+              message: e.nativeEvent.text
+            })
+          }}
+          multiline
+          maxLength={150} />
+        <Text style={styles.charCount}>{values.message.length}/150</Text>
 
-        {/* Submit Button */}
-        <TouchableOpacity style={styles.button} onPress={handleSubmit(onSubmit)}>
+        <TouchableOpacity disabled={loading} style={styles.button} onPress={onSubmit}>
           <Text style={styles.buttonText}>{(loading) ? "Loading" : "Send Announcement"}</Text>
         </TouchableOpacity>
       </View>
@@ -109,6 +111,22 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 25,
     color: "#666",
+  },
+  successAlertContainer: {
+    marginBottom: 20,
+    backgroundColor: "#69d173",
+    borderRadius: 8,
+    padding: 15,
+  },
+  errorAlertContainer: {
+    marginBottom: 20,
+    backgroundColor: "#F19797",
+    borderRadius: 8,
+    padding: 15,
+  },
+  alert: {
+    color: "#fff",
+    fontWeight: "500"
   },
   formContainer: {
     borderRadius: 8,
