@@ -106,13 +106,13 @@ const styles = StyleSheet.create({
     borderBottomColor: "#CDCBCB",
   },
   itemContent: {
-    width: "90%",
+    flex: 1,
     padding: 20,
     borderRightWidth: 1,
     borderRightColor: "#CDCBCB",
   },
   editIconContainer: {
-    width: "10%",
+    width: 80,
     padding: 20,
     justifyContent: "center",
     alignItems: "center"

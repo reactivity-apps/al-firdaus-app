@@ -14,6 +14,7 @@ export default function Index() {
         content={[
           { label: "Create Announcement", link: "/admin/create-announcement", showIcon: true },
           { label: "Manage Announcements", link: "/admin/manage-announcements", showIcon: true },
+      
         ]}
       />
 
