@@ -1,61 +1,69 @@
-import React from "react";
-import { View, Text, StyleSheet, FlatList } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, Text, StyleSheet, FlatList, ScrollView } from "react-native";
 import BackButton from "@/components/BackButton";
+import { collection, getDocs, Timestamp } from "firebase/firestore";
+import { db } from "@/firebase/clientApp";
+import { formatRelativeDate } from "@/common/utils";
 
-const announcements = [
-  {
-    id: "1",
-    title: "Heading to Makkah Tomorrow",
-    message:
-      "Hello all, we will be heading to Makkah tomorrow on the coach. Please be ready by noon so we can arrive there on-time inshaAllah!",
-    time: "8:25 AM",
-  },
-  {
-    id: "2",
-    title: "Heading to Makkah Tomorrow",
-    message:
-      "Hello all, we will be heading to Makkah tomorrow on the coach. Please be ready by noon so we can arrive there on-time inshaAllah!",
-    time: "8:25 AM",
-  },
-  {
-    id: "3",
-    title: "Heading to Makkah Tomorrow",
-    message:
-      "Hello all, we will be heading to Makkah tomorrow on the coach. Please be ready by noon so we can arrive there on-time inshaAllah!",
-    time: "8:25 AM",
-  },
-];
-
+type Announcement = {
+  title: string;
+  message: string;
+  date: Timestamp;
+}
 export default function ManageAnnouncements() {
-  return (
-    <View style={styles.container}>
-      <BackButton route={"/admin"} />
-      <Text style={styles.header}>Announcements</Text>
-      <Text style={styles.subHeader}>View all recent announcements.</Text>
+  const [announcements, setAnnouncements] = useState<Array<Announcement>>([]);
 
-      <Text style={styles.listTitle}>All Announcements</Text>
-      <View style={styles.listContainer}>
-        <FlatList
-          data={announcements}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item, index }) => {
-            const isLast = index === announcements.length - 1;
-            return (
-              <View style={[styles.item, isLast && styles.lastItem]}>
-                <View style={styles.itemHeader}>
-                  {/* Profile Icon Placeholder */}
-                  <View style={styles.profileCircle} />
-                  <Text style={styles.itemTitle}>{item.title}</Text>
-                  <Text style={styles.itemTime}>{item.time}</Text>
-                </View>
-                <Text style={styles.itemMessage}>{item.message}</Text>
-              </View>
-            );
-          }}
-        />
+  useEffect(() => {
+    const getAnnouncements = async () => {
+      try {
+        const data = await getDocs(collection(db, "announcements"));
+        const announcementsList: Array<Announcement> = data.docs.map((item) => ({
+          title: item.get("title"),
+          message: item.get("message"),
+          date: item.get("createdAt"),
+        }));
+        setAnnouncements(announcementsList);
+      } catch (error) {
+        console.log(`Error fetching announcements: ${error}`);
+      }
+    };
+
+    getAnnouncements();
+  }, []); 
+
+
+  return (
+    <ScrollView>
+      <View style={styles.container}>
+        <BackButton route={"/admin"} />
+        <Text style={styles.header}>Announcements</Text>
+        <Text style={styles.subHeader}>View all recent announcements.</Text>
+
+        {announcements.length ? 
+          <>
+            <Text style={styles.listTitle}>All Announcements</Text>
+            <View style={styles.listContainer}>
+              <FlatList
+                data={announcements}
+                renderItem={({ item, index }) => {
+                  const isLast = index === announcements.length - 1;
+                  return (
+                    <View key={index} style={[styles.item, isLast && styles.lastItem]}>
+                      <View style={styles.itemHeader}>
+                        <Text style={styles.itemTitle}>{item.title}</Text>
+                        <Text style={styles.itemTime}>{formatRelativeDate(item.date)}</Text>
+                      </View>
+                      <Text style={styles.itemMessage}>{item.message}</Text>
+                    </View>
+                  );
+                }}
+              />
+            </View>
+            <Text style={styles.footerText}>End of announcements! 🎉</Text>
+          </>
+          : <Text style={styles.footerText}>No announcements yet!</Text>}
       </View>
-      <Text style={styles.footerText}>End of announcements!</Text>
-    </View>
+    </ScrollView>
   );
 }
 
