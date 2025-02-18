@@ -1,43 +1,41 @@
 import React from "react";
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput } from "react-native";
 
 // Timeline Component
 const Timeline = () => {
   return (
     <View style={styles.timelineContainer}>
-      <View style={styles.timelineIndicator} />
-      <Text style={styles.timelineText}>Your Itinerary</Text>
+      <Text style={styles.timelineTitle}>Trip Timeline</Text>
+      <View style={styles.timelineBox}>
+        <Text style={styles.timelineHeader}>Arrive at King AbdulAziz Airport</Text>
+        <Text style={styles.timelineDots}>...</Text>
+        <ItineraryDay location="Jeddah" description="Lorem ipsum dolor sit amet, consectetur adipiscing elit." />
+        <ItineraryDay location="Madinah" description="Lorem ipsum dolor sit amet, consectetur adipiscing elit." />
+        <ItineraryDay location="Makkah" description="Lorem ipsum dolor sit amet, consectetur adipiscing elit." />
+      </View>
     </View>
   );
 };
 
 // Reusable Clickable Component for Itinerary Days
-const ItineraryDay = ({ location, onPress }) => {
+const ItineraryDay = ({ location, description, onPress }) => {
   return (
     <TouchableOpacity style={styles.itineraryItem} onPress={onPress}>
-      <Text style={styles.itineraryText}>{location}</Text>
+      <View style={styles.circle} />
+      <View style={styles.itineraryTextContainer}>
+        <Text style={styles.itineraryText}>{location}</Text>
+        <Text style={styles.itineraryDescription}>{description}</Text>
+      </View>
     </TouchableOpacity>
   );
 };
 
 export default function ItineraryScreen() {
-  const itineraryDays = [
-    { id: "1", location: "Jeddah" },
-    { id: "2", location: "Madina" },
-    { id: "3", location: "Makkah" },
-  ];
-
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Itinerary</Text>
+      <Text style={styles.header}>Itinerary</Text>
+      <TextInput style={styles.searchBar} placeholder="Search" />
       <Timeline />
-      <FlatList
-        data={itineraryDays}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <ItineraryDay location={item.location} onPress={() => console.log(`${item.location} clicked`)} />
-        )}
-      />
     </View>
   );
 }
@@ -46,44 +44,64 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
     padding: 20,
   },
-  text: {
-    color: "#000",
-    fontSize: 24,
+  header: {
+    fontSize: 32,
     fontWeight: "bold",
-    marginBottom: 20,
+  },
+  searchBar: {
+    backgroundColor: "#000",
+    color: "#fff",
+    padding: 10,
+    borderRadius: 8,
+    marginVertical: 10,
   },
   timelineContainer: {
-    alignItems: "center",
-    marginBottom: 20,
+    marginVertical: 10,
   },
-  timelineIndicator: {
-    width: 10,
-    height: 10,
-    backgroundColor: "#007AFF",
-    borderRadius: 5,
-    marginBottom: 5,
-  },
-  timelineText: {
+  timelineTitle: {
     fontSize: 18,
     fontWeight: "bold",
+    marginBottom: 10,
   },
-  itineraryItem: {
-    backgroundColor: "#fff",
+  timelineBox: {
+    backgroundColor: "#f5f5f5",
     padding: 15,
     borderRadius: 10,
-    marginVertical: 10,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 2,
+  },
+  timelineHeader: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  timelineDots: {
+    fontSize: 20,
+    textAlign: "center",
+  },
+  itineraryItem: {
+    flexDirection: "row",
     alignItems: "center",
+    padding: 10,
+    marginVertical: 5,
+  },
+  circle: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: "gray",
+    marginRight: 10,
+  },
+  itineraryTextContainer: {
+    flex: 1,
   },
   itineraryText: {
     fontSize: 16,
     fontWeight: "bold",
   },
+  itineraryDescription: {
+    fontSize: 14,
+    color: "gray",
+  },
 });
+
