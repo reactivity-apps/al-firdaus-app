@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator } from "react-native";
 import BackButton from "@/components/BackButton";
 import { addDoc, collection, getDocs } from "firebase/firestore"; 
 import { db } from "@/firebase/clientApp";
@@ -18,6 +18,15 @@ export default function CreateAnnouncement() {
 
   const onSubmit = async () => {
     setLoading(true);
+
+    if (!values.message || !values.title) {
+      setAlert({
+        type: "Error",
+        message: "Please enter both a title and a message."
+      });
+      setLoading(false);
+      return;
+    }
 
     const timeout = new Promise((_, reject) => {
       setTimeout(() => reject("Network request timed out."), 10000);
@@ -88,9 +97,10 @@ export default function CreateAnnouncement() {
         <Text style={styles.charCount}>{values.message.length}/150</Text>
 
         <TouchableOpacity disabled={loading} style={styles.button} onPress={onSubmit}>
-          <Text style={styles.buttonText}>{(loading) ? "Loading" : "Send Announcement"}</Text>
+          <Text style={styles.buttonText}>{(loading) ? <ActivityIndicator color="#FFF" /> : "Send Announcement"}</Text>
         </TouchableOpacity>
       </View>
+
     </View>
   );
 }

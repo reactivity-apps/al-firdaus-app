@@ -2,8 +2,14 @@ import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import Menu from "@/components/Menu";
 import { Link } from "expo-router";
+import { signOut } from "firebase/auth";
+import { auth } from "@/firebase/clientApp";
 
 export default function Index() {
+  const handleLogout = async () => {
+    await signOut(auth);
+    
+  };
 
   return (
     <View style={styles.container}>
@@ -20,7 +26,7 @@ export default function Index() {
 
       {/* Sign Out Button */}
       <Link href="/" asChild>
-        <TouchableOpacity style={styles.signOutButton}>
+        <TouchableOpacity style={styles.signOutButton} onPress={handleLogout}>
           <Text style={styles.signOutText}>Sign Out</Text>
         </TouchableOpacity>
       </Link>

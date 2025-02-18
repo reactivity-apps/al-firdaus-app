@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: "600",
+    color: "gray",
     marginBottom: 10,
   },
   rowContainer: {
