@@ -1,7 +1,21 @@
 import React from "react";
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput } from "react-native";
+import { ScrollView } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { Ionicons } from "@expo/vector-icons"; // Import arrow icon
 
-// Timeline Component
+// Define navigation type
+type RootStackParamList = {
+  Itinerary: undefined;
+  makkahscreen: undefined;
+  jeddahscreen: undefined;
+  madinahscreen: undefined;
+};
+
+type ItineraryScreenNavigationProp = StackNavigationProp<RootStackParamList, "Itinerary">;
+
+// Timeline Component (Unchanged)
 const Timeline = () => {
   return (
     <View style={styles.timelineContainer}>
@@ -18,7 +32,7 @@ const Timeline = () => {
 };
 
 // Reusable Clickable Component for Itinerary Days
-const ItineraryDay = ({ location, description, onPress }) => {
+const ItineraryDay = ({ location, description, onPress }: { location: string; description: string; onPress?: () => void }) => {
   return (
     <TouchableOpacity style={styles.itineraryItem} onPress={onPress}>
       <View style={styles.circle} />
@@ -30,15 +44,77 @@ const ItineraryDay = ({ location, description, onPress }) => {
   );
 };
 
-export default function ItineraryScreen() {
+const ItineraryScreen: React.FC = () => {
+  const navigation = useNavigation<ItineraryScreenNavigationProp>();
+
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
       <Text style={styles.header}>Itinerary</Text>
       <TextInput style={styles.searchBar} placeholder="Search" />
       <Timeline />
-    </View>
+
+      {/* Stay in Makkah Section */}
+      <TouchableOpacity style={styles.stayContainer} onPress={() => navigation.navigate("makkahscreen")}>
+        {/* Day Label (Top Left) */}
+        <Text style={styles.dayLabel}>Day 7 - 12</Text>
+
+        {/* Main Content */}
+        <View style={styles.stayContent}>
+          <View style={styles.stayTextContainer}>
+            <Text style={styles.stayHeader}>Stay in Makkah</Text>
+            <Text style={styles.stayDescription}>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Discover accommodations and plans for your stay.
+            </Text>
+          </View>
+
+          {/* Arrow Icon (Bottom Right) */}
+          <Ionicons name="chevron-forward-outline" size={20} color="#000000" style={styles.arrowIcon} />
+        </View>
+      </TouchableOpacity>
+
+      {/* Stay in Jeddah Section (Added Separately) */}
+      <TouchableOpacity style={styles.stayContainer} onPress={() => navigation.navigate("jeddahscreen")}>
+        {/* Day Label (Top Left) */}
+        <Text style={styles.dayLabel}>Day 1 - 2</Text>
+
+        {/* Main Content */}
+        <View style={styles.stayContent}>
+          <View style={styles.stayTextContainer}>
+            <Text style={styles.stayHeader}>Stay in Jeddah</Text>
+            <Text style={styles.stayDescription}>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Discover accommodations and plans for your stay.
+            </Text>
+          </View>
+
+          {/* Arrow Icon (Bottom Right) */}
+          <Ionicons name="chevron-forward-outline" size={20} color="#000000" style={styles.arrowIcon} />
+        </View>
+      </TouchableOpacity>
+
+      {/* Stay in Madinah Section (Added Separately) */}
+      <TouchableOpacity style={styles.stayContainer} onPress={() => navigation.navigate("jeddahscreen")}>
+        {/* Day Label (Top Left) */}
+        <Text style={styles.dayLabel}>Day 1 - 2</Text>
+
+        {/* Main Content */}
+        <View style={styles.stayContent}>
+          <View style={styles.stayTextContainer}>
+            <Text style={styles.stayHeader}>Stay in Madinah</Text>
+            <Text style={styles.stayDescription}>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Discover accommodations and plans for your stay.
+            </Text>
+          </View>
+
+          {/* Arrow Icon (Bottom Right) */}
+          <Ionicons name="chevron-forward-outline" size={20} color="#000000" style={styles.arrowIcon} />
+        </View>
+      </TouchableOpacity>
+    </ScrollView>
   );
-}
+};
+
+
+export default ItineraryScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -103,5 +179,47 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "gray",
   },
+  scrollContent: {
+    flexGrow: 1, // Allows scrolling when content exceeds screen height
+    paddingBottom: 30, // Prevents content from being cut off at the bottom
+  },
+  // Styles for Stay in Makkah Section
+  stayContainer: {
+    marginTop: 20,
+    padding: 15,
+    backgroundColor: "#f5f5f5",
+    borderRadius: 10,
+  },
+  dayLabel: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "gray",
+    position: "absolute",
+    top: 10,
+    right: 15,
+  },
+  stayContent: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 25,
+  },
+  stayTextContainer: {
+    flex: 1,
+  },
+  stayHeader: {
+    fontSize: 16,
+    top: -18,
+    left: -15,
+    fontWeight: "bold",
+},
+  stayDescription: {
+    fontSize: 14,
+    color: "gray",
+  },
+  arrowIcon: {
+    position: "absolute",
+    bottom: 4,
+    right: 8,
+  },
 });
-
