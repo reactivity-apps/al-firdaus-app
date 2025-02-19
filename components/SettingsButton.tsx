@@ -44,13 +44,15 @@ export default function SettingsButton() {
       }
     };
 
+    const lastItemStyle = {...styles.menuItem, ...styles.lastItem};
+
     return (
         <>
-         <Pressable
+         <TouchableOpacity
             onPress={toggleMenu}
             style={[styles.settingsButton, Platform.OS === "web" ? { cursor: "pointer" } : {}]}>
             <Ionicons name="settings-outline" size={24} color="black" />
-            </Pressable>
+          </TouchableOpacity>
     
             <Animated.View
             style={[
@@ -65,19 +67,16 @@ export default function SettingsButton() {
                 },
             ]}
             >
-            <Link href="/settings" asChild>
-                <TouchableOpacity style={styles.menuItem}>
-                    <Text style={styles.menuText}>Settings</Text>
-                </TouchableOpacity>
-            </Link>
-            <Link href="/admin-login" asChild>
-                <TouchableOpacity style={styles.menuItem}>
-                    <Text style={styles.menuText}>Admin</Text>
-                </TouchableOpacity>
-            </Link>
-            <TouchableOpacity style={[styles.menuItem, styles.lastItem]}>
-                <Text style={styles.menuText}>Logout</Text>
-            </TouchableOpacity>
+              <Link href="/settings" asChild>
+                  <TouchableOpacity style={styles.menuItem}>
+                      <Text style={styles.menuText}>Settings</Text>
+                  </TouchableOpacity>
+              </Link>
+              <Link href="/admin-login" asChild>
+                  <TouchableOpacity style={lastItemStyle}>
+                      <Text style={styles.menuText}>Admin</Text>
+                  </TouchableOpacity>
+              </Link>
             </Animated.View>
         </>
     )
@@ -92,6 +91,7 @@ const styles = StyleSheet.create({
         padding: 15,
         backgroundColor: "#eee",
         borderRadius: 30,
+        zIndex: 5
     },
     dropdownMenu: {
         position: "absolute",
@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
         elevation: 2,
         paddingVertical: 5,
         width: 150,
-        zIndex: 5
+        zIndex: 6
     },
     menuItem: {
         padding: 10,
