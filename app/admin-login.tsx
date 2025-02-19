@@ -11,7 +11,7 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase/clientApp";
 import BackButton from "@/components/BackButton";
 import Alert from "@/components/Alert";
-
+import { Link } from "expo-router";
 
 const AdminLogin = () => {
   const [email, setEmail] = useState("");
@@ -22,6 +22,7 @@ const AdminLogin = () => {
     message: ""
   });
 
+
   const handleLogin = async () => {
     if (!email || !password) {
       // Alert.alert("Error", "Please enter both email and password.");
@@ -31,9 +32,13 @@ const AdminLogin = () => {
       });
       return;
     }
+
+    // TODO: Add Google login
+
     setLoading(true);
     try {
       await signInWithEmailAndPassword(auth, email, password);
+
       // TODO: Add redirect
       setAlert({
         type: "Success",
@@ -124,6 +129,10 @@ const AdminLogin = () => {
       <Text style={styles.subTitle}>Login to access further administration controls.</Text>
       
       <Alert alert={alert} />
+      <Link href="/admin" asChild>
+        <Text>Link to Admin</Text>
+      </Link>
+
 
       {/* Sign In Form */}
       <View style={styles.signInForm}>
