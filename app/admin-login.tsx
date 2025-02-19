@@ -4,13 +4,14 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  Alert,
   StyleSheet,
   ActivityIndicator,
 } from "react-native";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase/clientApp";
 import BackButton from "@/components/BackButton";
+import Alert from "@/components/Alert";
+
 
 const AdminLogin = () => {
   const [email, setEmail] = useState("");
@@ -26,26 +27,91 @@ const AdminLogin = () => {
       // Alert.alert("Error", "Please enter both email and password.");
       setAlert({
         type: "Error",
-        message: "Please enter both email and password."
+        message: "Please enter both email/password."
       });
       return;
     }
     setLoading(true);
     try {
       await signInWithEmailAndPassword(auth, email, password);
+      // TODO: Add redirect
       setAlert({
-        type: "Error",
+        type: "Success",
         message: "Logged in successfully!"
       });
-      // Alert.alert("Success", "Logged in successfully!");
       
     } catch (error: any) {
-      setAlert({
-        type: "Error",
-        message: "Username/password incorrect. Please try again!"
-      });
       console.log(error.message);
-      // Alert.alert("Username/password incorrect. Please try again!", error.message);
+      switch (error.code) {
+        case "auth/network-request-failed":
+          setAlert({
+            type: "Error",
+            message: "Network request failed. Please try again!"
+          });
+          break;
+        
+        case "auth/invalid-email":
+          setAlert({
+            type: "Error",
+            message: "Invalid email format. Please enter a valid email, i.e, name@email.com."
+          });
+          break;
+      
+        case "auth/user-not-found":
+          setAlert({
+            type: "Error",
+            message: "No user found with this email. Please check and try again."
+          });
+          break;
+      
+        case "auth/wrong-password":
+          setAlert({
+            type: "Error",
+            message: "Incorrect password. Please try again."
+          });
+          break;
+      
+        case "auth/user-disabled":
+          setAlert({
+            type: "Error",
+            message: "This user account has been disabled. Contact support for help."
+          });
+          break;
+      
+        case "auth/invalid-id-token":
+          setAlert({
+            type: "Error",
+            message: "Invalid authentication token. Please try logging in again."
+          });
+          break;
+      
+        case "auth/too-many-requests":
+          setAlert({
+            type: "Error",
+            message: "Too many failed attempts. Try again later."
+          });
+          break;
+      
+        case "auth/operation-not-allowed":
+          setAlert({
+            type: "Error",
+            message: "This sign-in method is currently disabled. Contact support."
+          });
+          break;
+      
+        case "auth/invalid-credential":
+          setAlert({
+            type: "Error",
+            message: "Invalid credentials. Please check your email and password and try again."
+          });
+          break;
+      
+        default:
+          setAlert({
+            type: "Error",
+            message: "An unknown error occurred. Please try again."
+          });
+      }      
     }
     setLoading(false);
   };
@@ -55,8 +121,9 @@ const AdminLogin = () => {
       <BackButton route={"/"} />
       
       <Text style={styles.title}>Admin Login</Text>
-      <Text style={styles.subTitle}>Use this form to create new announcements. These announcements will appear on the Announcements page and will be sent to users as a notification.</Text>
+      <Text style={styles.subTitle}>Login to access further administration controls.</Text>
       
+      <Alert alert={alert} />
 
       {/* Sign In Form */}
       <View style={styles.signInForm}>
@@ -65,13 +132,15 @@ const AdminLogin = () => {
 
           <TextInput
             style={styles.input}
-            placeholder="Username"
+            placeholder="Enter your email"
+            placeholderTextColor="grey"
             value={email}
             onChangeText={setEmail}
           />
           <TextInput
             style={styles.input}
-            placeholder="Password"
+            placeholder="Enter your password"
+            placeholderTextColor="grey"
             secureTextEntry
             value={password}
             onChangeText={setPassword}
@@ -114,7 +183,7 @@ const styles = StyleSheet.create({
   },
   subTitle: {
     fontSize: 16,
-    marginBottom: 35,
+    marginBottom: 25,
     color: "#666",
   },
   signInForm: {
@@ -124,6 +193,8 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     padding: 20,
     borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#DDD",
     width: "100%",
     maxWidth: 400,
   },

@@ -7,8 +7,10 @@ import { auth } from "@/firebase/clientApp";
 
 export default function Index() {
   const handleLogout = async () => {
-    await signOut(auth);
-    
+    await signOut(auth)
+    .catch((err) => {
+      console.log(`Logout failed: ${err}`);
+    })
   };
 
   return (
