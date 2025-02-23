@@ -14,6 +14,7 @@ interface Announcement {
 
 export default function Itinerary() {
   const [announcements, setAnnouncements] = useState<Array<Announcement>>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const getAnnouncements = async () => {
@@ -27,19 +28,25 @@ export default function Itinerary() {
         setAnnouncements(announcementsList);
       } catch (error) {
         console.log(`Error fetching announcements: ${error}`);
+      } finally {
+        setLoading(false);
       }
     };
 
     getAnnouncements();
   }, []);
 
+
+  if(loading) return <Text>Loading...</Text>;
+  
+  // TODO: Add error display
+  
   return (
     <View style={styles.container}>
-
       <SettingsButton />
-     
       <Text style={styles.header}>Announcements</Text>
-      {announcements.length ? (
+  
+      {announcements.length > 0 ? (
         <>
           <Text style={styles.listTitle}>All Announcements</Text>
           <View style={styles.listContainer}>

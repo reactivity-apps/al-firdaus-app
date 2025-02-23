@@ -13,6 +13,7 @@ type Announcement = {
 }
 export default function ManageAnnouncements() {
   const [announcements, setAnnouncements] = useState<Array<Announcement>>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const getAnnouncements = async () => {
@@ -26,21 +27,25 @@ export default function ManageAnnouncements() {
         setAnnouncements(announcementsList);
       } catch (error) {
         console.log(`Error fetching announcements: ${error}`);
+      } finally {
+        setLoading(false);
       }
     };
 
     getAnnouncements();
   }, []); 
 
+  if(loading) return <Text>Loading...</Text>;
 
+  // TODO: Add error display
+  
   return (
     <ScrollView style={styles.scrollView}>
       <View style={styles.container}>
         <BackButton route={"/admin"} />
         <Text style={styles.header}>Announcements</Text>
         <Text style={styles.subHeader}>View all recent announcements.</Text>
-
-        {announcements.length ? 
+        {announcements.length > 0 ? (
           <>
             <Text style={styles.listTitle}>All Announcements</Text>
             <View style={styles.listContainer}>
@@ -67,7 +72,7 @@ export default function ManageAnnouncements() {
             </View>
             <Text style={styles.footerText}>End of announcements! 🎉</Text>
           </>
-          : <Text style={styles.footerText}>No announcements yet!</Text>}
+        ) : ( <Text style={styles.footerText}>No announcements yet!</Text> )}
       </View>
     </ScrollView>
   );
