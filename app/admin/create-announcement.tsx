@@ -4,6 +4,7 @@ import BackButton from "@/components/BackButton";
 import { addDoc, collection, getDocs } from "firebase/firestore"; 
 import { db } from "@/firebase/clientApp";
 import { get_today } from "@/common/utils";
+import Alert from "@/components/Alert";
 
 export default function CreateAnnouncement() {
   const [loading, setLoading] = useState(false);
@@ -63,10 +64,7 @@ export default function CreateAnnouncement() {
       <Text style={styles.header}>Create Announcement</Text>
       <Text style={styles.subHeader}>Use this form to create new announcements. These announcements will appear on the Announcements page and will be sent to users as a notification.</Text>
 
-
-      {alert.message && <View style={(alert.type == "Success") ? styles.successAlertContainer : styles.errorAlertContainer}>
-        <Text style={styles.alert}>{alert.message}</Text>
-      </View>}
+      <Alert alert={alert} />
 
       <View style={styles.formContainer}>
         <Text style={styles.label}>Title</Text>
