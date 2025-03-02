@@ -6,12 +6,13 @@ import {
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
+  Platform,
 } from "react-native";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase/clientApp";
 import BackButton from "@/components/BackButton";
 import Alert from "@/components/Alert";
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
 
 const AdminLogin = () => {
   const [email, setEmail] = useState("");
@@ -22,6 +23,7 @@ const AdminLogin = () => {
     message: ""
   });
 
+  const router = useRouter(); // Initialize router
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -33,17 +35,23 @@ const AdminLogin = () => {
       return;
     }
 
-    // TODO: Add Google login
-
     setLoading(true);
     try {
       await signInWithEmailAndPassword(auth, email, password);
 
-      // TODO: Add redirect
-      setAlert({
-        type: "Success",
-        message: "Logged in successfully!"
-      });
+      try {
+        if (Platform.OS === "web") {
+          window.location.href = "/admin";
+        } else {
+          router.replace("/admin");
+        }
+      } catch(error: any) {
+        console.log(error);
+        setAlert({
+          type: "Error",
+          message: "If not automatically redirect, use this link: "
+        });
+      }
       
     } catch (error: any) {
       console.log(error.message);
@@ -163,13 +171,13 @@ const AdminLogin = () => {
             )}
           </TouchableOpacity>
 
+          {/*
           <View style={styles.divider}></View>
 
-          <Text style={styles.orText}>Or continue with</Text>
-
+           <Text style={styles.orText}>Or continue with</Text> 
           <TouchableOpacity style={styles.googleButton}>
             <Text style={styles.googleText}>Login With Google</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       </View>
     </View>
