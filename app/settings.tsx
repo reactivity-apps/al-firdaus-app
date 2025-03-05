@@ -3,14 +3,11 @@ import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import Menu from "@/components/Menu";
 import { Link } from "expo-router";
-import BackButton from "@/components/BackButton";
 
 export default function Index() {
  
-
   return (
     <View style={styles.container}>
-        <BackButton route={"/"} />
       <Text style={styles.header}>Settings</Text>
 
       <Menu
