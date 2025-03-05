@@ -4,12 +4,14 @@ import { collection, getDocs, Timestamp } from "firebase/firestore";
 import { db } from "@/firebase/clientApp";
 import { formatRelativeDate } from "@/common/utils";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { globalStyles } from "@/common/style";
 
 type Announcement = {
   title: string;
   message: string;
   date: Timestamp;
 }
+
 export default function ManageAnnouncements() {
   const [announcements, setAnnouncements] = useState<Array<Announcement>>([]);
   const [loading, setLoading] = useState(true);
@@ -40,9 +42,9 @@ export default function ManageAnnouncements() {
   
   return (
     <ScrollView>
-      <View style={styles.container}>
-        <Text style={styles.header}>Announcements</Text>
-        <Text style={styles.subHeader}>View and manage all announcements.</Text>
+      <View style={globalStyles.container}>
+        <Text style={globalStyles.header}>Announcements</Text>
+        <Text style={globalStyles.subHeader}>View and manage all announcements.</Text>
         {announcements.length > 0 ? (
           <>
             <Text style={styles.listTitle}>All Announcements</Text>
@@ -74,20 +76,6 @@ export default function ManageAnnouncements() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20
-  },
-  header: {
-    fontSize: 28,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  subHeader: {
-    fontSize: 16,
-    marginBottom: 25,
-    color: "#666",
-  },
   listTitle: {
     fontSize: 16,
     marginBottom: 15,
@@ -133,14 +121,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center"
   },
-  profileCircle: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    backgroundColor: "#CCC",
-    marginRight: 10,
-  },
-
   footerText: {
     textAlign: "center",
     fontSize: 14,

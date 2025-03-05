@@ -4,6 +4,7 @@ import { db } from "@/firebase/clientApp";
 import { collection, getDocs, Timestamp } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, FlatList, ScrollView } from "react-native";
+import { globalStyles } from "@/common/style";
 
 // Define the type for announcements
 interface Announcement {
@@ -11,6 +12,7 @@ interface Announcement {
   message: string;
   date: Timestamp;
 }
+
 
 export default function Index() {
   const [announcements, setAnnouncements] = useState<Array<Announcement>>([]);
@@ -43,7 +45,7 @@ export default function Index() {
   
   return (
     <ScrollView>
-      <View style={styles.container}>
+      <View style={globalStyles.container}>
         <Menu
           title="Navigation"
           content={[
@@ -53,7 +55,7 @@ export default function Index() {
           ]}
         />
 
-        <Text style={styles.header}>Announcements</Text>
+        <Text style={globalStyles.header}>Announcements</Text>
     
         {announcements.length > 0 ? (
           <>
@@ -85,15 +87,6 @@ export default function Index() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-  },
-  header: {
-    fontSize: 28,
-    fontWeight: "bold",
-    marginTop: 20,
-  },
   listTitle: {
     fontSize: 16,
     marginBottom: 15,

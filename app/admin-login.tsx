@@ -14,6 +14,7 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase/clientApp";
 import Alert from "@/components/Alert";
 import { useRouter } from "expo-router";
+import { globalStyles } from "@/common/style";
 
 const AdminLogin = () => {
   const [email, setEmail] = useState("");
@@ -133,10 +134,10 @@ const AdminLogin = () => {
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
     
-      <View style={styles.container}>
+      <View style={globalStyles.container}>
         
-        <Text style={styles.title}>Admin Login</Text>
-        <Text style={styles.subTitle}>Login to access further administration controls.</Text>
+        <Text style={globalStyles.header}>Admin Login</Text>
+        <Text style={globalStyles.subHeader}>Login to access further administration controls.</Text>
         
         <Alert alert={alert} />
 
@@ -163,21 +164,13 @@ const AdminLogin = () => {
                 onChangeText={setPassword}
               />
 
-              <TouchableOpacity style={styles.button} onPress={handleLogin}>
+              <TouchableOpacity style={globalStyles.button} onPress={handleLogin}>
                 {loading ? (
                   <ActivityIndicator color="#FFF" />
                 ) : (
-                  <Text style={styles.buttonText}>Sign In</Text>
+                  <Text style={globalStyles.buttonText}>Sign In</Text>
                 )}
               </TouchableOpacity>
-
-              {/*
-              <View style={styles.divider}></View>
-
-              <Text style={styles.orText}>Or continue with</Text> 
-              <TouchableOpacity style={styles.googleButton}>
-                <Text style={styles.googleText}>Login With Google</Text>
-              </TouchableOpacity> */}
             </View>
           </View>
         </KeyboardAvoidingView>

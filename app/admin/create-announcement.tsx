@@ -4,6 +4,7 @@ import { addDoc, collection, getDocs } from "firebase/firestore";
 import { db } from "@/firebase/clientApp";
 import { get_today } from "@/common/utils";
 import Alert from "@/components/Alert";
+import { globalStyles } from "@/common/style";
 
 export default function CreateAnnouncement() {
   const [loading, setLoading] = useState(false);
@@ -58,10 +59,10 @@ export default function CreateAnnouncement() {
 
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-    <View style={styles.container}>
-      <Text style={styles.header}>Create Announcement</Text>
-      <Text style={styles.subHeader}>
-        Use this form to create new announcements. These announcements will appear on the Announcements page and will be sent to users as a notification.
+    <View style={globalStyles.container}>
+      <Text style={globalStyles.header}>Create Announcement</Text>
+      <Text style={globalStyles.subHeader}>
+        Use this form to create new announcements. They will appear on the For You page and will be sent to users as a notification.
       </Text>
   
       <Alert alert={alert} />
@@ -87,8 +88,8 @@ export default function CreateAnnouncement() {
           />
           <Text style={styles.charCount}>{values.message.length}/150</Text>
   
-          <TouchableOpacity disabled={loading} style={styles.button} onPress={onSubmit}>
-            <Text style={styles.buttonText}>
+          <TouchableOpacity disabled={loading} style={globalStyles.button} onPress={onSubmit}>
+            <Text style={globalStyles.buttonText}>
               {loading ? <ActivityIndicator color="#FFF" /> : "Send Announcement"}
             </Text>
           </TouchableOpacity>
@@ -100,36 +101,6 @@ export default function CreateAnnouncement() {
   );
 }
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20
-  },
-  header: {
-    fontSize: 28,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  subHeader: {
-    fontSize: 16,
-    marginBottom: 25,
-    color: "#666",
-  },
-  successAlertContainer: {
-    marginBottom: 20,
-    backgroundColor: "#69d173",
-    borderRadius: 8,
-    padding: 15,
-  },
-  errorAlertContainer: {
-    marginBottom: 20,
-    backgroundColor: "#F19797",
-    borderRadius: 8,
-    padding: 15,
-  },
-  alert: {
-    color: "#fff",
-    fontWeight: "500"
-  },
   formContainer: {
     borderRadius: 8,
     borderWidth: 1,
@@ -166,16 +137,5 @@ const styles = StyleSheet.create({
     color: "#888",
     marginTop: 5,
     marginBottom: 15,
-  },
-  button: {
-    backgroundColor: "#000",
-    borderRadius: 8,
-    padding: 15,
-    alignItems: "center",
-  },
-  buttonText: {
-    color: "#FFF",
-    fontSize: 16,
-    fontWeight: "600",
-  },
+  }
 });

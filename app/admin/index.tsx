@@ -4,6 +4,8 @@ import Menu from "@/components/Menu";
 import { Link } from "expo-router";
 import { signOut } from "firebase/auth";
 import { auth } from "@/firebase/clientApp";
+import { globalStyles } from "@/common/style";
+
 
 export default function Index() {
   const handleLogout = async () => {
@@ -14,11 +16,11 @@ export default function Index() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Admin</Text>
+    <View style={globalStyles.container}>
+      <Text style={globalStyles.header}>Admin</Text>
 
       <Menu
-        title="Announcements"
+        title="Manage Announcements"
         content={[
           { label: "Create Announcement", link: "/admin/create-announcement", showIcon: true },
           { label: "Manage Announcements", link: "/admin/manage-announcements", showIcon: true },
@@ -26,35 +28,11 @@ export default function Index() {
         ]}
       />
 
-      {/* Sign Out Button */}
       <Link href="/" asChild>
-        <TouchableOpacity style={styles.signOutButton} onPress={handleLogout}>
-          <Text style={styles.signOutText}>Sign Out</Text>
+        <TouchableOpacity style={globalStyles.signOutButton} onPress={handleLogout}>
+          <Text style={globalStyles.signOutText}>Sign Out</Text>
         </TouchableOpacity>
       </Link>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#F7F7F7",
-    padding: 20
-  },
-  header: {
-    fontSize: 38,
-    fontWeight: "bold",
-    marginBottom: 20,
-  },
-  signOutButton: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 8,
-    padding: 15,
-    alignItems: "center",
-  },
-  signOutText: {
-    fontSize: 16,
-    color: "#FF3B30",
-  },
-});

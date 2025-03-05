@@ -1,54 +1,28 @@
-
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import Menu from "@/components/Menu";
 import { Link } from "expo-router";
+import { globalStyles } from "@/common/style";
 
 export default function Index() {
- 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Settings</Text>
+    <View style={globalStyles.container}>
+      <Text style={globalStyles.header}>Settings</Text>
 
       <Menu
         title="Settings"
         content={[
-          { label: "Create Announcement", link: "/", showIcon: true },
-          { label: "Manage Announcements", link: "/", showIcon: true },
+          { label: "Setting 1", link: "/", showIcon: true },
+          { label: "Setting 2", link: "/", showIcon: true },
       
         ]}
       />
 
-      {/* Sign Out Button */}
       <Link href="/" asChild>
-        <TouchableOpacity style={styles.signOutButton}>
-          <Text style={styles.signOutText}>Sign Out</Text>
+        <TouchableOpacity style={globalStyles.signOutButton}>
+          <Text style={globalStyles.signOutText}>Sign Out</Text>
         </TouchableOpacity>
       </Link>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#F7F7F7",
-    padding: 20,
-    paddingTop: 30,
-  },
-  header: {
-    fontSize: 38,
-    fontWeight: "bold",
-    marginBottom: 20,
-  },
-  signOutButton: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 8,
-    padding: 15,
-    alignItems: "center",
-  },
-  signOutText: {
-    fontSize: 16,
-    color: "#FF3B30",
-  },
-});

@@ -3,6 +3,7 @@ import { Stack, Link } from "expo-router";
 import { auth } from "@/firebase/clientApp";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { Text } from "react-native";
+import { headerStyle } from "@/common/style";
 
 export default function AdminLayout() {
     const [loading, setLoading] = useState(true);
@@ -34,33 +35,15 @@ export default function AdminLayout() {
         <Stack initial="index">
             <Stack.Screen name="index" options={{
                 title: "Admin",
-                headerStyle: {
-                    backgroundColor: '#fff',
-                },
-                headerTintColor: '#000',
-                tabBarStyle: {
-                    backgroundColor: '#fff',
-                },
+                ...headerStyle
             }} />
             <Stack.Screen name="create-announcement" options={{
                 title: "Create Announcements",
-                headerStyle: {
-                    backgroundColor: '#fff',
-                },
-                headerTintColor: '#000',
-                tabBarStyle: {
-                    backgroundColor: '#fff',
-                },
+                ...headerStyle
             }} />
             <Stack.Screen name="manage-announcements" options={{
                 title: "Manage Announcements",
-                headerStyle: {
-                    backgroundColor: '#fff',
-                },
-                headerTintColor: '#000',
-                tabBarStyle: {
-                    backgroundColor: '#fff',
-                },
+                ...headerStyle
             }} />
         </Stack>
     );
