@@ -1,16 +1,22 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import Menu from "@/components/Menu";
-import { Link } from "expo-router";
+import { useRouter } from "expo-router";
 import { signOut } from "firebase/auth";
 import { auth } from "@/firebase/clientApp";
 import { globalStyles } from "@/common/style";
 
 
 export default function Index() {
+    const router = useRouter();
+  
   const handleLogout = async () => {
     await signOut(auth)
+    .then(() => {
+      router.replace("/?message=user-logged-out");
+    })
     .catch((err) => {
+      // Add error
       console.log(`Logout failed: ${err}`);
     })
   };
@@ -28,11 +34,9 @@ export default function Index() {
         ]}
       />
 
-      <Link href="/" asChild>
-        <TouchableOpacity style={globalStyles.signOutButton} onPress={handleLogout}>
-          <Text style={globalStyles.signOutText}>Sign Out</Text>
-        </TouchableOpacity>
-      </Link>
+      <TouchableOpacity style={globalStyles.signOutButton} onPress={handleLogout}>
+        <Text style={globalStyles.signOutText}>Sign Out</Text>
+      </TouchableOpacity>
     </View>
   );
 }

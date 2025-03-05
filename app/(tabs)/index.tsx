@@ -1,11 +1,13 @@
-import { formatRelativeDate } from "@/common/utils";
-import Menu from "@/components/Menu";
-import { db } from "@/firebase/clientApp";
 import { collection, getDocs, Timestamp } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, FlatList, ScrollView } from "react-native";
+import { View, Text, StyleSheet, ScrollView } from "react-native";
+import { useLocalSearchParams } from "expo-router";
 import { globalStyles } from "@/common/style";
+import { db } from "@/firebase/clientApp";
+import { formatRelativeDate } from "@/common/utils";
 import Loading from "@/components/Loading";
+import Menu from "@/components/Menu";
+import Alert from "@/components/Alert";
 
 // Define the type for announcements
 interface Announcement {
@@ -18,6 +20,32 @@ interface Announcement {
 export default function Index() {
   const [announcements, setAnnouncements] = useState<Array<Announcement>>([]);
   const [loading, setLoading] = useState(true);
+  const [alert, setAlert] = useState({
+      type: "",
+      message: ""
+    });
+
+  const { message } = useLocalSearchParams<{ message?: string }>();
+
+  // TODO: message does not clear after navigating away from page
+  useEffect(() => {
+    if(message) {
+      switch(message) {
+        case "unauthorized-user":
+          setAlert({
+            type: "Error",
+            message: "You do not have access to this page. Please login to continue."
+          });
+          break;
+        case "user-logged-out":
+          setAlert({
+            type: "Success",
+            message: "You have been successfully logged!"
+          });
+          break;
+      }
+    }
+  }, [message]);
 
   useEffect(() => {
     const getAnnouncements = async () => {
@@ -47,6 +75,8 @@ export default function Index() {
   return (
     <ScrollView>
       <View style={globalStyles.container}>
+        <Alert alert={alert} />
+        
         <Menu
           title="Navigation"
           content={[
@@ -55,8 +85,6 @@ export default function Index() {
         
           ]}
         />
-
-        <Text style={globalStyles.header}>Announcements</Text>
     
         {announcements.length > 0 ? (
           <>
@@ -89,7 +117,8 @@ export default function Index() {
 
 const styles = StyleSheet.create({
   listTitle: {
-    fontSize: 16,
+    fontSize: 18,
+    color: "gray",
     marginBottom: 15,
   },
   listContainer: {

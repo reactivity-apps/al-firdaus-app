@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Stack, Link } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import { auth } from "@/firebase/clientApp";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { Text } from "react-native";
@@ -9,6 +9,8 @@ import Loading from "@/components/Loading";
 export default function AdminLayout() {
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState<User | null>(null);
+
+    const router = useRouter();
 
     // Check if user is logged in
     useEffect(() => {
@@ -20,17 +22,14 @@ export default function AdminLayout() {
         return () => unsubscribe();
     }, []);
 
+    useEffect(() => {
+        if (!loading && !user) {
+            router.replace("/?message=unauthorized-user");
+        }
+    }, [user, loading, router]);
+
 
     if(loading) return <Loading />;
-
-    if(!user) {
-        return (
-            <Text style={{ flexDirection: "row" }}>
-                You do not have access to this page! Please return 
-                <Link href="/" style={{ color: "blue", textDecoration: "underline", marginHorizontal: 5 }}>home.</Link>
-            </Text>
-        );
-    }
 
     return (
         <Stack initial="index">
