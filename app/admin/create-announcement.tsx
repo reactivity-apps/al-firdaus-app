@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator } from "react-native";
-import BackButton from "@/components/BackButton";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
 import { addDoc, collection, getDocs } from "firebase/firestore"; 
 import { db } from "@/firebase/clientApp";
 import { get_today } from "@/common/utils";
@@ -58,60 +57,55 @@ export default function CreateAnnouncement() {
   };
 
   return (
+    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
     <View style={styles.container}>
-      <BackButton route={"/admin"} />
-
       <Text style={styles.header}>Create Announcement</Text>
-      <Text style={styles.subHeader}>Use this form to create new announcements. These announcements will appear on the Announcements page and will be sent to users as a notification.</Text>
-
+      <Text style={styles.subHeader}>
+        Use this form to create new announcements. These announcements will appear on the Announcements page and will be sent to users as a notification.
+      </Text>
+  
       <Alert alert={alert} />
-
-      <View style={styles.formContainer}>
-        <Text style={styles.label}>Title</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter title"
-          placeholderTextColor="grey"
-          onChange={(e) => {
-            setValues({
-              ...values,
-              title: e.nativeEvent.text
-            })
-         }}/>
-        
-        <Text style={styles.label}>Message</Text>
-        <TextInput
-          style={styles.textArea}
-          placeholder="Enter message (max 150 characters)"
-          placeholderTextColor="grey"
-          onChange={(e) => {
-            setValues({
-              ...values,
-              message: e.nativeEvent.text
-            })
-          }}
-          multiline
-          maxLength={150} />
-        <Text style={styles.charCount}>{values.message.length}/150</Text>
-
-        <TouchableOpacity disabled={loading} style={styles.button} onPress={onSubmit}>
-          <Text style={styles.buttonText}>{(loading) ? <ActivityIndicator color="#FFF" /> : "Send Announcement"}</Text>
-        </TouchableOpacity>
-      </View>
-
+  
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
+        <View style={styles.formContainer}>
+          <Text style={styles.label}>Title</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter title"
+            placeholderTextColor="grey"
+            onChange={(e) => setValues({ ...values, title: e.nativeEvent.text })}
+          />
+  
+          <Text style={styles.label}>Message</Text>
+          <TextInput
+            style={styles.textArea}
+            placeholder="Enter message (max 150 characters)"
+            placeholderTextColor="grey"
+            onChange={(e) => setValues({ ...values, message: e.nativeEvent.text })}
+            multiline
+            maxLength={150}
+          />
+          <Text style={styles.charCount}>{values.message.length}/150</Text>
+  
+          <TouchableOpacity disabled={loading} style={styles.button} onPress={onSubmit}>
+            <Text style={styles.buttonText}>
+              {loading ? <ActivityIndicator color="#FFF" /> : "Send Announcement"}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </KeyboardAvoidingView>
     </View>
+  </ScrollView>
+  
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: "#F7F7F7",
-    paddingTop: 30,
+    padding: 20
   },
   header: {
-    fontSize: 38,
+    fontSize: 28,
     fontWeight: "bold",
     marginBottom: 10,
   },

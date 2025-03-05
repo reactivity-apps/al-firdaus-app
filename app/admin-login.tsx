@@ -7,12 +7,13 @@ import {
   StyleSheet,
   ActivityIndicator,
   Platform,
+  ScrollView,
+  KeyboardAvoidingView,
 } from "react-native";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase/clientApp";
-import BackButton from "@/components/BackButton";
 import Alert from "@/components/Alert";
-import { Link, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 
 const AdminLogin = () => {
   const [email, setEmail] = useState("");
@@ -130,57 +131,58 @@ const AdminLogin = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <BackButton route={"/"} />
-      
-      <Text style={styles.title}>Admin Login</Text>
-      <Text style={styles.subTitle}>Login to access further administration controls.</Text>
-      
-      <Alert alert={alert} />
-      <Link href="/admin" asChild>
-        <Text>Link to Admin</Text>
-      </Link>
+    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+    
+      <View style={styles.container}>
+        
+        <Text style={styles.title}>Admin Login</Text>
+        <Text style={styles.subTitle}>Login to access further administration controls.</Text>
+        
+        <Alert alert={alert} />
 
+        <KeyboardAvoidingView 
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
+          style={{ flex: 1 }}>
+          <View style={styles.signInForm}>
+            <View style={styles.card}>
+              <Text style={styles.header}>Sign In</Text>
 
-      {/* Sign In Form */}
-      <View style={styles.signInForm}>
-        <View style={styles.card}>
-          <Text style={styles.header}>Sign In</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter your email"
+                placeholderTextColor="grey"
+                value={email}
+                onChangeText={setEmail}
+              />
+              <TextInput
+                style={styles.input}
+                placeholder="Enter your password"
+                placeholderTextColor="grey"
+                secureTextEntry
+                value={password}
+                onChangeText={setPassword}
+              />
 
-          <TextInput
-            style={styles.input}
-            placeholder="Enter your email"
-            placeholderTextColor="grey"
-            value={email}
-            onChangeText={setEmail}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Enter your password"
-            placeholderTextColor="grey"
-            secureTextEntry
-            value={password}
-            onChangeText={setPassword}
-          />
+              <TouchableOpacity style={styles.button} onPress={handleLogin}>
+                {loading ? (
+                  <ActivityIndicator color="#FFF" />
+                ) : (
+                  <Text style={styles.buttonText}>Sign In</Text>
+                )}
+              </TouchableOpacity>
 
-          <TouchableOpacity style={styles.button} onPress={handleLogin}>
-            {loading ? (
-              <ActivityIndicator color="#FFF" />
-            ) : (
-              <Text style={styles.buttonText}>Sign In</Text>
-            )}
-          </TouchableOpacity>
+              {/*
+              <View style={styles.divider}></View>
 
-          {/*
-          <View style={styles.divider}></View>
-
-           <Text style={styles.orText}>Or continue with</Text> 
-          <TouchableOpacity style={styles.googleButton}>
-            <Text style={styles.googleText}>Login With Google</Text>
-          </TouchableOpacity> */}
-        </View>
+              <Text style={styles.orText}>Or continue with</Text> 
+              <TouchableOpacity style={styles.googleButton}>
+                <Text style={styles.googleText}>Login With Google</Text>
+              </TouchableOpacity> */}
+            </View>
+          </View>
+        </KeyboardAvoidingView>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
@@ -189,12 +191,10 @@ export default AdminLogin;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F5F5F5",
-    padding: 20,
-    paddingTop: 30,
+    padding: 20
   },
   title: {
-    fontSize: 38,
+    fontSize: 28,
     fontWeight: "bold",
     marginBottom: 10,
   },
