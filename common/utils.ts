@@ -3,42 +3,45 @@ import { Timestamp } from "firebase/firestore";
 export const get_today = () => new Date();
 
 export function formatRelativeDate(timestamp: Timestamp): string {
-    const now = new Date();
+  const now = new Date();
+  const date = timestamp.toDate(); // Convert Firestore timestamp to JS Date
 
-    const date = timestamp.toDate(); // or new Date(timestamp.seconds * 1000)
-
-    if (!(date instanceof Date) || isNaN(date.getTime())) {
-        console.log(date);
-        throw new Error("Invalid date passed");
-    }
-
-    const timeDiff = now.getTime() - date.getTime();
-    const daysDiff = Math.floor(timeDiff / (1000 * 3600 * 24)); // Difference in days
-  
-    // Check if the date is today
-    if (daysDiff === 0) {
-      return "Today";
-    }
-  
-    // Check if the date is yesterday
-    if (daysDiff === 1) {
-      return "Yesterday";
-    }
-  
-    // Check if the date is within this week
-    const currentWeek = Math.floor(now.getDate() / 7);
-    const targetWeek = Math.floor(date.getDate() / 7);
-    if (daysDiff < 7) {
-      return "This week";
-    }
-  
-    // Check if the date is within last month
-    const currentMonth = now.getMonth();
-    const targetMonth = date.getMonth();
-    if (currentMonth === targetMonth + 1 || (currentMonth === 0 && targetMonth === 11)) {
-      return "Last month";
-    }
-  
-    // Return a specific date
-    return date.toDateString();
+  if (!(date instanceof Date) || isNaN(date.getTime())) {
+      console.error("Invalid date:", date);
+      throw new Error("Invalid date passed");
   }
+
+  // Get midnight boundaries for today and yesterday
+  const todayStart = new Date(now);
+  todayStart.setHours(0, 0, 0, 0);
+
+  const yesterdayStart = new Date(todayStart);
+  yesterdayStart.setDate(todayStart.getDate() - 1);
+
+  if (date >= todayStart) {
+      return "today";
+  }
+
+  if (date >= yesterdayStart) {
+      return "yesterday";
+  }
+
+  // Check if the date is within the current week
+  const startOfWeek = new Date(todayStart);
+  startOfWeek.setDate(todayStart.getDate() - todayStart.getDay()); // Start of the week (Sunday)
+
+  if (date >= startOfWeek) {
+      return "this week";
+  }
+
+  // Check if the date is within last month
+  const startOfLastMonth = new Date(todayStart);
+  startOfLastMonth.setMonth(todayStart.getMonth() - 1, 1); // First day of last month
+
+  if (date >= startOfLastMonth) {
+      return "last month";
+  }
+
+  // Default to full date string
+  return date.toDateString();
+}

@@ -56,6 +56,9 @@ export default function Index() {
           message: item.get("message"),
           date: item.get("createdAt"),
         }));
+        
+        announcementsList.sort((a, b) => b.date.toDate().getTime() - a.date.toDate().getTime());
+
         setAnnouncements(announcementsList);
       } catch (error) {
         console.log(`Error fetching announcements: ${error}`);
@@ -96,7 +99,7 @@ export default function Index() {
                     <View key={index} style={[styles.item, isLast && styles.lastItem]}>
                       <View style={styles.itemContent}>
                         <View style={styles.itemHeader}>
-                          <Text style={styles.itemTime}>{formatRelativeDate(item.date)}</Text>
+                          <Text style={styles.itemTime}>Posted {formatRelativeDate(item.date)}</Text>
                           <Text style={styles.itemTitle}>{item.title}</Text>
                         </View>
                         <Text style={styles.itemMessage}>{item.message}</Text>

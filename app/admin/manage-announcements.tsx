@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, FlatList, ScrollView, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
 import { collection, getDocs, Timestamp } from "firebase/firestore";
 import { db } from "@/firebase/clientApp";
 import { formatRelativeDate } from "@/common/utils";
@@ -26,6 +26,10 @@ export default function ManageAnnouncements() {
           message: item.get("message"),
           date: item.get("createdAt"),
         }));
+        
+        // Sort announcements by date (newest first)
+        announcementsList.sort((a, b) => b.date.toDate().getTime() - a.date.toDate().getTime());
+        
         setAnnouncements(announcementsList);
       } catch (error) {
         console.log(`Error fetching announcements: ${error}`);
@@ -56,7 +60,7 @@ export default function ManageAnnouncements() {
                   <View key={index} style={[styles.item, isLast && styles.lastItem]}>
                     <View style={styles.itemContent}>
                       <View style={styles.itemHeader}>
-                        <Text style={styles.itemTime}>{formatRelativeDate(item.date)}</Text>
+                        <Text style={styles.itemTime}>Posted {formatRelativeDate(item.date)}</Text>
                         <Text style={styles.itemTitle}>{item.title}</Text>
                       </View>
                       <Text style={styles.itemMessage}>{item.message}</Text>
