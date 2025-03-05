@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 
-type Props = {
+type AlertProps = {
   alert: {
-    type: string;
+    type: "Success" | "Error";
     message: string;
   };
 };
 
-const Alert = ({ alert }: Props) => {
+const Alert: React.FC<AlertProps> = ({ alert }) => {
   const [isVisible, setIsVisible] = useState(false);
 
-  // Reset visibility whenever the alert changes
   useEffect(() => {
     if (alert.message) {
       setIsVisible(true);
@@ -22,11 +21,9 @@ const Alert = ({ alert }: Props) => {
 
   return (
     <View
-      style={[
-        alert.type === "Success" ? styles.successAlertContainer : styles.errorAlertContainer,
-      ]}
+      style={alert.type === "Success" ? styles.successAlert : styles.errorAlert}
     >
-      <Text style={styles.alert}>{alert.message}</Text>
+      <Text style={styles.alertText}>{alert.message}</Text>
       <TouchableOpacity onPress={() => setIsVisible(false)} style={styles.closeButton}>
         <Text style={styles.closeText}>Close</Text>
       </TouchableOpacity>
@@ -36,40 +33,41 @@ const Alert = ({ alert }: Props) => {
 
 export default Alert;
 
+const baseAlertStyles = {
+  marginBottom: 20,
+  borderRadius: 8,
+  padding: 15,
+  flexDirection: "row" as const,
+  alignItems: "center" as const,
+  justifyContent: "space-between" as const,
+};
+
 const styles = StyleSheet.create({
-  successAlertContainer: {
-    marginBottom: 20,
+  successAlert: {
+    ...baseAlertStyles,
     backgroundColor: "#69d173",
-    borderRadius: 8,
-    padding: 15,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
   },
-  errorAlertContainer: {
-    marginBottom: 20,
+  errorAlert: {
+    ...baseAlertStyles,
     backgroundColor: "#F19797",
-    borderRadius: 8,
-    padding: 15,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
   },
-  alert: {
+  alertText: {
     color: "#fff",
     fontWeight: "500",
     flex: 1,
   },
   closeButton: {
-    padding: 8,
+    paddingVertical: 8,
     paddingHorizontal: 12,
     borderWidth: 1,
-    borderColor: "#fff", // White border
-    borderRadius: 5, // Slightly rounded corners for the button
+    borderColor: "#fff",
+    borderRadius: 5,
     justifyContent: "center",
     alignItems: "center",
+    marginHorizontal: 5
   },
   closeText: {
     color: "#fff",
+    fontWeight: "bold",
   },
 });

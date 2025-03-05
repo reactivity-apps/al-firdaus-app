@@ -9,7 +9,7 @@ export default function TabLayout() {
             name="index" 
             options={{ 
                 title: "Announcements",
-                tabBarIcon: ({ color, focused}) => (
+                tabBarIcon: ({ color, focused }) => (
                     <Ionicons name={focused ? 'list-circle' : 'list-circle-outline' } color={color} size={24} />
                 ),
                 tabBarLabel: "Announcements", 
@@ -19,7 +19,7 @@ export default function TabLayout() {
             name="itinerary" 
             options={{ 
                 title: "Itinerary",
-                tabBarIcon: ({ color, focused}) => (
+                tabBarIcon: ({ color, focused }) => (
                     <Ionicons name={focused ? 'airplane' : 'airplane-outline' } color={color} size={24} />
                 ),
                 tabBarLabel: "Itinerary", 

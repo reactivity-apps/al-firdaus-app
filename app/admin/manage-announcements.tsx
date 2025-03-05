@@ -78,7 +78,8 @@ export default function ManageAnnouncements() {
 
 const styles = StyleSheet.create({
   listTitle: {
-    fontSize: 16,
+    fontSize: 18,
+    color: "gray",
     marginBottom: 15,
   },
   listContainer: {

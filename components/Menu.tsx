@@ -51,7 +51,7 @@ export default Menu;
 
 const styles = StyleSheet.create({
   section: {
-    marginBottom: 10,
+    marginBottom: 20,
   },
   sectionTitle: {
     fontSize: 18,
