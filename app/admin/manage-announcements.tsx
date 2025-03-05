@@ -5,6 +5,7 @@ import { db } from "@/firebase/clientApp";
 import { formatRelativeDate } from "@/common/utils";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { globalStyles } from "@/common/style";
+import Loading from "@/components/Loading";
 
 type Announcement = {
   title: string;
@@ -36,7 +37,7 @@ export default function ManageAnnouncements() {
     getAnnouncements();
   }, []); 
 
-  if(loading) return <Text>Loading...</Text>;
+  if(loading) return <Loading />;
 
   // TODO: Add error display
   

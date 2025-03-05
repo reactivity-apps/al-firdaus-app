@@ -4,6 +4,7 @@ import { auth } from "@/firebase/clientApp";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { Text } from "react-native";
 import { headerStyle } from "@/common/style";
+import Loading from "@/components/Loading";
 
 export default function AdminLayout() {
     const [loading, setLoading] = useState(true);
@@ -20,7 +21,7 @@ export default function AdminLayout() {
     }, []);
 
 
-    if(loading) return <Text>Loading...</Text>;
+    if(loading) return <Loading />;
 
     if(!user) {
         return (

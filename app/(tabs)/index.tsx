@@ -5,6 +5,7 @@ import { collection, getDocs, Timestamp } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, FlatList, ScrollView } from "react-native";
 import { globalStyles } from "@/common/style";
+import Loading from "@/components/Loading";
 
 // Define the type for announcements
 interface Announcement {
@@ -39,7 +40,7 @@ export default function Index() {
   }, []);
 
 
-  if(loading) return <Text>Loading...</Text>;
+  if(loading) return <Loading />;
   
   // TODO: Add error display
   
