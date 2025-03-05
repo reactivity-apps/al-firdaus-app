@@ -1,9 +1,9 @@
 import { formatRelativeDate } from "@/common/utils";
-import SettingsButton from "@/components/SettingsButton";
+import Menu from "@/components/Menu";
 import { db } from "@/firebase/clientApp";
 import { collection, getDocs, Timestamp } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, FlatList } from "react-native";
+import { View, Text, StyleSheet, FlatList, ScrollView } from "react-native";
 
 // Define the type for announcements
 interface Announcement {
@@ -12,7 +12,7 @@ interface Announcement {
   date: Timestamp;
 }
 
-export default function Itinerary() {
+export default function Index() {
   const [announcements, setAnnouncements] = useState<Array<Announcement>>([]);
   const [loading, setLoading] = useState(true);
 
@@ -42,52 +42,57 @@ export default function Itinerary() {
   // TODO: Add error display
   
   return (
-    <View style={styles.container}>
-      <SettingsButton />
-      <Text style={styles.header}>Announcements</Text>
-  
-      {announcements.length > 0 ? (
-        <>
-          <Text style={styles.listTitle}>All Announcements</Text>
-          <View style={styles.listContainer}>
-            <FlatList
-              data={announcements}
-              renderItem={({ item, index }) => {
-                const isLast = index === announcements.length - 1;
-                return (
-                  <View key={index} style={[styles.item, isLast && styles.lastItem]}>
-                    <View style={styles.itemContent}>
-                      <View style={styles.itemHeader}>
-                        <Text style={styles.itemTitle}>{item.title}</Text>
-                        <Text style={styles.itemTime}>{formatRelativeDate(item.date)}</Text>
+    <ScrollView>
+      <View style={styles.container}>
+        <Menu
+          title="Navigation"
+          content={[
+            { label: "Settings", link: "/settings", showIcon: true },
+            { label: "Admin", link: "/admin-login", showIcon: true },
+        
+          ]}
+        />
+
+        <Text style={styles.header}>Announcements</Text>
+    
+        {announcements.length > 0 ? (
+          <>
+            <Text style={styles.listTitle}>All Announcements</Text>
+            <View style={styles.listContainer}>
+              {announcements.map((item, index) => {
+                  const isLast = index === announcements.length - 1;
+                  return (
+                    <View key={index} style={[styles.item, isLast && styles.lastItem]}>
+                      <View style={styles.itemContent}>
+                        <View style={styles.itemHeader}>
+                          <Text style={styles.itemTime}>{formatRelativeDate(item.date)}</Text>
+                          <Text style={styles.itemTitle}>{item.title}</Text>
+                        </View>
+                        <Text style={styles.itemMessage}>{item.message}</Text>
                       </View>
-                      <Text style={styles.itemMessage}>{item.message}</Text>
                     </View>
-                  </View>
-                );
-              }}
-            />
-          </View>
-          <Text style={styles.footerText}>End of announcements! 🎉</Text>
-        </>
-      ) : (
-        <Text style={styles.footerText}>No announcements yet!</Text>
-      )}
-    </View>
+                  );
+                })}
+            </View>
+            <Text style={styles.footerText}>End of announcements! 🎉</Text>
+          </>
+        ) : (
+          <Text style={styles.footerText}>No announcements yet!</Text>
+        )}
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
     padding: 20,
-    paddingTop: 30,
   },
   header: {
-    fontSize: 38,
+    fontSize: 28,
     fontWeight: "bold",
-    marginBottom: 10,
+    marginTop: 20,
   },
   listTitle: {
     fontSize: 16,
@@ -110,9 +115,10 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0,
   },
   itemHeader: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: "column",
+    alignItems: "flex-start",
     marginBottom: 5,
+    gap: 5
   },
   itemTitle: {
     fontSize: 16,

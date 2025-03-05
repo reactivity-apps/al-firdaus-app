@@ -40,8 +40,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#F7F7F7",
-    padding: 20,
-    paddingTop: 30,
+    padding: 20
   },
   header: {
     fontSize: 38,

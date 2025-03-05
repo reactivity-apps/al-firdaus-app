@@ -32,9 +32,36 @@ export default function AdminLayout() {
 
     return (
         <Stack initial="index">
-            <Stack.Screen name="index" options={{ headerShown: false }} />
-            <Stack.Screen name="create-announcement" options={{ headerShown: false }} />
-            <Stack.Screen name="manage-announcements" options={{ headerShown: false }} />
+            <Stack.Screen name="index" options={{
+                title: "Admin",
+                headerStyle: {
+                    backgroundColor: '#fff',
+                },
+                headerTintColor: '#000',
+                tabBarStyle: {
+                    backgroundColor: '#fff',
+                },
+            }} />
+            <Stack.Screen name="create-announcement" options={{
+                title: "Create Announcements",
+                headerStyle: {
+                    backgroundColor: '#fff',
+                },
+                headerTintColor: '#000',
+                tabBarStyle: {
+                    backgroundColor: '#fff',
+                },
+            }} />
+            <Stack.Screen name="manage-announcements" options={{
+                title: "Manage Announcements",
+                headerStyle: {
+                    backgroundColor: '#fff',
+                },
+                headerTintColor: '#000',
+                tabBarStyle: {
+                    backgroundColor: '#fff',
+                },
+            }} />
         </Stack>
     );
 }

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, FlatList, ScrollView, TouchableOpacity } from "react-native";
-import BackButton from "@/components/BackButton";
 import { collection, getDocs, Timestamp } from "firebase/firestore";
 import { db } from "@/firebase/clientApp";
 import { formatRelativeDate } from "@/common/utils";
@@ -40,35 +39,31 @@ export default function ManageAnnouncements() {
   // TODO: Add error display
   
   return (
-    <ScrollView style={styles.scrollView}>
+    <ScrollView>
       <View style={styles.container}>
-        <BackButton route={"/admin"} />
         <Text style={styles.header}>Announcements</Text>
-        <Text style={styles.subHeader}>View all recent announcements.</Text>
+        <Text style={styles.subHeader}>View and manage all announcements.</Text>
         {announcements.length > 0 ? (
           <>
             <Text style={styles.listTitle}>All Announcements</Text>
             <View style={styles.listContainer}>
-              <FlatList
-                data={announcements}
-                renderItem={({ item, index }) => {
-                  const isLast = index === announcements.length - 1;
-                  return (
-                    <View key={index} style={[styles.item, isLast && styles.lastItem]}>
-                      <View style={styles.itemContent}>
-                        <View style={styles.itemHeader}>
-                          <Text style={styles.itemTitle}>{item.title}</Text>
-                          <Text style={styles.itemTime}>{formatRelativeDate(item.date)}</Text>
-                        </View>
-                        <Text style={styles.itemMessage}>{item.message}</Text>
+              {announcements.map((item, index) => {
+                const isLast = index === announcements.length - 1;
+                return (
+                  <View key={index} style={[styles.item, isLast && styles.lastItem]}>
+                    <View style={styles.itemContent}>
+                      <View style={styles.itemHeader}>
+                        <Text style={styles.itemTime}>{formatRelativeDate(item.date)}</Text>
+                        <Text style={styles.itemTitle}>{item.title}</Text>
                       </View>
-                      <TouchableOpacity style={styles.editIconContainer}>
-                        <Ionicons name="information-circle-outline" size={25} color="#000" />
-                      </TouchableOpacity>
+                      <Text style={styles.itemMessage}>{item.message}</Text>
                     </View>
-                  );
-                }}
-              />
+                    <TouchableOpacity style={styles.editIconContainer}>
+                      <Ionicons name="information-circle-outline" size={25} color="#000" />
+                    </TouchableOpacity>
+                  </View>
+                );
+              })}
             </View>
             <Text style={styles.footerText}>End of announcements! 🎉</Text>
           </>
@@ -79,16 +74,12 @@ export default function ManageAnnouncements() {
 }
 
 const styles = StyleSheet.create({
-  scrollView: {
-    backgroundColor: "#F7F7F7", 
-  },
   container: {
     flex: 1,
-    padding: 20,
-    paddingTop: 40,
+    padding: 20
   },
   header: {
-    fontSize: 38,
+    fontSize: 28,
     fontWeight: "bold",
     marginBottom: 10,
   },
@@ -113,29 +104,15 @@ const styles = StyleSheet.create({
   itemContent: {
     flex: 1,
     padding: 20,
-    borderRightWidth: 1,
-    borderRightColor: "#CDCBCB",
-  },
-  editIconContainer: {
-    width: 80,
-    padding: 20,
-    justifyContent: "center",
-    alignItems: "center"
   },
   lastItem: {
-    borderBottomWidth: 0, // Removes bottom border for the last item
+    borderBottomWidth: 0,
   },
   itemHeader: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: "column",
+    alignItems: "flex-start",
     marginBottom: 5,
-  },
-  profileCircle: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    backgroundColor: "#CCC",
-    marginRight: 10,
+    gap: 5
   },
   itemTitle: {
     fontSize: 16,
@@ -150,6 +127,20 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#444",
   },
+  editIconContainer: {
+    width: 70,
+    padding: 20,
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  profileCircle: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: "#CCC",
+    marginRight: 10,
+  },
+
   footerText: {
     textAlign: "center",
     fontSize: 14,
