@@ -1,5 +1,60 @@
-import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { globalStyles } from "@/common/style";
+import * as React from "react";
+import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
+import { useSharedValue } from "react-native-reanimated";
+import Carousel, {
+  ICarouselInstance,
+  Pagination,
+} from "react-native-reanimated-carousel";
+
+const data = [...new Array(3).keys()];
+const cardHeight = 455; // Needed for carousel, will break otherwise
+
+function PrayerCarousel() {
+    const [containerWidth, setContainerWidth] = React.useState(0); // Track element width   
+    const ref = React.useRef<ICarouselInstance>(null);
+    const progress = useSharedValue<number>(0);
+
+    const onPressPagination = (index: number) => {
+        ref.current?.scrollTo({
+        count: index - progress.value,
+        animated: true,
+        });
+    };
+
+    return (
+        <View 
+            style={styles.container}
+            onLayout={(event) => {
+                const { width } = event.nativeEvent.layout;
+                setContainerWidth(width); // Use width of container to set carousel width
+            }}
+        >
+            {containerWidth > 0 && (
+                <>
+                <Carousel
+                    ref={ref}
+                    width={containerWidth} 
+                    height={460} // Maintain height
+                    data={data}
+                    onProgressChange={progress}
+                    renderItem={({ index }) => <PrayerCard />}
+                    loop={false}
+                    style={{ alignSelf: "center" }}
+                />
+
+                <Pagination.Basic
+                    progress={progress}
+                    data={data}
+                    dotStyle={styles.dot}
+                    containerStyle={styles.paginationContainer}
+                    onPress={onPressPagination}
+                />
+                </>
+            )}
+        </View>
+    );
+}
 
 const PrayerTimes = () => {
     const lastRowItemStyle = {...styles.prayerItemContainer, ...styles.lastRow};
@@ -36,7 +91,7 @@ const PrayerTimes = () => {
 
 const PrayerCard = () => {
     return (
-        <View style={styles.container}>
+        <View style={styles.card}>
             <View style={styles.header}>
                 <View style={styles.dateGroup}>
                     <Text>Rajab 20, 1445</Text>
@@ -49,21 +104,39 @@ const PrayerCard = () => {
                     <View style={styles.reciterIcon}></View>
                     <Text>Sheikh Abdul Rahman al-Sudais</Text>
                 </View>
-
                 <PrayerTimes />
+                <TouchableOpacity style={globalStyles.outlinedButton}>
+                    <Text>See More Information</Text>
+                </TouchableOpacity>
             </View>
         </View>
     );
 };
 
+export default PrayerCarousel;
+
 const styles = StyleSheet.create({
+    // Carousel
     container: {
+        marginBottom: 30,
+    },
+    dot: {
+        backgroundColor: "rgba(0,0,0,0.2)",
+        borderRadius: 50,
+    },
+    paginationContainer: {
+        gap: 5,
+        marginTop: 10,
+    },
+    card: {
         backgroundColor: "white",
         marginBottom: 20,
         borderRadius: 8,
         flexDirection: "column",
+        height: cardHeight // Needed for carousel, will break otherwise
     },
-
+    
+    // Prayer Card
     // Header
     header: {
         flexDirection: "column", // Stack location and dateGroup vertically
@@ -95,7 +168,8 @@ const styles = StyleSheet.create({
     },
     reciterInfo: {
         flexDirection: "row",
-        gap: 10
+        gap: 10,
+        marginBottom: 15
     },
     reciterIcon: {
         width: 20,
@@ -108,7 +182,7 @@ const styles = StyleSheet.create({
     prayerTimesContainer: {
         flexDirection: "column",
         justifyContent: "center",
-        marginTop: 20,
+        marginBottom: 15,
         borderWidth: 1,
         borderRadius: 5,
         borderColor: "#CDCBCB",
@@ -135,4 +209,3 @@ const styles = StyleSheet.create({
     }   
 });
 
-export default PrayerCard;

@@ -43,6 +43,14 @@ const globalStyles = StyleSheet.create({
         fontSize: 16,
         color: "#FF3B30",
     },
+    outlinedButton: {
+        backgroundColor: "#FFFFFF",
+        borderWidth: 1,
+        borderColor: "#CDCBCB",
+        borderRadius: 8,
+        padding: 15,
+        alignItems: "center",
+    }
 });
 
 const headerStyle = {
