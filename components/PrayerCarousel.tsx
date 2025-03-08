@@ -1,13 +1,39 @@
+import React,{ useState, useEffect } from "react";
 import { globalStyles } from "@/common/style";
-import * as React from "react";
 import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
 import { useSharedValue } from "react-native-reanimated";
 import Carousel, {
   ICarouselInstance,
   Pagination,
 } from "react-native-reanimated-carousel";
+import { 
+    fetchPrayerTimings, 
+    // fetchReciter, 
+    PrayerTimingsResponse 
+} from "@/common/fetchPrayerData";
+import { convertTo12HourFormat } from "@/common/utils";
 
-const data = [...new Array(3).keys()];
+type LocationProp = {
+    location: string;
+}
+
+type PrayerTimingsProp = {
+    timings: {
+        Fajr: string;
+        Sunrise: string;
+        Dhuhr: string;
+        Asr: string;
+        Sunset: string;
+        Maghrib: string;
+        Isha: string;
+        Imsak: string;
+        Midnight: string;
+        Firstthird: string;
+        Lastthird: string;
+    } | undefined;
+}
+
+const locations = ["Makkah", "Madina", "Hilliard"];
 const cardHeight = 455; // Needed for carousel, will break otherwise
 
 function PrayerCarousel() {
@@ -36,16 +62,16 @@ function PrayerCarousel() {
                     ref={ref}
                     width={containerWidth} 
                     height={460} // Maintain height
-                    data={data}
+                    data={locations}
                     onProgressChange={progress}
-                    renderItem={({ index }) => <PrayerCard />}
+                    renderItem={({ item, index }) => <PrayerCard location={item} />}
                     loop={false}
                     style={{ alignSelf: "center" }}
                 />
 
                 <Pagination.Basic
                     progress={progress}
-                    data={data}
+                    data={locations}
                     dotStyle={styles.dot}
                     containerStyle={styles.paginationContainer}
                     onPress={onPressPagination}
@@ -56,62 +82,111 @@ function PrayerCarousel() {
     );
 }
 
-const PrayerTimes = () => {
-    const lastRowItemStyle = {...styles.prayerItemContainer, ...styles.lastRow};
+const PrayerTimes = ({ timings }: PrayerTimingsProp) => {
+    const lastRowItemStyle = { ...styles.prayerItemContainer, ...styles.lastRow };
+
+    if (!timings) {
+        return <Text style={styles.errorText}>Network error: cannot load prayer times!</Text>;
+    }
+
+    // Array of prayer names, to match the keys in the timings object
+    const prayerNames = [
+        "Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"
+    ];
+
     return (
         <View style={styles.prayerTimesContainer}>
-            <View style={styles.prayerItemContainer}>
-                <Text style={styles.prayerName}>Fajr</Text>
-                <Text style={styles.prayerTime}>6:50am</Text>
-            </View>
+            {prayerNames.map((prayerName, index) => {
+                const time = timings[prayerName as keyof typeof timings];
 
-            <View style={styles.prayerItemContainer}>
-                <Text style={styles.prayerName}>Fajr</Text>
-                <Text style={styles.prayerTime}>6:50am</Text>
-            </View>
+                // Apply the last row style to the last item
+                const prayerItemStyle = index === prayerNames.length - 1 ? lastRowItemStyle : styles.prayerItemContainer;
 
-            <View style={styles.prayerItemContainer}>
-                <Text style={styles.prayerName}>Fajr</Text>
-                <Text style={styles.prayerTime}>6:50am</Text>
-            </View>
-
-            <View style={styles.prayerItemContainer}>
-                <Text style={styles.prayerName}>Fajr</Text>
-                <Text style={styles.prayerTime}>6:50am</Text>
-            </View>
-
-            <View style={lastRowItemStyle}>
-                <Text style={styles.prayerName}>Fajr</Text>
-                <Text style={styles.prayerTime}>6:50am</Text>
-                
-            </View>
+                return (
+                    <View key={prayerName} style={prayerItemStyle}>
+                        <Text style={styles.prayerName}>{prayerName}</Text>
+                        <Text style={styles.prayerTime}>{convertTo12HourFormat(time)}</Text>
+                    </View>
+                );
+            })}
         </View>
     );
-}
+};
 
-const PrayerCard = () => {
+import { ActivityIndicator } from 'react-native';
+
+const PrayerCard = ({ location }: LocationProp) => {
+    const [prayerData, setPrayerData] = useState<PrayerTimingsResponse | null>();
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(false);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                const [prayerTimings] = await Promise.all([
+                    fetchPrayerTimings({ location }),
+                    // fetchReciter({ location })
+                ]);
+
+                if (prayerTimings?.code !== 200) {
+                    setError(true);
+                } else {
+                    setPrayerData(prayerTimings);
+                }
+            } catch (error) {
+                setError(true);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, [location]);
+
     return (
         <View style={styles.card}>
             <View style={styles.header}>
                 <View style={styles.dateGroup}>
-                    <Text>Rajab 20, 1445</Text>
-                    <Text>January 20, 2025</Text>
+                    {!error ? (
+                        <>
+                            {loading ? (
+                                <ActivityIndicator size="small" color="black" />
+                            ) : (
+                                <>
+                                    <Text>{prayerData?.data.date.gregorian.month.en} {prayerData?.data.date.gregorian.day}, {prayerData?.data.date.gregorian.year}</Text>
+                                    <Text>{prayerData?.data.date.hijri.month.en} {prayerData?.data.date.hijri.day}, {prayerData?.data.date.hijri.year}</Text>
+                                </>
+                            )}
+                        </>
+                    ) : (
+                        <Text style={styles.errorText}>Network error: cannot load current dates!</Text>
+                    )}
                 </View>
-                <Text style={styles.locationName}>Madina</Text>
+                <Text style={styles.locationName}>{location}</Text>
             </View>
             <View style={styles.content}>
-                <View style={styles.reciterInfo}>
-                    <View style={styles.reciterIcon}></View>
-                    <Text>Sheikh Abdul Rahman al-Sudais</Text>
-                </View>
-                <PrayerTimes />
-                <TouchableOpacity style={globalStyles.outlinedButton}>
-                    <Text>See More Information</Text>
-                </TouchableOpacity>
+                {loading ? (
+                    <ActivityIndicator size="small" color="black" />
+                ) : !error ? (
+                    <>
+                        <View style={styles.reciterInfo}>
+                            <View style={styles.reciterIcon}></View>
+                            <Text>Current Imam: Sheikh Abdul Rahman al-Sudais</Text>
+                        </View>
+                        <PrayerTimes timings={prayerData?.data.timings} />
+                        <TouchableOpacity style={globalStyles.outlinedButton}>
+                            <Text>See More Information</Text>
+                        </TouchableOpacity>
+                    </>
+                ) : (
+                    <Text style={[styles.errorText, { alignSelf: "center" }]}>Network error: cannot load current dates!</Text>
+                )}
             </View>
         </View>
     );
 };
+
 
 export default PrayerCarousel;
 
@@ -134,6 +209,9 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         flexDirection: "column",
         height: cardHeight // Needed for carousel, will break otherwise
+    },
+    errorText: {
+        color: "red"
     },
     
     // Prayer Card
@@ -169,7 +247,8 @@ const styles = StyleSheet.create({
     reciterInfo: {
         flexDirection: "row",
         gap: 10,
-        marginBottom: 15
+        marginBottom: 15,
+        width: "90%"
     },
     reciterIcon: {
         width: 20,

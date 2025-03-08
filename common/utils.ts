@@ -45,3 +45,16 @@ export function formatRelativeDate(timestamp: Timestamp): string {
   // Default to full date string
   return date.toDateString();
 }
+
+
+export function convertTo12HourFormat(time: string) {
+    // Split the input time into hours and minutes
+    const [hours, minutes] = time.split(':').map(Number);
+    
+    // Determine AM/PM and adjust the hour for 12-hour format
+    const period = hours >= 12 ? 'PM' : 'AM';
+    const hour12 = hours % 12 || 12; // Convert 0 hours to 12 (midnight)
+    
+    // Return the formatted time
+    return `${hour12}:${minutes.toString().padStart(2, '0')} ${period}`;
+}
