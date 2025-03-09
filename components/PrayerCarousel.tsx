@@ -10,7 +10,7 @@ import {
     fetchPrayerTimings, 
     // fetchReciter, 
     PrayerTimingsResponse 
-} from "@/common/fetchPrayerData";
+} from "@/app/api/prayerDataApi";
 import { convertTo12HourFormat } from "@/common/utils";
 import { Link } from "expo-router";
 
