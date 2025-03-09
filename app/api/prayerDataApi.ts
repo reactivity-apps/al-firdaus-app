@@ -94,12 +94,28 @@ export type PrayerTimingsResponse = {
         };
 };
 
+export type PrayerTimings = {
+    timings: {
+        Fajr: string;
+        Sunrise: string;
+        Dhuhr: string;
+        Asr: string;
+        Sunset: string;
+        Maghrib: string;
+        Isha: string;
+        Imsak: string;
+        Midnight: string;
+        Firstthird: string;
+        Lastthird: string;
+    } | undefined;
+}
+
 export type Location = {
     name: string;
     address: string;
 };
   
-
+// TODO: Getting this error: Route "./api/prayerDataApi.ts" is missing the required default export. Ensure a React component is exported as default.
 export const fetchPrayerTimings = async ( address: string ) => {
     const date = new Date();
     const formattedDate = `${String(date.getDate()).padStart(2, '0')}-${String(date.getMonth() + 1).padStart(2, '0')}-${date.getFullYear()}`;    

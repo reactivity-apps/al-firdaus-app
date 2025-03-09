@@ -7,33 +7,16 @@ import Carousel, {
   Pagination,
 } from "react-native-reanimated-carousel";
 import { 
-    fetchPrayerTimings, 
+    PrayerTimings,
     // fetchReciter, 
-    PrayerTimingsResponse 
+    PrayerTimingsResponse,
+    Location
 } from "@/app/api/prayerDataApi";
 import { convertTo12HourFormat } from "@/common/utils";
 import { Link } from "expo-router";
+import cache from "@/app/api/cache";
 
-type Location = {
-    name: string;
-    address: string;
-};
 
-type PrayerTimings = {
-    timings: {
-        Fajr: string;
-        Sunrise: string;
-        Dhuhr: string;
-        Asr: string;
-        Sunset: string;
-        Maghrib: string;
-        Isha: string;
-        Imsak: string;
-        Midnight: string;
-        Firstthird: string;
-        Lastthird: string;
-    } | undefined;
-}
 
 const locations: Location[] = [
     { name: "Makkah", address: "Al Haram, Makkah 24231, Saudi Arabia" },
@@ -89,6 +72,7 @@ function PrayerCarousel() {
     );
 }
 
+// TODO: Handle case if timings is null
 const PrayerTimes = ({ timings }: PrayerTimings) => {
     const lastRowItemStyle = { ...styles.prayerItemContainer, ...styles.lastRow };
     const prayerNames = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"];
@@ -121,28 +105,29 @@ const PrayerCard = ({ location }: { location: Location }) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
 
-    // Move this to fetchPrayerTimes to instead cache
     useEffect(() => {
-        const fetchData = async () => {
+        const getCityPrayerData = async (city: string) => {
             try {
                 setLoading(true);
-                const prayerTimings = await fetchPrayerTimings(location.address);
-
-                if (prayerTimings?.code !== 200) {
-                    setError(true);
+                const value = await cache.get(city);
+                if(value !== undefined) {
+                    const data: PrayerTimingsResponse = JSON.parse(value);
+                    setPrayerData(data);
                 } else {
-                    setPrayerData(prayerTimings);
-                    setError(false); // Reset error state on success
+                    console.error(`Cached data for ${city} does not exists!`);
+                    setError(true);
                 }
             } catch (error) {
-                setError(true); // Fix incorrect setError call
+                setError(true); 
+                console.error(`Failed to retrive cached data for ${city}:`, error);
             } finally {
                 setLoading(false);
             }
-        };
+        }
 
-        fetchData();
-    }, [location]);
+        getCityPrayerData(location.name);
+    },[location]);
+
 
     return (
         <View style={styles.card}>
