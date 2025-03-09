@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { globalStyles } from "@/common/style";
 import Menu from "@/components/Menu";
 import { useLocalSearchParams } from "expo-router";
 import { ActivityIndicator, Text, View, StyleSheet } from "react-native";
+import cache from "./api/cache";
+import { PrayerTimingsResponse } from "./api/prayerDataApi";
 
 const PrayerTimes = () => {
     return (
@@ -59,6 +61,20 @@ const PrayerCard = () => {
 
 const ExtendedPrayerView = () => {
     const { city } = useLocalSearchParams<{ city: string }>();
+    const [prayerData, setPrayerData] = useState<PrayerTimingsResponse | null>(null);
+
+    useEffect(() => {
+        const getCityPrayerData = async (city: string) => {
+            const value = await cache.get(city);
+            if(value !== undefined) {
+                const data: PrayerTimingsResponse = JSON.parse(value);
+                setPrayerData(data);
+            }
+        }
+
+        getCityPrayerData(city);
+    },[]);
+
 
     return (
         <View style={globalStyles.container}>

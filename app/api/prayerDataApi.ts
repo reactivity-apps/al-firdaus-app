@@ -93,6 +93,11 @@ export type PrayerTimingsResponse = {
         };
         };
 };
+
+export type Location = {
+    name: string;
+    address: string;
+};
   
 
 export const fetchPrayerTimings = async ( address: string ) => {
