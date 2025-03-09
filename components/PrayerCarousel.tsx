@@ -12,6 +12,7 @@ import {
     PrayerTimingsResponse 
 } from "@/common/fetchPrayerData";
 import { convertTo12HourFormat } from "@/common/utils";
+import { Link } from "expo-router";
 
 type Location = {
     name: string;
@@ -41,6 +42,7 @@ const locations: Location[] = [
 ];
 const cardHeight = 455; // Needed for carousel, will break otherwise
 
+// FIXME: Carousel lags on load
 function PrayerCarousel() {
     const [containerWidth, setContainerWidth] = React.useState(0); // Track element width   
     const ref = React.useRef<ICarouselInstance>(null);
@@ -119,6 +121,7 @@ const PrayerCard = ({ location }: { location: Location }) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
 
+    // Move this to fetchPrayerTimes to instead cache
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -170,9 +173,12 @@ const PrayerCard = ({ location }: { location: Location }) => {
                             <Text>Current Imam: Sheikh Abdul Rahman al-Sudais</Text>
                         </View>
                         <PrayerTimes timings={prayerData?.data.timings} />
-                        <TouchableOpacity style={globalStyles.outlinedButton}>
-                            <Text>See More Information</Text>
-                        </TouchableOpacity>
+
+                        <Link href={`/extended-prayer-view?city=${location.name}`} asChild>
+                            <TouchableOpacity style={globalStyles.outlinedButton}>
+                                <Text>See More Information</Text>
+                            </TouchableOpacity>
+                        </Link>
                     </>
                 ) : (
                     <Text style={[styles.errorText, { alignSelf: "center" }]}>Network error: cannot load current prayer times!</Text>

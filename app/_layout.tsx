@@ -20,6 +20,10 @@ export default function RootLayout() {
           title: "Settings",
           ...headerStyle
         }} />
+        <Stack.Screen name="extended-prayer-view" options={{
+          title: "Prayer Times",
+          ...headerStyle
+        }} />
       </Stack>
       <StatusBar style="dark" />
     </>
