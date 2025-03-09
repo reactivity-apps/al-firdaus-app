@@ -1,6 +1,6 @@
 import React,{ useState, useEffect } from "react";
 import { globalStyles } from "@/common/style";
-import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
+import { Text, View, StyleSheet, TouchableOpacity, ActivityIndicator } from "react-native";
 import { useSharedValue } from "react-native-reanimated";
 import Carousel, {
   ICarouselInstance,
@@ -13,11 +13,12 @@ import {
 } from "@/common/fetchPrayerData";
 import { convertTo12HourFormat } from "@/common/utils";
 
-type LocationProp = {
-    location: string;
-}
+type Location = {
+    name: string;
+    address: string;
+};
 
-type PrayerTimingsProp = {
+type PrayerTimings = {
     timings: {
         Fajr: string;
         Sunrise: string;
@@ -33,7 +34,11 @@ type PrayerTimingsProp = {
     } | undefined;
 }
 
-const locations = ["Makkah", "Madina", "Hilliard"];
+const locations: Location[] = [
+    { name: "Makkah", address: "Al Haram, Makkah 24231, Saudi Arabia" },
+    { name: "Madina", address: "Al Haram, Madinah 42311, Saudi Arabia" },
+    { name: "Hilliard", address: "Davidson Rd, Hilliard, OH" }
+];
 const cardHeight = 455; // Needed for carousel, will break otherwise
 
 function PrayerCarousel() {
@@ -82,17 +87,13 @@ function PrayerCarousel() {
     );
 }
 
-const PrayerTimes = ({ timings }: PrayerTimingsProp) => {
+const PrayerTimes = ({ timings }: PrayerTimings) => {
     const lastRowItemStyle = { ...styles.prayerItemContainer, ...styles.lastRow };
+    const prayerNames = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"];
 
     if (!timings) {
         return <Text style={styles.errorText}>Network error: cannot load prayer times!</Text>;
     }
-
-    // Array of prayer names, to match the keys in the timings object
-    const prayerNames = [
-        "Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"
-    ];
 
     return (
         <View style={styles.prayerTimesContainer}>
@@ -113,10 +114,8 @@ const PrayerTimes = ({ timings }: PrayerTimingsProp) => {
     );
 };
 
-import { ActivityIndicator } from 'react-native';
-
-const PrayerCard = ({ location }: LocationProp) => {
-    const [prayerData, setPrayerData] = useState<PrayerTimingsResponse | null>();
+const PrayerCard = ({ location }: { location: Location }) => {
+    const [prayerData, setPrayerData] = useState<PrayerTimingsResponse | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
 
@@ -124,18 +123,16 @@ const PrayerCard = ({ location }: LocationProp) => {
         const fetchData = async () => {
             try {
                 setLoading(true);
-                const [prayerTimings] = await Promise.all([
-                    fetchPrayerTimings({ location }),
-                    // fetchReciter({ location })
-                ]);
+                const prayerTimings = await fetchPrayerTimings(location.address);
 
                 if (prayerTimings?.code !== 200) {
                     setError(true);
                 } else {
                     setPrayerData(prayerTimings);
+                    setError(false); // Reset error state on success
                 }
             } catch (error) {
-                setError(true);
+                setError(true); // Fix incorrect setError call
             } finally {
                 setLoading(false);
             }
@@ -149,21 +146,19 @@ const PrayerCard = ({ location }: LocationProp) => {
             <View style={styles.header}>
                 <View style={styles.dateGroup}>
                     {!error ? (
-                        <>
-                            {loading ? (
-                                <ActivityIndicator size="small" color="black" />
-                            ) : (
-                                <>
-                                    <Text>{prayerData?.data.date.gregorian.month.en} {prayerData?.data.date.gregorian.day}, {prayerData?.data.date.gregorian.year}</Text>
-                                    <Text>{prayerData?.data.date.hijri.month.en} {prayerData?.data.date.hijri.day}, {prayerData?.data.date.hijri.year}</Text>
-                                </>
-                            )}
-                        </>
+                        loading ? (
+                            <ActivityIndicator size="small" color="black" />
+                        ) : (
+                            <>
+                                <Text>{prayerData?.data.date.gregorian.month.en} {prayerData?.data.date.gregorian.day}, {prayerData?.data.date.gregorian.year}</Text>
+                                <Text>{prayerData?.data.date.hijri.month.en} {prayerData?.data.date.hijri.day}, {prayerData?.data.date.hijri.year}</Text>
+                            </>
+                        )
                     ) : (
                         <Text style={styles.errorText}>Network error: cannot load current dates!</Text>
                     )}
                 </View>
-                <Text style={styles.locationName}>{location}</Text>
+                <Text style={styles.locationName}>{location.name}</Text>
             </View>
             <View style={styles.content}>
                 {loading ? (
@@ -180,13 +175,12 @@ const PrayerCard = ({ location }: LocationProp) => {
                         </TouchableOpacity>
                     </>
                 ) : (
-                    <Text style={[styles.errorText, { alignSelf: "center" }]}>Network error: cannot load current dates!</Text>
+                    <Text style={[styles.errorText, { alignSelf: "center" }]}>Network error: cannot load current prayer times!</Text>
                 )}
             </View>
         </View>
     );
 };
-
 
 export default PrayerCarousel;
 
