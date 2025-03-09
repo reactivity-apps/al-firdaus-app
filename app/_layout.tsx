@@ -4,10 +4,12 @@ import { StatusBar } from 'expo-status-bar';
 import { headerStyle } from "@/common/style";
 import { fetchPrayerTimings, Location } from "./api/prayerDataApi";
 import cache from "./api/cache";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 export default function RootLayout() {
 
   // Will only run once when the app is loaded
+  // May need to be ran once a day
   useEffect(() => {
       const locations: Location[] = [
         { name: "Makkah", address: "Al Haram, Makkah 24231, Saudi Arabia" },
@@ -33,13 +35,12 @@ export default function RootLayout() {
           } 
         }
       };
-        
-
+      
       cachePrayerData();
   }, []);
       
   return (
-    <>
+    <GestureHandlerRootView>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ 
           title: "Home",
@@ -60,6 +61,6 @@ export default function RootLayout() {
         }} />
       </Stack>
       <StatusBar style="dark" />
-    </>
+    </GestureHandlerRootView>
   );
 }

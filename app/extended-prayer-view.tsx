@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { globalStyles } from "@/common/style";
-import Menu from "@/components/Menu";
 import { useLocalSearchParams } from "expo-router";
 import { ActivityIndicator, Text, View, StyleSheet } from "react-native";
 import cache from "./api/cache";
 import { PrayerTimingsResponse, PrayerTimings } from "./api/prayerDataApi";
 import { convertTo12HourFormat } from "@/common/utils";
+import List from "@/components/List";
+import { ScrollView } from "react-native-gesture-handler";
 
 // TODO: Handle case if timings is null
 const PrayerTimes = ({timings}: PrayerTimings) => { 
@@ -61,7 +62,7 @@ const PrayerCard = ({ city }: {city: string}) => {
         }
 
         getCityPrayerData(city);
-    },[location]);
+    },[]);
 
     return (
         <>
@@ -86,10 +87,32 @@ const ExtendedPrayerView = () => {
     const { city } = useLocalSearchParams<{ city: string }>();
   
     return (
-        <View style={globalStyles.container}>
-            <Text style={globalStyles.header}>Prayer Times</Text>
-            <PrayerCard city={city} />
-        </View>
+        <ScrollView>
+            <View style={globalStyles.container}>
+                <Text style={globalStyles.header}>Prayer Times in {city}</Text>
+                <Text style={globalStyles.subHeader}>See more prayer information.</Text>
+                <PrayerCard city={city} />
+
+                <List
+                    title="Prayer Detail"
+                    items={[
+                        { label: "Next Prayer", subtext: "Asr" },
+                        { label: "Current Imam", subtext: "Imam Abdul Rahman ibn Abdul Aziz al-Sudais" },
+                        { label: "Time Until Next Prayer", subtext: "1:30" },
+                    ]}
+                />
+
+                {/* TODO: Add link capability so the address can redirect to maps */}
+                <List
+                    title="Location Detail"
+                    items={[
+                        { label: "Address", subtext: "Al Haram, Makkah 24231, Saudi Arabia" },
+                        { label: "Current Temperature", subtext: "38°C/100°F" },
+                        { label: "Current Weather", subtext: "Sunny" },
+                    ]}
+                />
+            </View>
+        </ScrollView>
     );
 };
 
