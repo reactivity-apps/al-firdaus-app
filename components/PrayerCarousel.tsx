@@ -7,16 +7,12 @@ import Carousel, {
   Pagination,
 } from "react-native-reanimated-carousel";
 import { 
-    PrayerTimings,
-    // fetchReciter, 
-    PrayerTimingsResponse,
-    Location
+    PrayerDataResponse,
+    Location,
 } from "@/app/api/prayerDataApi";
-import { convertTo12HourFormat } from "@/common/utils";
 import { Link } from "expo-router";
 import cache from "@/app/api/cache";
-
-
+import PrayerTimes from "./PrayerTimes";
 
 const locations: Location[] = [
     { name: "Makkah", address: "Al Haram, Makkah 24231, Saudi Arabia" },
@@ -72,36 +68,9 @@ function PrayerCarousel() {
     );
 }
 
-// TODO: Handle case if timings is null
-const PrayerTimes = ({ timings }: PrayerTimings) => {
-    const lastRowItemStyle = { ...styles.prayerItemContainer, ...styles.lastRow };
-    const prayerNames = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"];
-
-    if (!timings) {
-        return <Text style={styles.errorText}>Network error: cannot load prayer times!</Text>;
-    }
-
-    return (
-        <View style={styles.prayerTimesContainer}>
-            {prayerNames.map((prayerName, index) => {
-                const time = timings[prayerName as keyof typeof timings];
-
-                // Apply the last row style to the last item
-                const prayerItemStyle = index === prayerNames.length - 1 ? lastRowItemStyle : styles.prayerItemContainer;
-
-                return (
-                    <View key={prayerName} style={prayerItemStyle}>
-                        <Text style={styles.prayerName}>{prayerName}</Text>
-                        <Text style={styles.prayerTime}>{convertTo12HourFormat(time)}</Text>
-                    </View>
-                );
-            })}
-        </View>
-    );
-};
 
 const PrayerCard = ({ location }: { location: Location }) => {
-    const [prayerData, setPrayerData] = useState<PrayerTimingsResponse | null>(null);
+    const [prayerData, setPrayerData] = useState<PrayerDataResponse | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
 
@@ -111,7 +80,7 @@ const PrayerCard = ({ location }: { location: Location }) => {
                 setLoading(true);
                 const value = await cache.get(city);
                 if(value !== undefined) {
-                    const data: PrayerTimingsResponse = JSON.parse(value);
+                    const data: PrayerDataResponse = JSON.parse(value);
                     setPrayerData(data);
                 } else {
                     console.error(`Cached data for ${city} does not exists!`);
@@ -128,6 +97,7 @@ const PrayerCard = ({ location }: { location: Location }) => {
         getCityPrayerData(location.name);
     },[location]);
 
+    const timings = prayerData?.data.timings;
 
     return (
         <View style={styles.card}>
@@ -157,9 +127,10 @@ const PrayerCard = ({ location }: { location: Location }) => {
                             <View style={styles.reciterIcon}></View>
                             <Text>Current Imam: Sheikh Abdul Rahman al-Sudais</Text>
                         </View>
-                        <PrayerTimes timings={prayerData?.data.timings} />
 
-                        <Link href={`/extended-prayer-view?city=${location.name}`} asChild>
+                        <PrayerTimes timings={timings} />
+
+                        <Link href={`/extended-prayer-view?city=${location.name}&address=${location.address}`} asChild>
                             <TouchableOpacity style={globalStyles.outlinedButton}>
                                 <Text>See More Information</Text>
                             </TouchableOpacity>
@@ -241,35 +212,5 @@ const styles = StyleSheet.create({
         backgroundColor: "#EDEDED",
         borderRadius: 10
     },
-
-    // Prayer Times
-    prayerTimesContainer: {
-        flexDirection: "column",
-        justifyContent: "center",
-        marginBottom: 15,
-        borderWidth: 1,
-        borderRadius: 5,
-        borderColor: "#CDCBCB",
-    },
-    prayerItemContainer: {
-        flexDirection: "row",
-        alignItems: "center",
-        height: 40,
-        paddingHorizontal: 10,
-        borderBottomWidth: 1,
-        borderColor: "#CDCBCB",
-        justifyContent: "space-between", // Pushes time to left and name to right
-    },
-    lastRow: {
-        borderBottomWidth: 0, // Removes border from the last row
-    },
-    prayerName: {
-        fontWeight: "bold",
-        fontSize: 15
-    },
-    prayerTime: {
-        color: "#515151",
-        fontSize: 15,
-    }   
 });
 
