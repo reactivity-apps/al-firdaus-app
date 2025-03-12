@@ -6,10 +6,7 @@ import Carousel, {
   ICarouselInstance,
   Pagination,
 } from "react-native-reanimated-carousel";
-import { 
-    PrayerDataResponse,
-    Location,
-} from "@/app/api/prayerDataApi";
+import { PrayerDataResponse, Location } from "@/types/prayer";
 import { Link } from "expo-router";
 import cache from "@/app/api/cache";
 import PrayerTimes from "./PrayerTimes";
@@ -130,6 +127,8 @@ const PrayerCard = ({ location }: { location: Location }) => {
 
                         <PrayerTimes timings={timings} />
 
+                        <View style={styles.buffer}></View>
+
                         <Link href={`/extended-prayer-view?city=${location.name}&address=${location.address}`} asChild>
                             <TouchableOpacity style={globalStyles.outlinedButton}>
                                 <Text>See More Information</Text>
@@ -212,5 +211,9 @@ const styles = StyleSheet.create({
         backgroundColor: "#EDEDED",
         borderRadius: 10
     },
+
+    buffer: {
+        marginBottom: 15
+    }
 });
 

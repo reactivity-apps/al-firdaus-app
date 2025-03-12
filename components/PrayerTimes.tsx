@@ -1,4 +1,4 @@
-import { PrayerTimings, getNextPrayer, prayerNames } from "@/app/api/prayerDataApi";
+import { PrayerTimings, getNextPrayer, prayerNames } from "@/types/prayer";
 import { convertTo12HourFormat } from "@/common/utils";
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";

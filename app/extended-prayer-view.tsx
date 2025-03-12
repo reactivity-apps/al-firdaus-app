@@ -3,7 +3,7 @@ import { globalStyles } from "@/common/style";
 import { useLocalSearchParams } from "expo-router";
 import { ActivityIndicator, Text, View, StyleSheet } from "react-native";
 import cache from "./api/cache";
-import { PrayerDataResponse, getNextPrayer, getTimeUntilNextPrayer } from "./api/prayerDataApi";
+import { PrayerDataResponse, getNextPrayer, getTimeUntilNextPrayer } from "@/types/prayer";
 import List from "@/components/List";
 import { ScrollView } from "react-native-gesture-handler";
 import PrayerTimes from "@/components/PrayerTimes";
