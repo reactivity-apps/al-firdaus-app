@@ -2,7 +2,8 @@ import React, { useEffect } from "react";
 import { Stack } from "expo-router";
 import { StatusBar } from 'expo-status-bar';
 import { headerStyle } from "@/common/style";
-import { fetchPrayerTimings, Location } from "./api/prayerDataApi";
+import { fetchPrayerTimings } from "./api/prayerDataApi";
+import { Location } from "@/types/prayer";
 import cache from "./api/cache";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
@@ -18,13 +19,13 @@ export default function RootLayout() {
       ];
 
       const cachePrayerData = async () => {
-        const today = new Date().toISOString().split("T")[0]; // Format: YYYY-MM-DD
-        const lastUpdated = await cache.get("lastUpdateDate");
+        // const today = new Date().toISOString().split("T")[0]; // Format: YYYY-MM-DD
+        // const lastUpdated = await cache.get("lastUpdateDate");
 
-        if (lastUpdated === today) {
-          console.log("Prayer timings already updated today.");
-          return; // Exit if data is already updated today
-        }
+        // if (lastUpdated === today) {
+        //   console.log("Prayer timings already updated today.");
+        //   return; // Exit if data is already updated today
+        // }
 
         for(const location of locations){
           try {
@@ -38,8 +39,8 @@ export default function RootLayout() {
                 throw Error();
               });
 
-              await cache.set("lastUpdateDate", today); // Save today's date
-              console.log("Prayer timings updated successfully.");
+              // await cache.set("lastUpdateDate", today); // Save today's date
+              // console.log("Prayer timings updated successfully.");
           } catch (error) {
             console.error(`Error caching data for ${location.name}:`, error);
             await cache.set(location.name, "failed").catch(console.error);
