@@ -1,4 +1,4 @@
-export type PrayerTimingsResponse = {
+export type PrayerDataResponse = {
     code: number;
     status: string;
     data: {
@@ -95,27 +95,26 @@ export type PrayerTimingsResponse = {
 };
 
 export type PrayerTimings = {
-    timings: {
-        Fajr: string;
-        Sunrise: string;
-        Dhuhr: string;
-        Asr: string;
-        Sunset: string;
-        Maghrib: string;
-        Isha: string;
-        Imsak: string;
-        Midnight: string;
-        Firstthird: string;
-        Lastthird: string;
-    } | undefined;
-}
+    Fajr: string; 
+    Sunrise: string; 
+    Dhuhr: string; 
+    Asr: string; 
+    Sunset: string; 
+    Maghrib: string;
+    Isha: string; 
+    Imsak: string; 
+    Midnight: string;
+    Firstthird: string; 
+    Lastthird: string; 
+} | undefined;
 
 export type Location = {
     name: string;
     address: string;
 };
   
-// TODO: Getting this error: Route "./api/prayerDataApi.ts" is missing the required default export. Ensure a React component is exported as default.
+// TODO: Getting this error: Route "./api/prayerDataApi.ts" is missing the required default export. 
+// Ensure a React component is exported as default.
 export const fetchPrayerTimings = async ( address: string ) => {
     const date = new Date();
     const formattedDate = `${String(date.getDate()).padStart(2, '0')}-${String(date.getMonth() + 1).padStart(2, '0')}-${date.getFullYear()}`;    
@@ -125,10 +124,75 @@ export const fetchPrayerTimings = async ( address: string ) => {
             `https://api.aladhan.com/v1/timingsByAddress/${formattedDate}?address=${address}`
         );
 
-        const data: PrayerTimingsResponse = await response.json();
+        const data: PrayerDataResponse = await response.json();
         return data;
     } catch (error) {
         console.error("Error fetching prayer data:", error);
         return null;
     }
+};
+
+export const prayerNames = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"];
+
+export const getNextPrayer = (timings: PrayerTimings) => {
+    const currentTime = new Date();
+    if (timings) {
+        for (let prayer of prayerNames) {
+            const prayerTime = new Date();
+            const [hours, minutes] = timings[prayer as keyof typeof timings]
+                .split(":")
+                .map(Number);
+            prayerTime.setHours(hours, minutes, 0, 0);
+
+            if (prayerTime > currentTime) {
+                return prayer; // Return the next prayer
+            }
+        }
+    }
+    return "Fajr"; // Default to "Fajr" if all prayers have passed
+};
+
+// Function to find the next prayer
+export const getTimeUntilNextPrayer = (timings: PrayerTimings): string => {
+    const currentTime = new Date();
+
+    if (timings) {
+        for (let prayer of prayerNames) {
+            const prayerTime = new Date();
+            const [hours, minutes] = timings[prayer as keyof typeof timings]
+                .split(":")
+                .map(Number);
+            
+            prayerTime.setHours(hours, minutes, 0, 0);
+
+            // If the prayer time is in the future, calculate the time difference
+            if (prayerTime > currentTime) {
+                const timeDifference = prayerTime.getTime() - currentTime.getTime(); // Get time difference in milliseconds
+                const hoursUntilNextPrayer = Math.floor(timeDifference / (1000 * 60 * 60)); // Convert to hours
+                const minutesUntilNextPrayer = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60)); // Convert to minutes
+
+                // Return formatted string "hh:mm"
+                return `${String(hoursUntilNextPrayer).padStart(2, '0')}:${String(minutesUntilNextPrayer).padStart(2, '0')}`;
+            }
+        }
+
+        // If all prayers have passed, calculate time until Fajr on the next day
+        const fajrTime = new Date();
+        const [fajrHours, fajrMinutes] = timings["Fajr"].split(":").map(Number);
+        fajrTime.setHours(fajrHours, fajrMinutes, 0, 0);
+
+        // If the current time is after Fajr, we need to calculate the time until the next day's Fajr
+        if (currentTime > fajrTime) {
+            fajrTime.setDate(fajrTime.getDate() + 1); // Set Fajr time for the next day
+        }
+
+        const timeDifference = fajrTime.getTime() - currentTime.getTime();
+        const hoursUntilFajr = Math.floor(timeDifference / (1000 * 60 * 60)); // Convert to hours
+        const minutesUntilFajr = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60)); // Convert to minutes
+
+        // Return formatted string "hh:mm"
+        return `${String(hoursUntilFajr).padStart(2, '0')}:${String(minutesUntilFajr).padStart(2, '0')}`;
+    }
+
+    return ""; // Return an empty string if no timings are available
 };
