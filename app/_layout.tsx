@@ -9,7 +9,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 export default function RootLayout() {
 
   // Will only run once when the app is loaded
-  // May need to be ran once a day
+  // If already ran, will not run again until the next day
   useEffect(() => {
       const locations: Location[] = [
         { name: "Makkah", address: "Al Haram, Makkah 24231, Saudi Arabia" },
@@ -18,6 +18,14 @@ export default function RootLayout() {
       ];
 
       const cachePrayerData = async () => {
+        const today = new Date().toISOString().split("T")[0]; // Format: YYYY-MM-DD
+        const lastUpdated = await cache.get("lastUpdateDate");
+
+        if (lastUpdated === today) {
+          console.log("Prayer timings already updated today.");
+          return; // Exit if data is already updated today
+        }
+
         for(const location of locations){
           try {
             const prayerTimings = await fetchPrayerTimings(location.address);
@@ -29,6 +37,9 @@ export default function RootLayout() {
               .catch((err) => {
                 throw Error();
               });
+
+              await cache.set("lastUpdateDate", today); // Save today's date
+              console.log("Prayer timings updated successfully.");
           } catch (error) {
             console.error(`Error caching data for ${location.name}:`, error);
             await cache.set(location.name, "failed").catch(console.error);
