@@ -8,7 +8,7 @@ const JeddahScreen: React.FC = () => {
       <View style={styles.container}>
         {/* Intro Section */}
         <Text style={styles.header}>Stay in Jeddah</Text>
-        <Image source={require('../../assets/images/jeddahscreen.jpg')} style={styles.image} resizeMode="cover"/>
+        <Image source={require('../../assets/images/jeddah.jpg')} style={styles.image} resizeMode="cover"/>
         <Text style={styles.description}>
           Jeddah, the **Gateway to Mecca**, is a vibrant coastal city along the Red Sea in Saudi Arabia. 
           Known for its stunning waterfront, rich history, and modern attractions, Jeddah is a major 

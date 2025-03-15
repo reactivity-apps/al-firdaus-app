@@ -84,6 +84,10 @@ export default function RootLayout() {
             title: "Home",
             headerShown: false
           }} />
+          <Stack.Screen name="docs" options={{ 
+            title: "Docs",
+            headerShown: false
+          }} />
           <Stack.Screen name="admin" options={{ headerShown: false }} />
           <Stack.Screen name="admin-login" options={{
             title: "Admin Login",

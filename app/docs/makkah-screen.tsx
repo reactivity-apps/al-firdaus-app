@@ -8,7 +8,7 @@ const MakkahScreen: React.FC = () => {
       <View style={styles.container}>
         {/* Intro Section */}
         <Text style={styles.header}>Stay in Makkah</Text>
-        <Image source={require('../../assets/images/makkahscreen.jpg')} style={styles.image} resizeMode="cover"/>
+        <Image source={require('../../assets/images/makkah.jpg')} style={styles.image} resizeMode="cover"/>
         <Text style={styles.description}>
           Makkah (Mecca) is the holiest city in Islam, located in the Hejaz region 
           of Saudi Arabia. Home to Masjid al-Haram and the Kaaba—the most sacred site 

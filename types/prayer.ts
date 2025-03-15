@@ -220,9 +220,7 @@ export const getTimeUntilNextPrayer = (timings: PrayerTimings): string => {
                 const minutesUntilNextPrayer = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60)); // Convert to minutes
 
                 // Return formatted string with hours, minutes
-                return (hoursUntilNextPrayer > 0 ? (
-                        `${hoursUntilNextPrayer}:${String(minutesUntilNextPrayer).padStart(2, '0')}` 
-                    ) : ( `${String(minutesUntilNextPrayer).padStart(2, '0')}`)) + " minutes";
+                return `${hoursUntilNextPrayer}:${String(minutesUntilNextPrayer).padStart(2, '0')}`;
             }
         }
 
@@ -241,9 +239,7 @@ export const getTimeUntilNextPrayer = (timings: PrayerTimings): string => {
         const minutesUntilFajr = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60)); // Convert to minutes
 
         // Return formatted string with hours, minutes, and seconds
-        return (hoursUntilFajr > 0 ? (
-            `${hoursUntilFajr}:${String(minutesUntilFajr).padStart(2, '0')}` 
-        ) : ( `${String(minutesUntilFajr).padStart(2, '0')}`)) + " minutes";
+        return `${hoursUntilFajr}:${String(minutesUntilFajr).padStart(2, '0')}`;
     }
 
     return "Unable to calculate"; // Return error message if no timings are available

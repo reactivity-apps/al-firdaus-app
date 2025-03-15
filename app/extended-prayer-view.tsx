@@ -1,13 +1,13 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { globalStyles } from "@/common/style";
 import { useLocalSearchParams } from "expo-router";
-import { ActivityIndicator, Text, View, StyleSheet, RefreshControl } from "react-native";
+import { ActivityIndicator, Text, View, StyleSheet, RefreshControl, Image } from "react-native";
 import cache from "../api/cache";
 import { PrayerDataResponse, PrayerTimings, WeatherDataResponse, getNextPrayer, getTimeUntilNextPrayer } from "@/types/prayer";
 import List from "@/components/List";
 import { ScrollView } from "react-native-gesture-handler";
 import PrayerTimes from "@/components/PrayerTimes";
-import { capitalizeFirstLetter } from "@/common/utils";
+import { capitalizeFirstLetter, getImageForLocation } from "@/common/utils";
 
 const ExtendedPrayerView = () => {
     // Pull up to refresh
@@ -72,6 +72,8 @@ const ExtendedPrayerView = () => {
         }
     }, [city, refreshing]);
 
+    const imageSource = getImageForLocation(city);
+
     return (
         <ScrollView refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -83,6 +85,8 @@ const ExtendedPrayerView = () => {
                 <Text style={globalStyles.subHeader}>
                     See more prayer information.
                 </Text>
+
+                <Image source={imageSource} style={styles.image} resizeMode="cover"/>
 
                 {loading || !timings ? (
                     <ActivityIndicator size="small" color="black" />
@@ -157,5 +161,12 @@ const styles = StyleSheet.create({
         flexDirection: "column",
         borderBottomLeftRadius: 8,
         borderBottomRightRadius: 8,
-    }
+    },
+    image: {
+        width: '100%',
+        height: 200, // Bigger image for a more immersive experience
+        marginBottom: 15,
+        resizeMode: 'cover',
+        borderRadius: 10,
+      },
 });

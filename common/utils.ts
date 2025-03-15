@@ -62,3 +62,17 @@ export function convertTo12HourFormat(time: string) {
 export function capitalizeFirstLetter(val: string) {
     return String(val).charAt(0).toUpperCase() + String(val).slice(1);
 }
+
+export const getImageForLocation = (locationName: string) => {
+    // Using a switch statement to map location names to their respective images
+    switch(locationName) {
+        case 'Makkah':
+            return require('../assets/images/makkah.jpg');
+        case 'Madina':
+            return require('../assets/images/madina.jpg');
+        // Add more cases as needed for other locations
+        default:
+            // Fallback image if no match is found
+            return require('../assets/images/makkah.jpg');
+    }
+};

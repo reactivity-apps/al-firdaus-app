@@ -8,7 +8,7 @@ const MadinahScreen: React.FC = () => {
       <View style={styles.container}>
         {/* Intro Section */}
         <Text style={styles.header}>Stay in Madinah</Text>
-        <Image source={require('../../assets/images/madinah.jpg')} style={styles.image} resizeMode="cover"/>
+        <Image source={require('../../assets/images/madina.jpg')} style={styles.image} resizeMode="cover"/>
         <Text style={styles.description}>
           Madinah (Medina), known as the “City of the Prophet,” is the second holiest city in Islam, 
           located in western Saudi Arabia. It is home to Al-Masjid an-Nabawi, the Prophet Muhammad's 

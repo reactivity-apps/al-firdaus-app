@@ -1,6 +1,6 @@
 import React,{ useState, useEffect } from "react";
 import { globalStyles } from "@/common/style";
-import { Text, View, StyleSheet, TouchableOpacity, ActivityIndicator } from "react-native";
+import { Text, View, StyleSheet, TouchableOpacity, ActivityIndicator, ImageBackground } from "react-native";
 import { useSharedValue } from "react-native-reanimated";
 import Carousel, {
   ICarouselInstance,
@@ -10,8 +10,10 @@ import { PrayerDataResponse, Location, locations, PrayerTimings } from "@/types/
 import { Link } from "expo-router";
 import cache from "@/api/cache";
 import PrayerTimes from "./PrayerTimes";
+import { LinearGradient } from 'expo-linear-gradient';
+import { getImageForLocation } from "@/common/utils";
 
-const cardHeight = 405; // Needed for carousel, will break otherwise
+const cardHeight = 450; // Needed for carousel, will break otherwise
 
 // FIXME: Carousel loads on start without indicator
 function PrayerCarousel() {
@@ -90,25 +92,37 @@ const PrayerCard = ({ location }: { location: Location }) => {
         getCityPrayerData(location.name);
     },[location]);
 
+    const imageSource = getImageForLocation(location.name);
+
     return (
         <View style={styles.card}>
-            <View style={styles.header}>
-                <View style={styles.dateGroup}>
-                    {!error ? (
-                        loading ? (
-                            <ActivityIndicator size="small" color="black" />
-                        ) : (
-                            <>
-                                <Text>{prayerData?.data.date.gregorian.month.en} {prayerData?.data.date.gregorian.day}, {prayerData?.data.date.gregorian.year}</Text>
-                                <Text>{prayerData?.data.date.hijri.month.en} {prayerData?.data.date.hijri.day}, {prayerData?.data.date.hijri.year}</Text>
-                            </>
-                        )
-                    ) : (
-                        <Text style={styles.errorText}>Network error: cannot load current dates!</Text>
-                    )}
-                </View>
-                <Text style={styles.locationName}>{location.name}</Text>
-            </View>
+            <ImageBackground
+                source={imageSource}
+                style={styles.headerImageBackground}
+            >
+                <LinearGradient
+                    colors={['transparent', 'rgba(0, 0, 0, 0.7)']}
+                    style={styles.gradient}
+                >
+                    <View style={styles.headerContent}>
+                        <Text style={styles.locationName}>{location.name}</Text>
+                        <View style={styles.dateGroup}>
+                            {!error ? (
+                                loading ? (
+                                    <ActivityIndicator size="small" color="white" />
+                                ) : (
+                                    <>
+                                        <Text style={styles.dateText}>{prayerData?.data.date.gregorian.month.en} {prayerData?.data.date.gregorian.day}, {prayerData?.data.date.gregorian.year}</Text>
+                                        <Text style={styles.dateText}>{prayerData?.data.date.hijri.month.en} {prayerData?.data.date.hijri.day}, {prayerData?.data.date.hijri.year}</Text>
+                                    </>
+                                )
+                            ) : (
+                                <Text style={[styles.errorText, styles.dateText]}>Network error: cannot load current dates!</Text>
+                            )}
+                        </View>
+                    </View>
+                </LinearGradient>
+            </ImageBackground>
             <View style={styles.content}>
                 {loading ? (
                     <ActivityIndicator size="small" color="black" />
@@ -161,23 +175,44 @@ const styles = StyleSheet.create({
     
     // Prayer Card
     // Header
-    header: {
-        flexDirection: "column", // Stack location and dateGroup vertically
-        backgroundColor: "#e8e8e8",
+    headerImageBackground: {
+        height: 150, // Adjust height as needed
+        width: "100%",
+        borderTopLeftRadius: 8, // Round top-left corner
+        borderTopRightRadius: 8, // Round top-right corner
+        overflow: "hidden",
+    },
+    gradient: {
+        flex: 1,
+        justifyContent: "flex-end", // Pushes content to bottom of gradient
+    },
+    headerContent: {
+        flex: 1,
+        flexDirection: "row", // Arrange children horizontally
+        justifyContent: "space-between", // Push children to opposite sides
+        alignItems: "flex-start", // Align children to the top
         padding: 15,
         paddingTop: 15,
-        borderTopLeftRadius: 8,
-        borderTopRightRadius: 8,
-        position: "relative", // Allows precise control if needed
     },
     locationName: {
         fontSize: 34,
         fontWeight: "bold",
+        color: "white", // For better visibility on the gradient background
+        textShadowColor: 'rgba(0,0,0,0.5)',
+        textShadowOffset: { width: 1, height: 1 },
+        textShadowRadius: 3,
+        alignSelf: "flex-end", 
+
     },
     dateGroup: {
-        alignSelf: "flex-end", // Moves the date to the top right
         alignItems: "flex-end", // Ensures text is aligned to the right
         marginBottom: 8, 
+    },
+    dateText: {
+        color: "white", // For better visibility on the gradient background
+        textShadowColor: 'rgba(0,0,0,0.5)',
+        textShadowOffset: { width: 1, height: 1 },
+        textShadowRadius: 3,
     },
 
     // Content
