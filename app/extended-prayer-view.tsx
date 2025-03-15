@@ -1,16 +1,25 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { globalStyles } from "@/common/style";
 import { useLocalSearchParams } from "expo-router";
-import { ActivityIndicator, Text, View, StyleSheet } from "react-native";
+import { ActivityIndicator, Text, View, StyleSheet, RefreshControl } from "react-native";
 import cache from "../api/cache";
-import { PrayerDataResponse, WeatherDataResponse, getNextPrayer, getTimeUntilNextPrayer } from "@/types/prayer";
+import { PrayerDataResponse, PrayerTimings, WeatherDataResponse, getNextPrayer, getTimeUntilNextPrayer } from "@/types/prayer";
 import List from "@/components/List";
 import { ScrollView } from "react-native-gesture-handler";
 import PrayerTimes from "@/components/PrayerTimes";
 
 const ExtendedPrayerView = () => {
+    // Pull up to refresh
+    const [refreshing, setRefreshing] = React.useState(false);
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        setTimeout(() => {
+            setRefreshing(false);
+        }, 2000);
+    }, []);
+
     const {city, address} = useLocalSearchParams<{ city: string, address: string }>();
-    const [prayerData, setPrayerData] = useState<PrayerDataResponse | null>(null);
+    const [timings, setTimings] = useState<PrayerTimings | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
 
@@ -24,7 +33,7 @@ const ExtendedPrayerView = () => {
                 const value = await cache.get(city);
                 if (value) {
                     const data: PrayerDataResponse = JSON.parse(value);
-                    setPrayerData(data);
+                    setTimings(data.data.timings);
                 } else {
                     throw new Error(`Cached data for ${city} does not exist!`);
                 }
@@ -60,12 +69,12 @@ const ExtendedPrayerView = () => {
             getCityPrayerData(city);
             getCityWeatherData(city);
         }
-    }, [city]);
-
-    const timings = prayerData?.data.timings;
+    }, [city, refreshing]);
 
     return (
-        <ScrollView>
+        <ScrollView refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }>
             <View style={globalStyles.container}>
                 <Text style={globalStyles.header}>
                     Prayer Times in {city}
@@ -100,8 +109,8 @@ const ExtendedPrayerView = () => {
                         },
                         { 
                             label: "Time Until Next Prayer", 
-                            subtext: timings ? getTimeUntilNextPrayer(timings) : "Unable to calculate",
-                            isLoading: loading
+                            subtext: timings ? getTimeUntilNextPrayer(timings) : "Unable to retrieve",
+                            isLoading: loading 
                         },
                     ]}
                 />

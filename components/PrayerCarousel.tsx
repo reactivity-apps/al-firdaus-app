@@ -6,12 +6,12 @@ import Carousel, {
   ICarouselInstance,
   Pagination,
 } from "react-native-reanimated-carousel";
-import { PrayerDataResponse, Location, getTimeUntilNextPrayer, locations } from "@/types/prayer";
+import { PrayerDataResponse, Location, getTimeUntilNextPrayer, locations, PrayerTimings } from "@/types/prayer";
 import { Link } from "expo-router";
 import cache from "@/api/cache";
 import PrayerTimes from "./PrayerTimes";
 
-const cardHeight = 440; // Needed for carousel, will break otherwise
+const cardHeight = 405; // Needed for carousel, will break otherwise
 
 // FIXME: Carousel lags on load
 function PrayerCarousel() {
@@ -60,9 +60,9 @@ function PrayerCarousel() {
     );
 }
 
-
 const PrayerCard = ({ location }: { location: Location }) => {
     const [prayerData, setPrayerData] = useState<PrayerDataResponse | null>(null);
+    const [timings, setTimings] = useState<PrayerTimings | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
 
@@ -73,7 +73,8 @@ const PrayerCard = ({ location }: { location: Location }) => {
                 const value = await cache.get(city);
                 if(value !== undefined) {
                     const data: PrayerDataResponse = JSON.parse(value);
-                    setPrayerData(data);
+                    setPrayerData(data)
+                    setTimings(data.data.timings);
                 } else {
                     console.log(`Cached data for ${city} does not exists!`);
                     setError(true);
@@ -88,8 +89,6 @@ const PrayerCard = ({ location }: { location: Location }) => {
 
         getCityPrayerData(location.name);
     },[location]);
-
-    const timings = prayerData?.data.timings;
 
     return (
         <View style={styles.card}>
@@ -115,15 +114,7 @@ const PrayerCard = ({ location }: { location: Location }) => {
                     <ActivityIndicator size="small" color="black" />
                 ) : !error ? (
                     <>
-                      
-
-                        <View style={styles.nextPrayer}>
-                            <Text>Next Prayer In: </Text> 
-                            <Text style={{ fontWeight: "bold" }}>{getTimeUntilNextPrayer(timings)}</Text>
-                        </View>
-
-
-                        <PrayerTimes timings={timings} />
+                        <PrayerTimes timings={timings!} />
 
                         {/* Needed for spacing */}
                         <View style={styles.buffer}></View>

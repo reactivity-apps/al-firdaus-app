@@ -198,7 +198,7 @@ export const getNextPrayer = (timings: PrayerTimings) => {
     return "Fajr"; // Default to "Fajr" if all prayers have passed
 };
 
-// Function to find the next prayer
+// Function to find the next prayer time
 export const getTimeUntilNextPrayer = (timings: PrayerTimings): string => {
     const currentTime = new Date();
 
@@ -217,8 +217,10 @@ export const getTimeUntilNextPrayer = (timings: PrayerTimings): string => {
                 const hoursUntilNextPrayer = Math.floor(timeDifference / (1000 * 60 * 60)); // Convert to hours
                 const minutesUntilNextPrayer = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60)); // Convert to minutes
 
-                // Return formatted string "hh:mm"
-                return `${String(hoursUntilNextPrayer).padStart(2, '0')}:${String(minutesUntilNextPrayer).padStart(2, '0')}`;
+                // Return formatted string with hours, minutes
+                return (hoursUntilNextPrayer > 0 ? (
+                        `${hoursUntilNextPrayer}:${String(minutesUntilNextPrayer).padStart(2, '0')}` 
+                    ) : ( `${String(minutesUntilNextPrayer).padStart(2, '0')}`)) + " minutes";
             }
         }
 
@@ -236,9 +238,11 @@ export const getTimeUntilNextPrayer = (timings: PrayerTimings): string => {
         const hoursUntilFajr = Math.floor(timeDifference / (1000 * 60 * 60)); // Convert to hours
         const minutesUntilFajr = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60)); // Convert to minutes
 
-        // Return formatted string "hh:mm"
-        return `${String(hoursUntilFajr).padStart(2, '0')}:${String(minutesUntilFajr).padStart(2, '0')}`;
+        // Return formatted string with hours, minutes, and seconds
+        return (hoursUntilFajr > 0 ? (
+            `${hoursUntilFajr}:${String(minutesUntilFajr).padStart(2, '0')}` 
+        ) : ( `${String(minutesUntilFajr).padStart(2, '0')}`)) + " minutes";
     }
 
-    return ""; // Return an empty string if no timings are available
+    return "Unable to calculate"; // Return error message if no timings are available
 };
