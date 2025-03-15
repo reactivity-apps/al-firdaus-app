@@ -6,14 +6,14 @@ import Carousel, {
   ICarouselInstance,
   Pagination,
 } from "react-native-reanimated-carousel";
-import { PrayerDataResponse, Location, getTimeUntilNextPrayer, locations, PrayerTimings } from "@/types/prayer";
+import { PrayerDataResponse, Location, locations, PrayerTimings } from "@/types/prayer";
 import { Link } from "expo-router";
 import cache from "@/api/cache";
 import PrayerTimes from "./PrayerTimes";
 
 const cardHeight = 405; // Needed for carousel, will break otherwise
 
-// FIXME: Carousel lags on load
+// FIXME: Carousel loads on start without indicator
 function PrayerCarousel() {
     const [containerWidth, setContainerWidth] = React.useState(0); // Track element width   
     const ref = React.useRef<ICarouselInstance>(null);
