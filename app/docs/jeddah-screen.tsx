@@ -8,6 +8,8 @@ const JeddahScreen: React.FC = () => {
       <View style={styles.container}>
         {/* Intro Section */}
         <Text style={styles.header}>Stay in Jeddah</Text>
+        <Text style={styles.subHeader}>Learn more about your stay in Jeddah.</Text>
+        
         <Image source={require('../../assets/images/jeddah.jpg')} style={styles.image} resizeMode="cover"/>
         <Text style={styles.description}>
           Jeddah, the **Gateway to Mecca**, is a vibrant coastal city along the Red Sea in Saudi Arabia. 
@@ -17,7 +19,7 @@ const JeddahScreen: React.FC = () => {
         </Text>
 
         {/* Accommodation Overview */}
-        <Text style={[styles.header, { marginTop: 20 }]}>Accommodation</Text>
+        <Text style={[styles.sectionHeader, { marginTop: 20 }]}>Accommodation</Text>
         <Text style={styles.description}>
           Jeddah offers a mix of luxury resorts, business hotels, and budget-friendly stays. Many 
           high-end hotels offer stunning sea views and world-class hospitality. Below is one of 
@@ -26,7 +28,7 @@ const JeddahScreen: React.FC = () => {
 
         {/* Example of a 5-Star Hotel */}
         <View style={styles.hotelContainer}>
-          <Text style={styles.subHeader}>The Ritz-Carlton, Jeddah</Text>
+          <Text style={styles.sectionHeader}>The Ritz-Carlton, Jeddah</Text>
           <Text style={styles.description}>
             The Ritz-Carlton, Jeddah is a prestigious 5-star hotel that offers breathtaking views of 
             the Red Sea, exceptional service, and luxurious accommodations:
