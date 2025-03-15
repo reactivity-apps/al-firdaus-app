@@ -14,7 +14,6 @@ import PrayerTimes from "./PrayerTimes";
 const locations: Location[] = [
     { name: "Makkah", address: "Al Haram, Makkah 24231, Saudi Arabia" },
     { name: "Madina", address: "Al Haram, Madinah 42311, Saudi Arabia" },
-    { name: "Hilliard", address: "Davidson Rd, Hilliard, OH" }
 ];
 const cardHeight = 510; // Needed for carousel, will break otherwise
 

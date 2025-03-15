@@ -3,14 +3,9 @@ import { convertTo12HourFormat } from "@/common/utils";
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 
-// TODO: Handle case if timings is null
 const PrayerTimes = ({ timings }: { timings: PrayerTimings }) => {
     if (!timings) {
-        return (
-            <Text style={styles.errorText}>
-                Error: Unable to load prayer times!
-            </Text>
-        );
+        return;
     }
 
     const nextPrayer = getNextPrayer(timings);

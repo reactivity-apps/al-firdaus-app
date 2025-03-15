@@ -66,39 +66,28 @@ const ExtendedPrayerView = () => {
                     </View>
                 )}
 
-                {(city === "Makkah" || city === "Madina") ? (
-                    <>  
-                        <List
-                            title="Prayer Detail"
-                            items={[
-                                { label: "Next Prayer", subtext: getNextPrayer(timings) },
-                                {
-                                    label: "Current Imam", 
-                                    subtext: "Imam Abdul Rahman ibn Abdul Aziz al-Sudais",
-                                },
-                                { label: "Time Until Next Prayer", subtext: getTimeUntilNextPrayer(timings) },
-                            ]}
-                        />
-                        
-                        <List
-                            title="Location Detail"
-                            items={[
+         
+                <List
+                    title="Prayer Detail"
+                    items={[
+                        { label: "Next Prayer", subtext: getNextPrayer(timings) },
+                        {
+                            label: "Current Imam", 
+                            subtext: "Imam Abdul Rahman ibn Abdul Aziz al-Sudais",
+                        },
+                        { label: "Time Until Next Prayer", subtext: getTimeUntilNextPrayer(timings) },
+                    ]}
+                />
+                
+                <List
+                    title="Location Detail"
+                    items={[
 
-                                { label: "Address of Haram", subtext: address },
-                                { label: "Current Temperature", subtext: "38°C/100°F" },
-                                { label: "Current Weather", subtext: "Sunny" },
-                            ]}
-                        />
-                    </>
-                ) : (
-                    <List
-                        title="Prayer Detail"
-                        items={[
-                            { label: "Next Prayer", subtext: getNextPrayer(timings) },
-                            { label: "Time Until Next Prayer", subtext: getTimeUntilNextPrayer(timings) },
-                        ]}
-                    />
-                )}
+                        { label: "Address of Haram", subtext: address },
+                        { label: "Current Temperature", subtext: "38°C/100°F" },
+                        { label: "Current Weather", subtext: "Sunny" },
+                    ]}
+                />               
             </View>
         </ScrollView>
     );
