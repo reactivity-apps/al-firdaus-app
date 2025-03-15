@@ -2,9 +2,9 @@ import React, { useEffect } from "react";
 import { Stack } from "expo-router";
 import { StatusBar } from 'expo-status-bar';
 import { headerStyle } from "@/common/style";
-import { fetchPrayerTimings } from "./api/prayerDataApi";
+import { fetchPrayerTimings } from "@/api/prayerDataApi";
 import { Location } from "@/types/prayer";
-import cache from "./api/cache";
+import cache from "@/api/cache";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 export default function RootLayout() {
@@ -42,8 +42,8 @@ export default function RootLayout() {
               // await cache.set("lastUpdateDate", today); // Save today's date
               // console.log("Prayer timings updated successfully.");
           } catch (error) {
-            console.error(`Error caching data for ${location.name}:`, error);
-            await cache.set(location.name, "failed").catch(console.error);
+            console.log(`Error caching data for ${location.name}:`, error);
+            await cache.set(location.name, "failed").catch(console.log);
           } 
         }
       };

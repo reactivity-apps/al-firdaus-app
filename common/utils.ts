@@ -7,7 +7,7 @@ export function formatRelativeDate(timestamp: Timestamp): string {
   const date = timestamp.toDate(); // Convert Firestore timestamp to JS Date
 
   if (!(date instanceof Date) || isNaN(date.getTime())) {
-      console.error("Invalid date:", date);
+      console.log("Invalid date:", date);
       throw new Error("Invalid date passed");
   }
 

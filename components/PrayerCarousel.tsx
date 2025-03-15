@@ -6,9 +6,9 @@ import Carousel, {
   ICarouselInstance,
   Pagination,
 } from "react-native-reanimated-carousel";
-import { PrayerDataResponse, Location } from "@/types/prayer";
+import { PrayerDataResponse, Location, getTimeUntilNextPrayer } from "@/types/prayer";
 import { Link } from "expo-router";
-import cache from "@/app/api/cache";
+import cache from "@/api/cache";
 import PrayerTimes from "./PrayerTimes";
 
 const locations: Location[] = [
@@ -16,7 +16,7 @@ const locations: Location[] = [
     { name: "Madina", address: "Al Haram, Madinah 42311, Saudi Arabia" },
     { name: "Hilliard", address: "Davidson Rd, Hilliard, OH" }
 ];
-const cardHeight = 455; // Needed for carousel, will break otherwise
+const cardHeight = 510; // Needed for carousel, will break otherwise
 
 // FIXME: Carousel lags on load
 function PrayerCarousel() {
@@ -44,7 +44,7 @@ function PrayerCarousel() {
                 <Carousel
                     ref={ref}
                     width={containerWidth} 
-                    height={460} // Maintain height
+                    height={cardHeight} // Maintain height
                     data={locations}
                     onProgressChange={progress}
                     renderItem={({ item, index }) => <PrayerCard location={item} />}
@@ -80,12 +80,12 @@ const PrayerCard = ({ location }: { location: Location }) => {
                     const data: PrayerDataResponse = JSON.parse(value);
                     setPrayerData(data);
                 } else {
-                    console.error(`Cached data for ${city} does not exists!`);
+                    console.log(`Cached data for ${city} does not exists!`);
                     setError(true);
                 }
             } catch (error) {
                 setError(true); 
-                console.error(`Failed to retrive cached data for ${city}:`, error);
+                console.log(`Failed to retrive cached data for ${city}:`, error);
             } finally {
                 setLoading(false);
             }
@@ -127,7 +127,11 @@ const PrayerCard = ({ location }: { location: Location }) => {
 
                         <PrayerTimes timings={timings} />
 
-                        <View style={styles.buffer}></View>
+                        {/* Needed for spacing */}
+                        <View style={styles.nextPrayer}>
+                            <Text>Next Prayer In:</Text>
+                            <Text>{getTimeUntilNextPrayer(timings)}</Text>
+                        </View>
 
                         <Link href={`/extended-prayer-view?city=${location.name}&address=${location.address}`} asChild>
                             <TouchableOpacity style={globalStyles.outlinedButton}>
@@ -212,8 +216,16 @@ const styles = StyleSheet.create({
         borderRadius: 10
     },
 
-    buffer: {
-        marginBottom: 15
-    }
+    nextPrayer: {
+        padding: 15,
+        marginVertical: 10,
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "flex-start", 
+        borderWidth: 1,
+        borderColor: "#CDCBCB",
+        borderRadius: 5,
+        flexWrap: "wrap", // Allow the items to wrap
+    },
 });
 

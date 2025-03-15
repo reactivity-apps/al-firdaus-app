@@ -1,8 +1,5 @@
-// TODO: Getting this error: Route "./api/prayerDataApi.ts" is missing the required default export. 
-
 import { PrayerDataResponse } from "@/types/prayer";
 
-// Ensure a React component is exported as default.
 export const fetchPrayerTimings = async ( address: string ) => {
     const date = new Date();
     const formattedDate = `${String(date.getDate()).padStart(2, '0')}-${String(date.getMonth() + 1).padStart(2, '0')}-${date.getFullYear()}`;    
@@ -15,7 +12,7 @@ export const fetchPrayerTimings = async ( address: string ) => {
         const data: PrayerDataResponse = await response.json();
         return data;
     } catch (error) {
-        console.error("Error fetching prayer data:", error);
+        console.log("Error fetching prayer data:", error);
         return null;
     }
 };

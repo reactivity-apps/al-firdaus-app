@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { globalStyles } from "@/common/style";
 import { useLocalSearchParams } from "expo-router";
 import { ActivityIndicator, Text, View, StyleSheet } from "react-native";
-import cache from "./api/cache";
+import cache from "../api/cache";
 import { PrayerDataResponse, getNextPrayer, getTimeUntilNextPrayer } from "@/types/prayer";
 import List from "@/components/List";
 import { ScrollView } from "react-native-gesture-handler";
@@ -27,7 +27,7 @@ const ExtendedPrayerView = () => {
                 }
             } catch (err) {
                 setError(true);
-                console.error("Error fetching prayer data:", err);
+                console.log("Error fetching prayer data:", err);
             } finally {
                 setLoading(false);
             }
