@@ -198,6 +198,8 @@ export const getNextPrayer = (timings: PrayerTimings) => {
     return "Fajr"; // Default to "Fajr" if all prayers have passed
 };
 
+// TODO: Alter output so that it returns by hour, minute, and by second instead of static minute
+// Ex: 2 hours, 36 minutes
 // Function to find the next prayer time
 export const getTimeUntilNextPrayer = (timings: PrayerTimings): string => {
     const currentTime = new Date();
