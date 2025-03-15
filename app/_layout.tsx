@@ -2,31 +2,37 @@ import React, { useEffect } from "react";
 import { Stack } from "expo-router";
 import { StatusBar } from 'expo-status-bar';
 import { headerStyle } from "@/common/style";
-import { fetchPrayerTimings } from "@/api/prayerDataApi";
-import { Location } from "@/types/prayer";
+import { fetchHaramWeatherDetails, fetchPrayerTimings } from "@/api/prayerDataApi";
+import { locations } from "@/types/prayer";
 import cache from "@/api/cache";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 export default function RootLayout() {
 
   // Will only run once when the app is loaded
-  // If already ran, will not run again until the next day
   useEffect(() => {
-      const locations: Location[] = [
-        { name: "Makkah", address: "Al Haram, Makkah 24231, Saudi Arabia" },
-        { name: "Madina", address: "Al Haram, Madinah 42311, Saudi Arabia" },
-      ];
 
-      const cachePrayerData = async () => {
-        // const today = new Date().toISOString().split("T")[0]; // Format: YYYY-MM-DD
-        // const lastUpdated = await cache.get("lastUpdateDate");
-
-        // if (lastUpdated === today) {
-        //   console.log("Prayer timings already updated today.");
-        //   return; // Exit if data is already updated today
-        // }
-
+      const cachePrayerRelatedData = async () => {
+        
         for(const location of locations){
+          try {
+            const weatherData = await fetchHaramWeatherDetails(location.lat, location.long);
+            
+            if (!weatherData || weatherData.code !== 200) {
+              throw new Error(weatherData.message);
+            }
+            console.log(`Weather data fetched for ${location.name}`);
+            
+            // Cache the weather data
+            await cache.set(`${location.name}_weather`, JSON.stringify(weatherData))
+              .catch((err) => {
+                console.log(`Error caching weather data for ${location.name}:`, err);
+              });
+          } catch (error) {
+            console.log(`Error fetching weather data for ${location.name}:`, error);
+          }
+
+
           try {
             const prayerTimings = await fetchPrayerTimings(location.address);
             if (!prayerTimings || prayerTimings.code !== 200) {
@@ -34,12 +40,10 @@ export default function RootLayout() {
             }
 
             await cache.set(location.name, JSON.stringify(prayerTimings))
-              .catch((err) => {
+              .catch(() => {
                 throw Error();
               });
 
-              // await cache.set("lastUpdateDate", today); // Save today's date
-              // console.log("Prayer timings updated successfully.");
           } catch (error) {
             console.log(`Error caching data for ${location.name}:`, error);
             await cache.set(location.name, "failed").catch(console.log);
@@ -47,7 +51,7 @@ export default function RootLayout() {
         }
       };
       
-      cachePrayerData();
+      cachePrayerRelatedData();
   }, []);
       
   return (

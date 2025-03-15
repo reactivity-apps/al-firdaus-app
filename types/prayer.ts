@@ -111,9 +111,24 @@ export type PrayerTimings = {
 export type Location = {
     name: string;
     address: string;
+    lat: number;
+    long: number;
 };
   
-
+export const locations: Location[] = [
+    { 
+        name: "Makkah", 
+        address: "Al Haram, Makkah 24231, Saudi Arabia", 
+        lat: 21.4259, 
+        long: 39.8272 
+    },
+    { 
+        name: "Madina", 
+        address: "Al Haram, Madinah 42311, Saudi Arabia", 
+        lat: 24.4684, 
+        long: 39.6105 
+    },
+];
 
 export const prayerNames = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"];
 

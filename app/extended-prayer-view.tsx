@@ -50,12 +50,12 @@ const ExtendedPrayerView = () => {
                     See more prayer information.
                 </Text>
 
-                {loading ? (
+                {loading || !timings ? (
                     <ActivityIndicator size="small" color="black" />
                 ) : (
                     <View style={styles.card}>
                         <View style={styles.content}>
-                            {error || !timings ? (
+                            {error ? (
                                 <Text style={styles.errorText}>
                                     Unable to load prayer times. Please try again later.
                                 </Text>

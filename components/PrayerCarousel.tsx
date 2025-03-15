@@ -6,15 +6,11 @@ import Carousel, {
   ICarouselInstance,
   Pagination,
 } from "react-native-reanimated-carousel";
-import { PrayerDataResponse, Location, getTimeUntilNextPrayer } from "@/types/prayer";
+import { PrayerDataResponse, Location, getTimeUntilNextPrayer, locations } from "@/types/prayer";
 import { Link } from "expo-router";
 import cache from "@/api/cache";
 import PrayerTimes from "./PrayerTimes";
 
-const locations: Location[] = [
-    { name: "Makkah", address: "Al Haram, Makkah 24231, Saudi Arabia" },
-    { name: "Madina", address: "Al Haram, Madinah 42311, Saudi Arabia" },
-];
 const cardHeight = 510; // Needed for carousel, will break otherwise
 
 // FIXME: Carousel lags on load
