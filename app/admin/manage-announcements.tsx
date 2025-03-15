@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
+import React, { useCallback, useEffect, useState } from "react";
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl } from "react-native";
 import { collection, getDocs, Timestamp } from "firebase/firestore";
 import { db } from "@/firebase/clientApp";
 import { formatRelativeDate } from "@/common/utils";
@@ -14,6 +14,15 @@ type Announcement = {
 }
 
 export default function ManageAnnouncements() {
+   // Pull up to refresh
+  const [refreshing, setRefreshing] = useState(false);
+  const onRefresh = useCallback(() => {
+      setRefreshing(true);
+      setTimeout(() => {
+          setRefreshing(false);
+      }, 1000);
+  }, []);
+  
   const [announcements, setAnnouncements] = useState<Array<Announcement>>([]);
   const [loading, setLoading] = useState(true);
 
@@ -39,14 +48,16 @@ export default function ManageAnnouncements() {
     };
 
     getAnnouncements();
-  }, []); 
+  }, [refreshing]); 
 
   if(loading) return <Loading />;
 
   // TODO: Add error display
   
   return (
-    <ScrollView>
+     <ScrollView refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }>
       <View style={globalStyles.container}>
         <Text style={globalStyles.header}>Announcements</Text>
         <Text style={globalStyles.subHeader}>View and manage all announcements.</Text>
@@ -131,6 +142,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 14,
     color: "#888",
-    marginTop: 15,
+    marginVertical: 20,
   },
 });
