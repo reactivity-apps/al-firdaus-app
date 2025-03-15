@@ -11,7 +11,7 @@ import { Link } from "expo-router";
 import cache from "@/api/cache";
 import PrayerTimes from "./PrayerTimes";
 
-const cardHeight = 510; // Needed for carousel, will break otherwise
+const cardHeight = 440; // Needed for carousel, will break otherwise
 
 // FIXME: Carousel lags on load
 function PrayerCarousel() {
@@ -115,18 +115,20 @@ const PrayerCard = ({ location }: { location: Location }) => {
                     <ActivityIndicator size="small" color="black" />
                 ) : !error ? (
                     <>
-                        <View style={styles.reciterInfo}>
+                        {/* <View style={styles.reciterInfo}>
                             <View style={styles.reciterIcon}></View>
                             <Text>Current Imam: Sheikh Abdul Rahman al-Sudais</Text>
+                        </View> */}
+
+                        <View style={styles.nextPrayer}>
+                            <Text>Next Prayer In: <b>{getTimeUntilNextPrayer(timings)}</b></Text>
                         </View>
+
 
                         <PrayerTimes timings={timings} />
 
                         {/* Needed for spacing */}
-                        <View style={styles.nextPrayer}>
-                            <Text>Next Prayer In:</Text>
-                            <Text>{getTimeUntilNextPrayer(timings)}</Text>
-                        </View>
+                        <View style={styles.buffer}></View>
 
                         <Link href={`/extended-prayer-view?city=${location.name}&address=${location.address}`} asChild>
                             <TouchableOpacity style={globalStyles.outlinedButton}>
@@ -210,17 +212,14 @@ const styles = StyleSheet.create({
         backgroundColor: "#EDEDED",
         borderRadius: 10
     },
-
     nextPrayer: {
-        padding: 15,
-        marginVertical: 10,
+        marginBottom: 15,
         flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "flex-start", 
-        borderWidth: 1,
-        borderColor: "#CDCBCB",
         borderRadius: 5,
         flexWrap: "wrap", // Allow the items to wrap
     },
+    buffer: {
+        marginVertical: 5
+    }
 });
 

@@ -71,10 +71,6 @@ const ExtendedPrayerView = () => {
                     title="Prayer Detail"
                     items={[
                         { label: "Next Prayer", subtext: getNextPrayer(timings) },
-                        {
-                            label: "Current Imam", 
-                            subtext: "Imam Abdul Rahman ibn Abdul Aziz al-Sudais",
-                        },
                         { label: "Time Until Next Prayer", subtext: getTimeUntilNextPrayer(timings) },
                     ]}
                 />
