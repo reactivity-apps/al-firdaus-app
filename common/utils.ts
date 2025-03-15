@@ -58,3 +58,7 @@ export function convertTo12HourFormat(time: string) {
     // Return the formatted time
     return `${hour12}:${minutes.toString().padStart(2, '0')} ${period}`;
 }
+
+export function capitalizeFirstLetter(val: string) {
+    return String(val).charAt(0).toUpperCase() + String(val).slice(1);
+}

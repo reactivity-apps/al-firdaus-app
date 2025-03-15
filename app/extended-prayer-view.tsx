@@ -7,6 +7,7 @@ import { PrayerDataResponse, PrayerTimings, WeatherDataResponse, getNextPrayer, 
 import List from "@/components/List";
 import { ScrollView } from "react-native-gesture-handler";
 import PrayerTimes from "@/components/PrayerTimes";
+import { capitalizeFirstLetter } from "@/common/utils";
 
 const ExtendedPrayerView = () => {
     // Pull up to refresh
@@ -129,7 +130,7 @@ const ExtendedPrayerView = () => {
                         },
                         {
                             label: "Current Weather",
-                            subtext: weatherData ? weatherData.weather[0].description : "Weather data unavailable",
+                            subtext: weatherData ? capitalizeFirstLetter(weatherData.weather[0].description) : "Weather data unavailable",
                             isLoading: weatherLoading
                         },
                     ]}

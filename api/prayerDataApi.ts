@@ -22,7 +22,7 @@ export const fetchHaramWeatherDetails = async (latitude: number, longitude: numb
 
     try {
         const response = await fetch(
-            `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}`
+            `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=metric`
         );
     
         const data = await response.json();
