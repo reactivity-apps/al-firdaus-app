@@ -11,12 +11,12 @@ import { capitalizeFirstLetter, getImageForLocation } from "@/common/utils";
 
 const ExtendedPrayerView = () => {
     // Pull up to refresh
-    const [refreshing, setRefreshing] = React.useState(false);
+    const [refreshing, setRefreshing] = useState(false);
     const onRefresh = useCallback(() => {
         setRefreshing(true);
         setTimeout(() => {
             setRefreshing(false);
-        }, 2000);
+        }, 1000);
     }, []);
 
     const {city, address} = useLocalSearchParams<{ city: string, address: string }>();
@@ -77,7 +77,7 @@ const ExtendedPrayerView = () => {
     return (
         <ScrollView refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }>
+        }>
             <View style={globalStyles.container}>
                 <Text style={globalStyles.header}>
                     Prayer Times in {city}
