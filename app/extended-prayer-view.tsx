@@ -3,7 +3,7 @@ import { globalStyles } from "@/common/style";
 import { useLocalSearchParams } from "expo-router";
 import { ActivityIndicator, Text, View, StyleSheet } from "react-native";
 import cache from "../api/cache";
-import { PrayerDataResponse, getNextPrayer, getTimeUntilNextPrayer } from "@/types/prayer";
+import { PrayerDataResponse, WeatherDataResponse, getNextPrayer, getTimeUntilNextPrayer } from "@/types/prayer";
 import List from "@/components/List";
 import { ScrollView } from "react-native-gesture-handler";
 import PrayerTimes from "@/components/PrayerTimes";
@@ -13,6 +13,11 @@ const ExtendedPrayerView = () => {
     const [prayerData, setPrayerData] = useState<PrayerDataResponse | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
+
+    // Added weather state variables
+    const [weatherData, setWeatherData] = useState<WeatherDataResponse>(null); 
+    const [weatherLoading, setWeatherLoading] = useState(false);
+    const [weatherError, setWeatherError] = useState(false);
 
     useEffect(() => {
         const getCityPrayerData = async (city: string) => {
@@ -33,8 +38,30 @@ const ExtendedPrayerView = () => {
             }
         };
 
+        const getCityWeatherData = async (city: string) => {
+            try {
+                setWeatherLoading(true);
+                const weatherCacheKey = `${city}_weather`;
+                const value = await cache.get(weatherCacheKey);
+                
+                if (value) {
+                    const data: WeatherDataResponse = JSON.parse(value);
+                    setWeatherData(data);
+                } else {
+                    throw new Error(`Cached weather data for ${city} does not exist!`);
+                }
+            } catch (err) {
+                setWeatherError(true);
+                console.log(`Error fetching weather data for ${city}:`, err);
+            } finally {
+                setWeatherLoading(false);
+            }
+        };
+    
+
         if (city) {
             getCityPrayerData(city);
+            getCityWeatherData(city);
         }
     }, [city]);
 
@@ -66,24 +93,40 @@ const ExtendedPrayerView = () => {
                     </View>
                 )}
 
-         
+                {/* TODO: Add loading to list component */}
                 <List
                     title="Prayer Detail"
                     items={[
-                        { label: "Next Prayer", subtext: getNextPrayer(timings) },
-                        { label: "Time Until Next Prayer", subtext: getTimeUntilNextPrayer(timings) },
+                        { 
+                            label: "Next Prayer", 
+                            subtext: timings ? getNextPrayer(timings) : "Unable to retrieve" 
+                        },
+                        { 
+                            label: "Time Until Next Prayer", 
+                            subtext: timings ? getTimeUntilNextPrayer(timings) : "Unable to calculate" 
+                        },
                     ]}
                 />
-                
+
                 <List
                     title="Location Detail"
                     items={[
-
-                        { label: "Address of Haram", subtext: address },
-                        { label: "Current Temperature", subtext: "38°C/100°F" },
-                        { label: "Current Weather", subtext: "Sunny" },
+                        { 
+                            label: "Address of Haram", 
+                            subtext: address 
+                        },
+                        { 
+                            label: "Current Temperature", 
+                            subtext: weatherData?.temperature ? 
+                                `${weatherData.temperature}°C/${Math.round(weatherData.temperature * 9/5 + 32)}°F` : 
+                                "Temperature unavailable" 
+                        },
+                        { 
+                            label: "Current Weather", 
+                            subtext: weatherData?.conditions || "Weather data unavailable" 
+                        },
                     ]}
-                />               
+                />         
             </View>
         </ScrollView>
     );

@@ -108,6 +108,8 @@ export type PrayerTimings = {
     Lastthird: string; 
 } | undefined;
 
+export type WeatherDataResponse = any;
+
 export type Location = {
     name: string;
     address: string;

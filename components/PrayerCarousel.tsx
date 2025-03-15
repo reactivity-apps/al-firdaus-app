@@ -115,13 +115,11 @@ const PrayerCard = ({ location }: { location: Location }) => {
                     <ActivityIndicator size="small" color="black" />
                 ) : !error ? (
                     <>
-                        {/* <View style={styles.reciterInfo}>
-                            <View style={styles.reciterIcon}></View>
-                            <Text>Current Imam: Sheikh Abdul Rahman al-Sudais</Text>
-                        </View> */}
+                      
 
                         <View style={styles.nextPrayer}>
-                            <Text>Next Prayer In: <b>{getTimeUntilNextPrayer(timings)}</b></Text>
+                            <Text>Next Prayer In: </Text> 
+                            <Text style={{ fontWeight: "bold" }}>{getTimeUntilNextPrayer(timings)}</Text>
                         </View>
 
 
