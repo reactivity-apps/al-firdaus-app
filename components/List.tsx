@@ -1,5 +1,5 @@
 import React from "react";
-import { TouchableOpacity, Text, StyleSheet, View } from "react-native";
+import { TouchableOpacity, Text, StyleSheet, View, ActivityIndicator } from "react-native";
 
 type ListProps = {
   title: string;
@@ -8,17 +8,22 @@ type ListProps = {
 
 type ListItemProps = {
   label: string;
-  subtext?: string; // Subtext positioned to the right
+  subtext?: any; // Subtext positioned to the right
   link?: string; // Optional link prop
+  isLoading?: boolean; // New prop to control loading state at item level
 };
 
-const ListItem = ({ label, subtext, isLast }: ListItemProps & { isLast?: boolean }) => {
+const ListItem = ({ label, subtext, isLast, isLoading }: ListItemProps & { isLast?: boolean }) => {
   const itemStyle = isLast ? { ...styles.row, ...styles.lastRow } : styles.row;
 
   const content = (
     <View style={itemStyle}>
       <Text style={styles.label}>{label}</Text>
-      {subtext && <Text style={styles.subtext}>{subtext}</Text>}
+      {isLoading ? (
+        <ActivityIndicator size="small" color="black" />
+      ) : (
+        subtext && <Text style={styles.subtext}>{subtext}</Text>
+      )}
     </View>
   );
 
@@ -36,6 +41,7 @@ const List = ({ title, items }: ListProps) => {
             label={item.label} 
             subtext={item.subtext}
             isLast={index === items.length - 1} // Mark last item
+            isLoading={item.isLoading}
           />
         ))}
       </View>
@@ -66,6 +72,11 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#CDCBCB",
     flexWrap: "wrap", // Allow the items to wrap
+  },
+  centerContent: {
+    justifyContent: "center",
+    alignItems: "center",
+    minHeight: 50,
   },
   label: {
     fontSize: 16,

@@ -11,18 +11,16 @@ import PrayerTimes from "@/components/PrayerTimes";
 const ExtendedPrayerView = () => {
     const {city, address} = useLocalSearchParams<{ city: string, address: string }>();
     const [prayerData, setPrayerData] = useState<PrayerDataResponse | null>(null);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
 
-    // Added weather state variables
-    const [weatherData, setWeatherData] = useState<WeatherDataResponse>(null); 
-    const [weatherLoading, setWeatherLoading] = useState(false);
-    const [weatherError, setWeatherError] = useState(false);
+    // Weather state variables
+    const [weatherData, setWeatherData] = useState<WeatherDataResponse | null>(null); 
+    const [weatherLoading, setWeatherLoading] = useState(true);
 
     useEffect(() => {
         const getCityPrayerData = async (city: string) => {
             try {
-                setLoading(true);
                 const value = await cache.get(city);
                 if (value) {
                     const data: PrayerDataResponse = JSON.parse(value);
@@ -39,8 +37,8 @@ const ExtendedPrayerView = () => {
         };
 
         const getCityWeatherData = async (city: string) => {
+            setWeatherLoading(true);
             try {
-                setWeatherLoading(true);
                 const weatherCacheKey = `${city}_weather`;
                 const value = await cache.get(weatherCacheKey);
                 
@@ -51,7 +49,6 @@ const ExtendedPrayerView = () => {
                     throw new Error(`Cached weather data for ${city} does not exist!`);
                 }
             } catch (err) {
-                setWeatherError(true);
                 console.log(`Error fetching weather data for ${city}:`, err);
             } finally {
                 setWeatherLoading(false);
@@ -84,7 +81,7 @@ const ExtendedPrayerView = () => {
                         <View style={styles.content}>
                             {error ? (
                                 <Text style={styles.errorText}>
-                                    Unable to load prayer times. Please try again later.
+                                    Unable to load prayer times.
                                 </Text>
                             ) : (
                                 <PrayerTimes timings={timings} />
@@ -93,17 +90,18 @@ const ExtendedPrayerView = () => {
                     </View>
                 )}
 
-                {/* TODO: Add loading to list component */}
                 <List
                     title="Prayer Detail"
                     items={[
                         { 
                             label: "Next Prayer", 
-                            subtext: timings ? getNextPrayer(timings) : "Unable to retrieve" 
+                            subtext: timings ? getNextPrayer(timings) : "Unable to retrieve",
+                            isLoading: loading 
                         },
                         { 
                             label: "Time Until Next Prayer", 
-                            subtext: timings ? getTimeUntilNextPrayer(timings) : "Unable to calculate" 
+                            subtext: timings ? getTimeUntilNextPrayer(timings) : "Unable to calculate",
+                            isLoading: loading
                         },
                     ]}
                 />
@@ -111,22 +109,22 @@ const ExtendedPrayerView = () => {
                 <List
                     title="Location Detail"
                     items={[
-                        { 
-                            label: "Address of Haram", 
-                            subtext: address 
+                        {
+                            label: "Address of Haram",
+                            subtext: address,
                         },
-                        { 
-                            label: "Current Temperature", 
-                            subtext: weatherData?.temperature ? 
-                                `${weatherData.temperature}°C/${Math.round(weatherData.temperature * 9/5 + 32)}°F` : 
-                                "Temperature unavailable" 
+                        {
+                            label: "Current Temperature",
+                            subtext: weatherData ? `${weatherData.main.temp}°C/${Math.round(weatherData.main.temp * 9/5 + 32)}°F` : "Temperature unavailable",
+                            isLoading: weatherLoading
                         },
-                        { 
-                            label: "Current Weather", 
-                            subtext: weatherData?.conditions || "Weather data unavailable" 
+                        {
+                            label: "Current Weather",
+                            subtext: weatherData ? weatherData.weather[0].description : "Weather data unavailable",
+                            isLoading: weatherLoading
                         },
                     ]}
-                />         
+                />
             </View>
         </ScrollView>
     );

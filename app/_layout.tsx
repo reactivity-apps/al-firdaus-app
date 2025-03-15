@@ -18,7 +18,7 @@ export default function RootLayout() {
           try {
             const weatherData = await fetchHaramWeatherDetails(location.lat, location.long);
             
-            if (!weatherData || weatherData.code !== 200) {
+            if (!weatherData.coord) {
               throw new Error(weatherData.message);
             }
             console.log(`Weather data fetched for ${location.name}`);
