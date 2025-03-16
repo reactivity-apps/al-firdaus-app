@@ -8,7 +8,9 @@ const MakkahScreen: React.FC = () => {
       <View style={styles.container}>
         {/* Intro Section */}
         <Text style={styles.header}>Stay in Makkah</Text>
-        <Image source={require('../../assets/images/makkahscreen.jpg')} style={styles.image} resizeMode="cover"/>
+        <Text style={styles.subHeader}>Learn more about your stay in Makkah al-Mukarramah.</Text>
+
+        <Image source={require('../../assets/images/makkah.jpg')} style={styles.image} resizeMode="cover"/>
         <Text style={styles.description}>
           Makkah (Mecca) is the holiest city in Islam, located in the Hejaz region 
           of Saudi Arabia. Home to Masjid al-Haram and the Kaaba—the most sacred site 
@@ -16,7 +18,7 @@ const MakkahScreen: React.FC = () => {
         </Text>
 
         {/* Accommodation Overview */}
-        <Text style={[styles.header, { marginTop: 20 }]}>Accommodation</Text>
+        <Text style={[styles.sectionHeader, { marginTop: 20 }]}>Accommodations</Text>
         <Text style={styles.description}>
           From budget-friendly to luxury five-star hotels, Makkah offers a variety of 
           accommodations to suit travelers’ needs. Below is a popular 5-star hotel 
@@ -25,7 +27,7 @@ const MakkahScreen: React.FC = () => {
 
         {/* Example of a 5-Star Hotel */}
         <View style={styles.hotelContainer}>
-          <Text style={styles.subHeader}>Fairmont Makkah Clock Royal Tower</Text>
+          <Text style={styles.sectionHeader}>Fairmont Makkah Clock Royal Tower</Text>
           <Text style={styles.description}>
             The Fairmont Makkah Clock Royal Tower is an iconic 5-star hotel situated 
             steps away from Masjid al-Haram. It features:

@@ -4,28 +4,29 @@ export const styles = StyleSheet.create({
     container: {
       flex: 1,
       padding: 20,
+      paddingBottom: 40,
       backgroundColor: "#fff",
-      paddingBottom: 40
     },
     header: {
       fontSize: 28,
       fontWeight: 'bold',
       marginBottom: 10,
     },
-     description: {
+    subHeader: {
+      fontSize: 16,
+      marginBottom: 20,
+      color: "#666",
+    },
+    description: {
       fontSize: 16,
       color: 'gray',
       lineHeight: 22,
     },
-    subHeader: {
-      fontSize: 20,
-      fontWeight: 'bold',
-      marginBottom: 6,
-    },
+    
     image: {
       width: '100%',
-      height: 550, // Bigger image for a more immersive experience
-      marginBottom: 10,
+      height: 400, // Bigger image for a more immersive experience
+      marginBottom: 15,
       resizeMode: 'cover',
       borderRadius: 10,
     },
@@ -34,6 +35,11 @@ export const styles = StyleSheet.create({
       backgroundColor: '#f9f9f9',
       borderRadius: 8,
       padding: 15,
+    },
+    sectionHeader: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      marginBottom: 10,
     },
     bulletList: {
       marginTop: 10,

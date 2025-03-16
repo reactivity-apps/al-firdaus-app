@@ -1,6 +1,6 @@
 import { collection, getDocs, Timestamp } from "firebase/firestore";
-import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
+import React, { useCallback, useEffect, useState } from "react";
+import { View, Text, StyleSheet, ScrollView, RefreshControl } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { globalStyles } from "@/common/style";
 import { db } from "@/firebase/clientApp";
@@ -16,8 +16,16 @@ interface Announcement {
   date: Timestamp;
 }
 
-
 export default function Index() {
+   // Pull up to refresh
+    const [refreshing, setRefreshing] = useState(false);
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        setTimeout(() => {
+            setRefreshing(false);
+        }, 1000);
+    }, []);
+  
   const [announcements, setAnnouncements] = useState<Array<Announcement>>([]);
   const [loading, setLoading] = useState(true);
   const [alert, setAlert] = useState({
@@ -68,7 +76,7 @@ export default function Index() {
     };
 
     getAnnouncements();
-  }, []);
+  }, [refreshing]);
 
 
   if(loading) return <Loading />;
@@ -76,7 +84,9 @@ export default function Index() {
   // TODO: Add error display
   
   return (
-    <ScrollView>
+     <ScrollView refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }>
       <View style={globalStyles.container}>
         <Alert alert={alert} />
         
@@ -120,7 +130,7 @@ export default function Index() {
 
 const styles = StyleSheet.create({
   listTitle: {
-    fontSize: 18,
+    fontSize: 15,
     color: "gray",
     marginBottom: 15,
   },

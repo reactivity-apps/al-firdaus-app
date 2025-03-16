@@ -7,7 +7,7 @@ export function formatRelativeDate(timestamp: Timestamp): string {
   const date = timestamp.toDate(); // Convert Firestore timestamp to JS Date
 
   if (!(date instanceof Date) || isNaN(date.getTime())) {
-      console.error("Invalid date:", date);
+      console.log("Invalid date:", date);
       throw new Error("Invalid date passed");
   }
 
@@ -45,3 +45,34 @@ export function formatRelativeDate(timestamp: Timestamp): string {
   // Default to full date string
   return date.toDateString();
 }
+
+
+export function convertTo12HourFormat(time: string) {
+    // Split the input time into hours and minutes
+    const [hours, minutes] = time.split(':').map(Number);
+    
+    // Determine AM/PM and adjust the hour for 12-hour format
+    const period = hours >= 12 ? 'PM' : 'AM';
+    const hour12 = hours % 12 || 12; // Convert 0 hours to 12 (midnight)
+    
+    // Return the formatted time
+    return `${hour12}:${minutes.toString().padStart(2, '0')} ${period}`;
+}
+
+export function capitalizeFirstLetter(val: string) {
+    return String(val).charAt(0).toUpperCase() + String(val).slice(1);
+}
+
+export const getImageForLocation = (locationName: string) => {
+    // Using a switch statement to map location names to their respective images
+    switch(locationName) {
+        case 'Makkah':
+            return require('../assets/images/makkah.jpg');
+        case 'Madina':
+            return require('../assets/images/madina.jpg');
+        // Add more cases as needed for other locations
+        default:
+            // Fallback image if no match is found
+            return require('../assets/images/makkah.jpg');
+    }
+};

@@ -8,7 +8,9 @@ const MadinahScreen: React.FC = () => {
       <View style={styles.container}>
         {/* Intro Section */}
         <Text style={styles.header}>Stay in Madinah</Text>
-        <Image source={require('../../assets/images/madinah.jpg')} style={styles.image} resizeMode="cover"/>
+        <Text style={styles.subHeader}>Learn more about your stay in Madina al-Munawara.</Text>
+        
+        <Image source={require('../../assets/images/madina.jpg')} style={styles.image} resizeMode="cover"/>
         <Text style={styles.description}>
           Madinah (Medina), known as the “City of the Prophet,” is the second holiest city in Islam, 
           located in western Saudi Arabia. It is home to Al-Masjid an-Nabawi, the Prophet Muhammad's 
@@ -17,7 +19,7 @@ const MadinahScreen: React.FC = () => {
         </Text>
 
         {/* Accommodation Overview */}
-        <Text style={[styles.header, { marginTop: 20 }]}>Accommodation</Text>
+        <Text style={[styles.sectionHeader, { marginTop: 20 }]}>Accommodations</Text>
         <Text style={styles.description}>
           Madinah offers a wide range of accommodations, from budget hotels to luxurious five-star 
           stays. Many hotels are located near Al-Masjid an-Nabawi for easy access to prayer services.
@@ -26,7 +28,7 @@ const MadinahScreen: React.FC = () => {
 
         {/* Example of a 5-Star Hotel */}
         <View style={styles.hotelContainer}>
-          <Text style={styles.subHeader}>Shaza Al Madina</Text>
+          <Text style={styles.sectionHeader}>Shaza Al Madina</Text>
           <Text style={styles.description}>
             Shaza Al Madina is a luxury 5-star hotel located just a short walk from Al-Masjid an-Nabawi.
             Known for its elegant interiors and excellent hospitality, the hotel offers:
