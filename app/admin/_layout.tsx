@@ -32,7 +32,7 @@ export default function AdminLayout() {
     if(loading) return <Loading />;
 
     return (
-        <Stack initial="index">
+        <Stack initialRouteName="index">
             <Stack.Screen name="index" options={{
                 title: "Admin",
                 ...headerStyle

@@ -8,8 +8,11 @@ import { globalStyles } from "@/common/style";
 
 export default function CreateAnnouncement() {
   const [loading, setLoading] = useState(false);
-  const [alert, setAlert] = useState({
-    type: "",
+  const [alert, setAlert] = useState<{
+    type: "Error" | "Success";
+    message: string;
+  }>({
+    type: "Error",
     message: ""
   });
   const [values, setValues] = useState({

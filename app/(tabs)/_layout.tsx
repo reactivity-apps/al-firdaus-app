@@ -5,6 +5,17 @@ import React from 'react';
 export default function TabLayout() {
   return (
     <Tabs>
+        {/* Main For You Page */}
+        <Tabs.Screen 
+            name="for-you" 
+            options={{ 
+                title: "For You",
+                tabBarIcon: ({ color, focused }) => (
+                    <Ionicons name={focused ? 'home' : 'home-outline' } color={color} size={24} />
+                ),
+                tabBarLabel: "For You", 
+            }} 
+        />
         <Tabs.Screen 
             name="index" 
             options={{ 
