@@ -88,6 +88,10 @@ export default function RootLayout() {
             title: "Docs",
             headerShown: false
           }} />
+          <Stack.Screen name="resources" options={{ 
+            title: "Resources",
+            headerShown: false
+          }} />
           <Stack.Screen name="admin" options={{ headerShown: false }} />
           <Stack.Screen name="admin-login" options={{
             title: "Admin Login",

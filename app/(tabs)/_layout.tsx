@@ -25,6 +25,16 @@ export default function TabLayout() {
                 tabBarLabel: "Itinerary", 
             }} 
         />
+        <Tabs.Screen 
+            name="resources" 
+            options={{ 
+                title: "Resources",
+                tabBarIcon: ({ color, focused }) => (
+                    <Ionicons name={focused ? 'library' : 'library-outline' } color={color} size={24} />
+                ),
+                tabBarLabel: "Resources", 
+            }} 
+        />
     </Tabs>
   );
 }
