@@ -1,7 +1,6 @@
-"use strict";
 import { StyleSheet } from "react-native";
 
-const globalStyles = StyleSheet.create({
+export const style = StyleSheet.create({
     // Containers
     container: {
         flex: 1,
@@ -53,15 +52,3 @@ const globalStyles = StyleSheet.create({
         alignItems: "center",
     }
 });
-
-const headerStyle = {
-    headerStyle: {
-        backgroundColor: "#fff",
-    },
-    headerTintColor: "#000",
-    tabBarStyle: {
-        backgroundColor: "#fff",
-    },
-};
-
-export { globalStyles, headerStyle };
