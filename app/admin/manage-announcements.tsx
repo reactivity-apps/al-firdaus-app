@@ -4,7 +4,7 @@ import { collection, getDocs, Timestamp } from "firebase/firestore";
 import { db } from "@/firebase/clientApp";
 import { formatRelativeDate } from "@/common/utils";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { globalStyles } from "@/common/style";
+import { style as globalStyles } from "@/styles/global";
 import Loading from "@/components/Loading";
 
 type Announcement = {

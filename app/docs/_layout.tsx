@@ -1,5 +1,5 @@
 import React from "react";
-import { headerStyle } from "@/common/style";
+import { style as headerStyle } from "@/styles/header";
 import { Stack } from "expo-router";
 
 export default function DocsLayout() {

@@ -2,7 +2,7 @@ import { collection, getDocs, Timestamp } from "firebase/firestore";
 import React, { useCallback, useEffect, useState } from "react";
 import { View, Text, StyleSheet, ScrollView, RefreshControl } from "react-native";
 import { useLocalSearchParams } from "expo-router";
-import { globalStyles } from "@/common/style";
+import { style as globalStyles } from "@/styles/global";
 import { db } from "@/firebase/clientApp";
 import { formatRelativeDate } from "@/common/utils";
 import Loading from "@/components/Loading";

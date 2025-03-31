@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput } from "r
 import { ScrollView } from "react-native";
 import { Link } from "expo-router";
 import { Ionicons } from "@expo/vector-icons"; // Import arrow icon
-import { globalStyles } from "@/common/style";
+import { style as globalStyles } from "@/styles/global";
 
 // Timeline Component (Unchanged)
 const Timeline = () => {

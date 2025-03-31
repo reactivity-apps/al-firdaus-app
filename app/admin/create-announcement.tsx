@@ -4,7 +4,7 @@ import { addDoc, collection, getDocs } from "firebase/firestore";
 import { db } from "@/firebase/clientApp";
 import { get_today } from "@/common/utils";
 import Alert from "@/components/Alert";
-import { globalStyles } from "@/common/style";
+import { style as globalStyles } from "@/styles/global";
 
 export default function CreateAnnouncement() {
   const [loading, setLoading] = useState(false);

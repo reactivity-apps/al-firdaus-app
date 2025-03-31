@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Stack } from "expo-router";
 import { StatusBar } from 'expo-status-bar';
-import { headerStyle } from "@/common/style";
+import { style as headerStyle } from "@/styles/header";
 import { fetchHaramWeatherDetails, fetchPrayerTimings } from "@/api/prayerDataApi";
 import { locations } from "@/types/prayer";
 import cache from "@/api/cache";

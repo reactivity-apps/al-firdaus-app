@@ -1,7 +1,7 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { Text } from "react-native";
 import { ScrollView } from "react-native";
-import { globalStyles } from "@/common/style";
+import { style as globalStyles } from "@/styles/global";
 import Menu from "@/components/Menu";
 
 const Resources = () => {

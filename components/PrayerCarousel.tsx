@@ -1,5 +1,5 @@
 import React,{ useState, useEffect } from "react";
-import { globalStyles } from "@/common/style";
+import { style as globalStyles } from "@/styles/global";
 import { Text, View, StyleSheet, TouchableOpacity, ActivityIndicator, ImageBackground } from "react-native";
 import { useSharedValue } from "react-native-reanimated";
 import Carousel, {
