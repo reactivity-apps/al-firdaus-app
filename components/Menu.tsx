@@ -61,6 +61,9 @@ const styles = StyleSheet.create({
   rowContainer: {
     backgroundColor: "#FFFFFF",
     borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#CDCBCB",
+    overflow: "hidden", 
   },
   row: {
     padding: 15,
