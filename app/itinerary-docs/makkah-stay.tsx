@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, Image, ScrollView } from 'react-native';
 import { styles } from "./style";
 
-const MakkahScreen: React.FC = () => {
+const MakkahStay: React.FC = () => {
   return (
     <ScrollView>
       <View style={styles.container}>
@@ -45,4 +45,4 @@ const MakkahScreen: React.FC = () => {
   );
 };
 
-export default MakkahScreen;
+export default MakkahStay;

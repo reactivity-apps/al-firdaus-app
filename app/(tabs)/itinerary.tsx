@@ -44,7 +44,7 @@ const ItineraryScreen: React.FC = () => {
 
 
         <Text style={styles.stayTitle}>Location Details</Text>
-        <Link href="/docs/jeddah-screen" asChild>
+        <Link href="/itinerary-docs/jeddah-stay" asChild>
           <TouchableOpacity style={styles.stayContainer} activeOpacity={0.7}>
             {/* Header and Day Label in a Row */}
             <View style={styles.headerRow}>
@@ -62,7 +62,7 @@ const ItineraryScreen: React.FC = () => {
           </TouchableOpacity>
         </Link>
 
-        <Link href="/docs/madinah-screen" asChild>
+        <Link href="/itinerary-docs/madinah-stay" asChild>
           <TouchableOpacity style={styles.stayContainer} activeOpacity={0.7}>
             {/* Header and Day Label in a Row */}
             <View style={styles.headerRow}>
@@ -80,7 +80,7 @@ const ItineraryScreen: React.FC = () => {
           </TouchableOpacity>
         </Link>
 
-        <Link href="/docs/makkah-screen" asChild>
+        <Link href="/itinerary-docs/makkah-stay" asChild>
           <TouchableOpacity style={styles.stayContainer} activeOpacity={0.7}>
             <View style={styles.headerRow}>
               <Text style={styles.stayHeader}>Stay in Makkah</Text>
