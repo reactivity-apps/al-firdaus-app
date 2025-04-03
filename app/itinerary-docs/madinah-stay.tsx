@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, Image, ScrollView } from 'react-native';
 import { style as styles } from "@/styles/docs";
 
-const MadinahScreen: React.FC = () => {
+const MadinahStay: React.FC = () => {
   return (
     <ScrollView>
       <View style={styles.container}>
@@ -46,4 +46,4 @@ const MadinahScreen: React.FC = () => {
   );
 };
 
-export default MadinahScreen;
+export default MadinahStay;
