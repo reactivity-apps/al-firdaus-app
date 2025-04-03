@@ -7,21 +7,12 @@ const EssentialPreparations = () => {
   // Example usage
   const resourceItems = [
     {
-      title: "Resource 1",
+      title: "Spiritual Preparation",
       content: [
-        { label: "Resource 1", link: "resources/docs/resource-1", showIcon: true },
-        { label: "Resource 2", link: "resources/docs/resource-1", showIcon: true },
-        { label: "Resource 3", link: "resources/docs/resource-1", showIcon: true },
+        { label: "Significance of Umrah", link: "resources/docs/spiritual-1", showIcon: true },
       ],
     },
-    {
-      title: "Resource 2",
-      content: [
-        { label: "Resource 1", link: "resources/docs/resource-1", showIcon: true },
-        { label: "Resource 2", link: "resources/docs/resource-1", showIcon: true },
-        { label: "Resource 3", link: "resources/docs/resource-1", showIcon: true },
-      ],
-    }
+
   ];
 
   return (
@@ -34,8 +25,8 @@ const EssentialPreparations = () => {
         </Text>
 
         {/* Can create multiple dropdowns */}
-        <Dropdown items={resourceItems} />
-        <Dropdown items={resourceItems} />
+        <Dropdown title={"Travel Preparation"} items={resourceItems} />
+
       </View>
     </ScrollView>
   );

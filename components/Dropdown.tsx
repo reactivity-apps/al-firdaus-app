@@ -4,6 +4,7 @@ import { Ionicons } from "@expo/vector-icons"; // Import Ionicons
 import MenuItem from "./MenuItem"; 
 
 type DropdownProps = {
+  title: string;
   items: {
     title: string;
     content: {
@@ -14,7 +15,7 @@ type DropdownProps = {
   }[];
 };
 
-const Dropdown = ({ items }: DropdownProps) => {
+const Dropdown = ({ title, items }: DropdownProps) => {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   // Create an array of rotation values, one for each dropdown item
   const [rotations] = useState(() => 
@@ -47,71 +48,81 @@ const Dropdown = ({ items }: DropdownProps) => {
   };
 
   return (
-    <View style={styles.dropdownSection}>
-      {items.map((item, index) => {
-        // Create interpolated rotation for each dropdown item
-        const rotateChevron = rotations[index].interpolate({
-          inputRange: [0, 1],
-          outputRange: ["0deg", "180deg"], // Rotation values for 0 and 180 degrees
-        });
+    <View style={styles.dropdownContainer}>
+      <Text style={styles.dropdownTitle}>{title}</Text>
+      <View style={styles.dropdownSection}>
+        {items.map((item, index) => {
+          // Create interpolated rotation for each dropdown item
+          const rotateChevron = rotations[index].interpolate({
+            inputRange: [0, 1],
+            outputRange: ["0deg", "180deg"], // Rotation values for 0 and 180 degrees
+          });
 
-        const isLast = index === items.length - 1;
-        const isExpanded = expandedIndex === index;
+          const isLast = index === items.length - 1;
+          const isExpanded = expandedIndex === index;
 
-        return (
-          <View key={index}>
-            <TouchableOpacity
-              style={[
-                styles.sectionHeader,
-                !isLast && !isExpanded && styles.borderBottom,
-                index === 0 && styles.firstItem,
-                isLast && !isExpanded && styles.lastItem
-              ]}
-              onPress={() => toggleExpand(index)}
-            >
-              <Text style={styles.sectionTitle}>{item.title}</Text>
-              <View style={styles.chevronContainer}>
-                <Animated.View
-                  style={{
-                    transform: [{ rotate: rotateChevron }]
-                  }}
-                >
-                  <Ionicons name="chevron-down-outline" size={18} style={styles.icon} />
-                </Animated.View>
-              </View>
-            </TouchableOpacity>
-            {isExpanded && (
-              <View style={[
-                styles.contentContainer,
-                !isLast && styles.contentBorderBottom,
-                isLast && styles.lastItemContent
-              ]}>
-                {item.content.map((menuItem, itemIndex) => (
-                  <MenuItem
-                    key={itemIndex}
-                    label={menuItem.label}
-                    link={menuItem.link}
-                    showIcon={menuItem.showIcon}
-                    isLast={itemIndex === item.content.length - 1}
-                  />
-                ))}
-              </View>
-            )}
-          </View>
-        );
-      })}
+          return (
+            <View key={index}>
+              <TouchableOpacity
+                style={[
+                  styles.sectionHeader,
+                  !isLast && !isExpanded && styles.borderBottom,
+                  index === 0 && styles.firstItem,
+                  isLast && !isExpanded && styles.lastItem
+                ]}
+                onPress={() => toggleExpand(index)}
+              >
+                <Text style={styles.sectionTitle}>{item.title}</Text>
+                <View style={styles.chevronContainer}>
+                  <Animated.View
+                    style={{
+                      transform: [{ rotate: rotateChevron }]
+                    }}
+                  >
+                    <Ionicons name="chevron-down-outline" size={18} style={styles.icon} />
+                  </Animated.View>
+                </View>
+              </TouchableOpacity>
+              {isExpanded && (
+                <View style={[
+                  styles.contentContainer,
+                  !isLast && styles.contentBorderBottom,
+                  isLast && styles.lastItemContent
+                ]}>
+                  {item.content.map((menuItem, itemIndex) => (
+                    <MenuItem
+                      key={itemIndex}
+                      label={menuItem.label}
+                      link={menuItem.link}
+                      showIcon={menuItem.showIcon}
+                      isLast={itemIndex === item.content.length - 1}
+                    />
+                  ))}
+                </View>
+              )}
+            </View>
+          );
+        })}
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  dropdownContainer: {
+    marginBottom: 15,
+  },
   dropdownSection: {
-    marginBottom: 10,
     borderRadius: 8,
     backgroundColor: "#fff",
     borderWidth: 1,
     borderColor: "#CDCBCB",
     overflow: "hidden", // This ensures content doesn't spill outside rounded corners
+  },
+  dropdownTitle: {
+    fontSize: 15,
+    color: "gray",
+    marginBottom: 10,
   },
   sectionHeader: {
     padding: 15,

@@ -5,8 +5,8 @@ import { Stack } from "expo-router";
 export default function ResourcesDocsLayout() {
   return (
     <Stack>
-      <Stack.Screen name="resource-1" options={{ 
-            title: "Resource 1",
+      <Stack.Screen name="spiritual-1" options={{ 
+            title: "Resource",
             ...headerStyle
       }}/>  
     </Stack>

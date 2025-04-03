@@ -10,7 +10,7 @@ export const style = StyleSheet.create({
       fontSize: 28,
       fontWeight: 'bold',
       marginBottom: 10,
-      color: "#333",
+      color: "#000",
     },
     subHeader: {
       fontSize: 18,
@@ -36,7 +36,7 @@ export const style = StyleSheet.create({
       fontSize: 22,
       fontWeight: 'bold',
       marginBottom: 10,
-      color: "#444",
+      color: "#000",
     },
     bulletList: {
       marginTop: 10,
