@@ -32,15 +32,11 @@ export default function EditAnnouncementModal({
   onClose,
   onDelete
 }: AnnouncementModalProps) {
-  const [title, setTitle] = useState('');
-  const [message, setMessage] = useState('');
   const [deleteText, setDeleteText] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     if (announcement) {
-      setTitle(announcement.title);
-      setMessage(announcement.message);
       setDeleteText('');
     }
   }, [announcement]);
@@ -172,12 +168,6 @@ const styles = StyleSheet.create({
   modalContent: {
     padding: 15,
   },
-  inputLabel: {
-    fontSize: 14,
-    fontWeight: '500',
-    marginBottom: 5,
-    color: '#444',
-  },
   input: {
     borderWidth: 1,
     borderColor: '#CDCBCB',
@@ -185,27 +175,6 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 15,
     fontSize: 14,
-  },
-  messageInput: {
-    minHeight: 100,
-    textAlignVertical: 'top',
-  },
-  saveButton: {
-    backgroundColor: '#007AFF',
-    padding: 12,
-    borderRadius: 6,
-    alignItems: 'center',
-    marginTop: 5,
-  },
-  saveButtonText: {
-    color: '#FFF',
-    fontWeight: '600',
-    fontSize: 16,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: '#CDCBCB',
-    marginVertical: 5,
   },
   deleteSection: {
     padding: 15,

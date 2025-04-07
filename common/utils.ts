@@ -26,24 +26,12 @@ export function formatRelativeDate(timestamp: Timestamp): string {
       return "yesterday";
   }
 
-  // Check if the date is within the current week
-  const startOfWeek = new Date(todayStart);
-  startOfWeek.setDate(todayStart.getDate() - todayStart.getDay()); // Start of the week (Sunday)
-
-  if (date >= startOfWeek) {
-      return "this week";
-  }
-
-  // Check if the date is within last month
-  const startOfLastMonth = new Date(todayStart);
-  startOfLastMonth.setMonth(todayStart.getMonth() - 1, 1); // First day of last month
-
-  if (date >= startOfLastMonth) {
-      return "last month";
-  }
-
-  // Default to full date string
-  return date.toDateString();
+   // Format as "Month Day, Year"
+   return new Intl.DateTimeFormat("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  }).format(date);
 }
 
 
