@@ -24,27 +24,22 @@ type AnnouncementModalProps = {
   } | null;
   onClose: () => void;
   onSave: (id: string, title: string, message: string) => Promise<void>;
-  onDelete: (id: string) => Promise<void>;
 };
 
-export default function AnnouncementModal({
+export default function EditAnnouncementModal({
   visible,
   announcement,
   onClose,
   onSave,
-  onDelete
 }: AnnouncementModalProps) {
   const [title, setTitle] = useState('');
   const [message, setMessage] = useState('');
-  const [deleteText, setDeleteText] = useState('');
   const [isSaving, setIsSaving] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     if (announcement) {
       setTitle(announcement.title);
       setMessage(announcement.message);
-      setDeleteText('');
     }
   }, [announcement]);
 
@@ -72,31 +67,9 @@ export default function AnnouncementModal({
     }
   };
 
-  const handleDelete = async () => {
-    if (deleteText !== announcement?.title.toLowerCase()) {
-      Alert.alert('Error', 'Please type the announcement title in lowercase to confirm deletion');
-      return;
-    }
-
-    if (announcement?.id) {
-      setIsDeleting(true);
-      try {
-        await onDelete(announcement.id);
-        onClose();
-      } catch (error) {
-        Alert.alert('Error', 'Failed to delete announcement');
-      } finally {
-        setIsDeleting(false);
-      }
-    }
-  };
-
   const dismissKeyboard = () => {
     Keyboard.dismiss();
   };
-
-  // Get the correct placeholder text for delete field
-  const deletePlaceholder = announcement?.title ? `Type "${announcement.title.toLowerCase()}" to confirm` : '';
 
   return (
     <Modal
@@ -154,35 +127,6 @@ export default function AnnouncementModal({
                   </TouchableOpacity>
                 </View>
 
-                {/* Divider */}
-                <View style={styles.divider} />
-
-                {/* Delete section */}
-                <View style={styles.deleteSection}>
-                  <Text style={styles.deleteTitle}>Delete Announcement</Text>
-                  <Text style={styles.deleteInstructions}>
-                    To delete, type the announcement title in lowercase:
-                  </Text>
-                  <TextInput
-                    style={[styles.input, styles.deleteInput]}
-                    value={deleteText}
-                    onChangeText={setDeleteText}
-                    placeholder={deletePlaceholder}
-                    placeholderTextColor="#BB6060"
-                  />
-                  <TouchableOpacity
-                    style={[
-                      styles.deleteButton,
-                      (deleteText !== announcement?.title?.toLowerCase()) && styles.deleteButtonDisabled
-                    ]}
-                    onPress={handleDelete}
-                    disabled={isDeleting || deleteText !== announcement?.title?.toLowerCase()}
-                  >
-                    <Text style={styles.deleteButtonText}>
-                      {isDeleting ? 'Deleting...' : 'Delete Announcement'}
-                    </Text>
-                  </TouchableOpacity>
-                </View>
               </ScrollView>
             </View>
           </View>
@@ -262,41 +206,5 @@ const styles = StyleSheet.create({
     color: '#FFF',
     fontWeight: '600',
     fontSize: 16,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: '#CDCBCB',
-    marginVertical: 5,
-  },
-  deleteSection: {
-    padding: 15,
-  },
-  deleteTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#FF3B30',
-    marginBottom: 10,
-  },
-  deleteInstructions: {
-    fontSize: 14,
-    color: '#444',
-    marginBottom: 10,
-  },
-  deleteInput: {
-    borderColor: '#FF3B30',
-  },
-  deleteButton: {
-    backgroundColor: '#FF3B30',
-    padding: 12,
-    borderRadius: 6,
-    alignItems: 'center',
-  },
-  deleteButtonDisabled: {
-    backgroundColor: '#FFCCCC',
-  },
-  deleteButtonText: {
-    color: '#FFF',
-    fontWeight: '600',
-    fontSize: 16,
-  },
+  }
 });
