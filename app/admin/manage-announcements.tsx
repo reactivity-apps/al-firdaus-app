@@ -77,7 +77,7 @@ export default function ManageAnnouncements() {
                       <Text style={styles.itemMessage}>{item.message}</Text>
                     </View>
                     <TouchableOpacity style={styles.editIconContainer}>
-                      <Ionicons name="information-circle-outline" size={25} color="#000" />
+                      <Ionicons name="ellipsis-horizontal-outline" size={25} color="#000" />
                     </TouchableOpacity>
                   </View>
                 );
@@ -100,6 +100,8 @@ const styles = StyleSheet.create({
   listContainer: {
     backgroundColor: "#FFF",
     borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#CDCBCB",
   },
   item: {
     flexDirection: "row",
@@ -108,7 +110,7 @@ const styles = StyleSheet.create({
   },
   itemContent: {
     flex: 1,
-    padding: 20,
+    padding: 15,
   },
   lastItem: {
     borderBottomWidth: 0,

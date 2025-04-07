@@ -137,6 +137,8 @@ const styles = StyleSheet.create({
   listContainer: {
     backgroundColor: "#FFF",
     borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#CDCBCB",
   },
   item: {
     flexDirection: "row",
@@ -145,7 +147,7 @@ const styles = StyleSheet.create({
   },
   itemContent: {
     flex: 1,
-    padding: 20,
+    padding: 15,
   },
   lastItem: {
     borderBottomWidth: 0,

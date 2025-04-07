@@ -36,6 +36,8 @@ export const style = StyleSheet.create({
     signOutButton: {
         backgroundColor: "#FFFFFF",
         borderRadius: 8,
+        borderWidth: 1,
+        borderColor: "#CDCBCB",
         padding: 15,
         alignItems: "center",
     },
