@@ -1,17 +1,12 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, ScrollView, KeyboardAvoidingView, Platform, Alert } from "react-native";
 import { addDoc, collection, getDocs } from "firebase/firestore"; 
 import { db } from "@/firebase/clientApp";
 import { get_today } from "@/common/utils";
-import Alert from "@/components/Alert";
 import { style as globalStyles } from "@/styles/global";
 
 export default function CreateAnnouncement() {
   const [loading, setLoading] = useState(false);
-  const [alert, setAlert] = useState({
-    type: "",
-    message: ""
-  });
   const [values, setValues] = useState({
     title: "",
     message: "",
@@ -21,10 +16,7 @@ export default function CreateAnnouncement() {
     setLoading(true);
 
     if (!values.message || !values.title) {
-      setAlert({
-        type: "Error",
-        message: "Please enter both a title and a message."
-      });
+      Alert.alert("Error", "Please enter both a title and a message.");
       setLoading(false);
       return;
     }
@@ -42,16 +34,12 @@ export default function CreateAnnouncement() {
       }),
       timeout
     ]).then(() => {
-      setAlert({
-        type: "Success",
-        message: "Successfully created announcement!"
-      })
+      Alert.alert("Success", "Successfully created announcement!");
+      setValues({ title: "", message: "" }); // Reset form here
+
     }).catch((error) => {
       console.log(`Error occured when creating announcement: ${error}`);
-      setAlert({
-        type: "Error",
-        message: `Error occured when creating announcement. Please try again!` 
-      })
+      Alert.alert("Error", "Error occured when creating announcement. Please try again!");
     });
 
     setLoading(false);
@@ -64,9 +52,7 @@ export default function CreateAnnouncement() {
       <Text style={globalStyles.subHeader}>
         Use this form to create new announcements. They will appear on the For You page and will be sent to users as a notification.
       </Text>
-  
-      <Alert alert={alert} />
-  
+    
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
         <View style={styles.formContainer}>
           <Text style={styles.label}>Title</Text>

@@ -9,10 +9,10 @@ import {
   Platform,
   ScrollView,
   KeyboardAvoidingView,
+  Alert,
 } from "react-native";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase/clientApp";
-import Alert from "@/components/Alert";
 import { useRouter } from "expo-router";
 import { style as globalStyles } from "@/styles/global";
 
@@ -20,20 +20,12 @@ const AdminLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [alert, setAlert] = useState({
-    type: "",
-    message: ""
-  });
 
   const router = useRouter(); // Initialize router
 
   const handleLogin = async () => {
     if (!email || !password) {
-      // Alert.alert("Error", "Please enter both email and password.");
-      setAlert({
-        type: "Error",
-        message: "Please enter both email/password."
-      });
+      Alert.alert("Error", "Please enter both email and password.");
       return;
     }
 
@@ -49,84 +41,72 @@ const AdminLogin = () => {
         }
       } catch(error: any) {
         console.log(error);
-        setAlert({
-          type: "Error",
-          message: "If not automatically redirect, use this link: "
-        });
+        Alert.alert("Error", "Could not redirect. Please try again.");
       }
       
     } catch (error: any) {
       console.log(error.message);
       switch (error.code) {
         case "auth/network-request-failed":
-          setAlert({
-            type: "Error",
-            message: "Network request failed. Please try again!"
-          });
+          Alert.alert("Error", "Network request failed. Please try again!");
           break;
-        
+
         case "auth/invalid-email":
-          setAlert({
-            type: "Error",
-            message: "Invalid email format. Please enter a valid email, i.e, name@email.com."
-          });
+          Alert.alert(
+            "Error",
+            "Invalid email format. Please enter a valid email, i.e, name@email.com."
+          );
           break;
-      
+
         case "auth/user-not-found":
-          setAlert({
-            type: "Error",
-            message: "No user found with this email. Please check and try again."
-          });
+          Alert.alert(
+            "Error",
+            "No user found with this email. Please check and try again."
+          );
           break;
-      
+
         case "auth/wrong-password":
-          setAlert({
-            type: "Error",
-            message: "Incorrect password. Please try again."
-          });
+          Alert.alert("Error", "Incorrect password. Please try again.");
           break;
-      
+
         case "auth/user-disabled":
-          setAlert({
-            type: "Error",
-            message: "This user account has been disabled. Contact support for help."
-          });
+          Alert.alert(
+            "Error",
+            "This user account has been disabled. Contact support for help."
+          );
           break;
-      
+
         case "auth/invalid-id-token":
-          setAlert({
-            type: "Error",
-            message: "Invalid authentication token. Please try logging in again."
-          });
+          Alert.alert(
+            "Error",
+            "Invalid authentication token. Please try logging in again."
+          );
           break;
-      
+
         case "auth/too-many-requests":
-          setAlert({
-            type: "Error",
-            message: "Too many failed attempts. Try again later."
-          });
+          Alert.alert("Error", "Too many failed attempts. Try again later.");
           break;
-      
+
         case "auth/operation-not-allowed":
-          setAlert({
-            type: "Error",
-            message: "This sign-in method is currently disabled. Contact support."
-          });
+          Alert.alert(
+            "Error",
+            "This sign-in method is currently disabled. Contact support."
+          );
           break;
-      
+
         case "auth/invalid-credential":
-          setAlert({
-            type: "Error",
-            message: "Invalid credentials. Please check your email and password and try again."
-          });
+          Alert.alert(
+            "Error",
+            "Invalid credentials. Please check your email and password and try again."
+          );
           break;
-      
+
         default:
-          setAlert({
-            type: "Error",
-            message: "An unknown error occurred. Please try again."
-          });
-      }      
+          Alert.alert(
+            "Error",
+            "An unknown error occurred. Please try again."
+          );
+      }     
     }
     setLoading(false);
   };
@@ -139,8 +119,6 @@ const AdminLogin = () => {
         <Text style={globalStyles.header}>Admin Login</Text>
         <Text style={globalStyles.subHeader}>Login to access further administration controls.</Text>
         
-        <Alert alert={alert} />
-
         <KeyboardAvoidingView 
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
           style={{ flex: 1 }}>
