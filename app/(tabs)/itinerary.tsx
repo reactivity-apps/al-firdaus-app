@@ -1,124 +1,128 @@
 import React from "react";
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { ScrollView } from "react-native";
 import { Link } from "expo-router";
-import { Ionicons } from "@expo/vector-icons"; // Import arrow icon
-import { globalStyles } from "@/common/style";
+import { LinearGradient } from "expo-linear-gradient";
+import { Ionicons, MaterialCommunityIcons, FontAwesome5 } from '@expo/vector-icons';
+import { style as globalStyles } from "@/styles/global";
 
-// Timeline Component (Unchanged)
-const Timeline = () => {
-  return (
-    <View style={styles.timelineContainer}>
-      <Text style={styles.timelineTitle}>Trip Timeline</Text>
-      <View style={styles.timelineBox}>
-        <ItineraryDay location="Arrive at King Abdulaziz Intl. Airport" description="Lorem ipsum dolor sit amet, consectetur adipiscing elit." />
-        <View style={styles.separatorLine} /> {/* Separator Line */}
-        <ItineraryDay location="Jeddah" description="Lorem ipsum dolor sit amet, consectetur adipiscing elit." />
-        <ItineraryDay location="Madinah" description="Lorem ipsum dolor sit amet, consectetur adipiscing elit." />
-        <ItineraryDay location="Makkah" description="Lorem ipsum dolor sit amet, consectetur adipiscing elit." />
-      </View>
+const Timeline = () => (
+  <View style={styles.timelineContainer}>
+    <Text style={styles.timelineTitle}>Trip Timeline</Text>
+    <View style={styles.timelineBox}>
+      <ItineraryDay 
+        location="King Abdul-Aziz International Airport" 
+        description="Details about this location."
+        icon="airplane"
+        dates="4/16" />
+      <View style={styles.dividerLine} />
+
+      <ItineraryDay 
+        location="Jeddah" 
+        description="Details about this location." 
+        icon="beach"
+        dates="4/16-4/18" />
+      <View style={styles.dividerLine} />
+
+      <ItineraryDay 
+        location="Madina" 
+        description="Details about this location." 
+        icon="mosque"
+        dates="4/18-4/20" />
+      <View style={styles.dividerLine} />
+
+      <ItineraryDay 
+        location="Makkah" 
+        description="Details about this location."
+        icon="kaaba"
+        dates="4/20-4/26" />
     </View>
-  );
-};
+  </View>
+);
 
-// Reusable Clickable Component for Itinerary Days
-const ItineraryDay = ({ location, description }: { location: string; description: string; }) => {
+const ItineraryDay = ({ location, description, icon, dates }: { location: string, description: string, icon: string, dates: string }) => {
+  const renderIcon = () => {
+    switch(icon) {
+      case 'airplane':
+        return <Ionicons name="airplane" size={24} color="#555" />;
+      case 'beach':
+        return <MaterialCommunityIcons name="palm-tree" size={24} color="#555" />;
+      case 'mosque':
+        return <FontAwesome5 name="mosque" size={24} color="#555" />;
+      case 'kaaba':
+        return <FontAwesome5 name="kaaba" size={24} color="#555" />;
+      default:
+        return <Ionicons name="location" size={24} color="#555" />;
+    }
+  };
+
   return (
     <View style={styles.itineraryItem}>
-      <View style={styles.circle} />
-      <View style={styles.itineraryTextContainer}>
-        <Text style={styles.itineraryText}>{location}</Text>
-        <Text style={styles.itineraryDescription}>{description}</Text>
+      <View style={styles.itineraryContent}>
+        {/* <View style={styles.iconContainer}>
+          {renderIcon()}
+        </View> */}
+        <View style={styles.itineraryTextContainer}>
+          <Text style={styles.itineraryText}>{location}</Text>
+          <Text style={styles.itineraryDescription}>{description}</Text>
+        </View>
+      </View>
+      <View style={styles.itineraryDate}>
+        <Text style={styles.dateText}>{dates}</Text>
       </View>
     </View>
   );
 };
 
-const ItineraryScreen: React.FC = () => {
-  return (
-    <ScrollView style={globalStyles.container} contentContainerStyle={styles.scrollContent}>
-      <Text style={globalStyles.header}>Itinerary</Text>
-      <Text style={globalStyles.subHeader}>View trip timeline and see a detailed breakdown of each stay.</Text>
+const StayDetails = ({ title, days, link, image }: { title: string, days: string, link: string, image: any }) => (
+  <Link href={link} asChild>
+    <TouchableOpacity style={styles.stayContainer} activeOpacity={0.7}>
+      <View style={styles.stayImageWrapper}>
+        <Image source={image} style={styles.stayImage} />
+        <LinearGradient 
+          colors={["transparent", "rgba(0,0,0,0.7)"]} 
+          style={styles.gradientOverlay}
+        />
+        <View style={styles.textOverlay}>
+          <Text style={styles.dayLabel}>{days}</Text>
+          <Text style={styles.stayHeaderTitle}>{title}</Text>
+          <Text style={styles.stayDescriptionTitle}>Discover accommodations and plans for your stay.</Text>
+        </View>
+      </View>
+    </TouchableOpacity>
+  </Link>
+);
 
-      <Timeline />
-
-
-        <Text style={styles.stayTitle}>Location Details</Text>
-        <Link href="/docs/jeddah-screen" asChild>
-          <TouchableOpacity style={styles.stayContainer} activeOpacity={0.7}>
-            {/* Header and Day Label in a Row */}
-            <View style={styles.headerRow}>
-              <Text style={styles.stayHeader}>Stay in Jeddah</Text>
-              <Text style={styles.dayLabel}>Day 1 - 2</Text>
-            </View>
-
-            {/* Description and Arrow in a Row */}
-            <View style={styles.descriptionRow}>
-              <Text style={styles.stayDescription}>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Discover accommodations and plans for your stay.
-              </Text>
-              <Ionicons name="chevron-forward-outline" size={20} color="#000000" style={styles.arrowIcon} />
-            </View>
-          </TouchableOpacity>
-        </Link>
-
-        <Link href="/docs/madinah-screen" asChild>
-          <TouchableOpacity style={styles.stayContainer} activeOpacity={0.7}>
-            {/* Header and Day Label in a Row */}
-            <View style={styles.headerRow}>
-              <Text style={styles.stayHeader}>Stay in Madinah</Text>
-              <Text style={styles.dayLabel}>Day 3 - 6</Text>
-            </View>
-
-            {/* Description and Arrow in a Row */}
-            <View style={styles.descriptionRow}>
-              <Text style={styles.stayDescription}>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Discover accommodations and plans for your stay.
-              </Text>
-              <Ionicons name="chevron-forward-outline" size={20} color="#000000" style={styles.arrowIcon} />
-            </View>
-          </TouchableOpacity>
-        </Link>
-
-        <Link href="/docs/makkah-screen" asChild>
-          <TouchableOpacity style={styles.stayContainer} activeOpacity={0.7}>
-            <View style={styles.headerRow}>
-              <Text style={styles.stayHeader}>Stay in Makkah</Text>
-              <Text style={styles.dayLabel}>Day 7 - 12</Text>
-            </View>
-
-            <View style={styles.descriptionRow}>
-              <Text style={styles.stayDescription}>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Discover accommodations and plans for your stay.
-              </Text>
-              <Ionicons name="chevron-forward-outline" size={20} color="#000000" style={styles.arrowIcon} />
-            </View>
-          </TouchableOpacity>
-        </Link>
-
-
-    </ScrollView>
-  );
-};
-
+const ItineraryScreen = () => (
+  <ScrollView style={globalStyles.container} contentContainerStyle={styles.scrollContent}>
+    <Text style={globalStyles.header}>Itinerary</Text>
+    <Text style={globalStyles.subHeader}>View trip timeline and see a detailed breakdown of each stay.</Text>
+    <Timeline />
+    <Text style={styles.stayTitle}>Location Details</Text>
+    <StayDetails 
+      title="Stay in Jeddah" 
+      days="Day 1 - 2" 
+      link="/itinerary-docs/jeddah-stay"
+      image={require('../../assets/images/jeddah.jpg')} />
+    <StayDetails 
+      title="Stay in Madinah" 
+      days="Day 3 - 6" 
+      link="/itinerary-docs/madinah-stay"
+      image={require('../../assets/images/madina.jpg')} />
+    <StayDetails 
+      title="Stay in Makkah" 
+      days="Day 7 - 12" 
+      link="/itinerary-docs/makkah-stay" 
+      image={require('../../assets/images/makkah.jpg')} />
+  </ScrollView>
+);
 
 export default ItineraryScreen;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    padding: 20,
-  },
-  header: {
-    fontSize: 32,
-    fontWeight: "bold",
-  },
-  searchBar: {
-    backgroundColor: "#fff",
-    padding: 10,
-    borderRadius: 8,
-    marginVertical: 10,
+  scrollContent: {
+    flexGrow: 1,
+    paddingBottom: 30,
   },
   timelineContainer: {
     marginBottom: 30,
@@ -130,93 +134,94 @@ const styles = StyleSheet.create({
   },
   timelineBox: {
     backgroundColor: "#fff",
-    padding: 15,
     borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#CDCBCB",
   },
-  timelineHeader: {
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  timelineDots: {
-    fontSize: 20,
-    textAlign: "center",
-  },
-  separatorLine: {
+  dividerLine: {
     height: 1,
     backgroundColor: "#ccc",
-    marginVertical: 10,
   },
   itineraryItem: {
     flexDirection: "row",
+    padding: 15,
     alignItems: "center",
-    padding: 10,
-    marginVertical: 5,
   },
-  circle: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    borderWidth: 2,
-    borderColor: "gray",
-    marginRight: 10,
+  itineraryDate: {
+    alignItems: "flex-end",
+    width: 80,
   },
+  dateText: {
+    fontSize: 14,
+  },
+  itineraryContent: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  // iconContainer: {
+  //   marginRight: 10,
+  //   width: 32,
+  //   alignItems: "center",
+  //   justifyContent: "center",
+  // },
   itineraryTextContainer: {
     flex: 1,
   },
   itineraryText: {
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: "500",
   },
   itineraryDescription: {
     fontSize: 14,
     color: "gray",
   },
-  scrollContent: {
-    flexGrow: 1, // Allows scrolling when content exceeds screen height
-    paddingBottom: 30, // Prevents content from being cut off at the bottom
+  stayContainer: {
+    marginVertical: 8,
+    borderRadius: 10,
+    overflow: "hidden",
   },
-  // Styles for Stay in Makkah Section
+  stayImageWrapper: {
+    position: "relative",
+    width: "100%",
+    height: 400,
+  },
+  stayImage: {
+    width: "100%",
+    height: "100%",
+    resizeMode: "cover",
+  },
+  gradientOverlay: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: "40%", // Covers bottom for readability
+  },
+  textOverlay: {
+    position: "absolute",
+    bottom: 15,
+    left: 15,
+    right: 15,
+  },
+  stayHeaderTitle: {
+    fontSize: 30,
+    fontWeight: "bold",
+    color: "white",
+  },
+  stayDescriptionTitle: {
+    fontSize: 18,
+    color: "white",
+    marginTop: 4,
+  },
+  dayLabel: {
+    fontSize: 15,
+    color: "white",
+    marginTop: 4,
+  },
   stayTitle: {
     fontSize: 15,
     color: "gray",
+    marginBottom: 5,
   },
-  headerRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 10, 
-  },
-  descriptionRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    minHeight: 60
-  },
-  stayContainer: {
-    marginVertical: 8,
-    padding: 15,
-    backgroundColor: "#fff",
-    borderRadius: 10,
-  },
-  stayHeader: {
-    fontSize: 16,
-    fontWeight: "bold",
-    flex: 1,
-  },
-  dayLabel: {
-    fontSize: 14,
-    color: "gray",
-  },
-  stayDescription: {
-    fontSize: 14,
-    color: "gray",
-    flex: 1, // Allows text to take space and prevent overlap
-    marginTop: 10,
-    alignSelf: "flex-start"
-  },
-  arrowIcon: {
-    marginLeft: 10, // Adds spacing between text and arrow
-    alignSelf: "flex-end"
-  },  
-
 });

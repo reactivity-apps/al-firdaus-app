@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { globalStyles } from "@/common/style";
+import { style as globalStyles } from "@/styles/global";
 import { useLocalSearchParams } from "expo-router";
 import { ActivityIndicator, Text, View, StyleSheet, RefreshControl, Image } from "react-native";
 import cache from "../api/cache";

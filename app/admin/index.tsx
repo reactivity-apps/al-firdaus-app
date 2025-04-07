@@ -4,8 +4,7 @@ import Menu from "@/components/Menu";
 import { useRouter } from "expo-router";
 import { signOut } from "firebase/auth";
 import { auth } from "@/firebase/clientApp";
-import { globalStyles } from "@/common/style";
-
+import { style as globalStyles } from "@/styles/global";
 
 export default function Index() {
     const router = useRouter();

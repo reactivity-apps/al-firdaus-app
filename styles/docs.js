@@ -1,54 +1,58 @@
 import { StyleSheet } from "react-native";
 
-export const styles = StyleSheet.create({
+export const style = StyleSheet.create({
     container: {
       flex: 1,
       padding: 20,
       paddingBottom: 40,
-      backgroundColor: "#fff",
     },
     header: {
       fontSize: 28,
       fontWeight: 'bold',
       marginBottom: 10,
+      color: "#000",
     },
     subHeader: {
-      fontSize: 16,
+      fontSize: 18,
       marginBottom: 20,
       color: "#666",
     },
     description: {
       fontSize: 16,
-      color: 'gray',
-      lineHeight: 22,
+      color: "#666",
+      lineHeight: 24,
     },
-    
     image: {
       width: '100%',
-      height: 400, // Bigger image for a more immersive experience
-      marginBottom: 15,
+      height: 350,
+      marginBottom: 20,
       resizeMode: 'cover',
-      borderRadius: 10,
+      borderRadius: 12,
     },
-    hotelContainer: {
+    sectionContainer: {
       marginTop: 20,
-      backgroundColor: '#f9f9f9',
-      borderRadius: 8,
-      padding: 15,
     },
     sectionHeader: {
-      fontSize: 20,
+      fontSize: 22,
       fontWeight: 'bold',
       marginBottom: 10,
+      color: "#000",
     },
     bulletList: {
       marginTop: 10,
+      paddingLeft: 10,
     },
     bulletItem: {
       fontSize: 16,
-      color: 'gray',
-      marginVertical: 2,
+      color: "#666",
+      marginVertical: 4,
       lineHeight: 22,
     },
+    hotelContainer: {
+      marginTop: 20,
+      backgroundColor: '#f5f5f5',
+      borderRadius: 10,
+      padding: 15,
+    },    
 });
-  
+

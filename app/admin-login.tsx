@@ -14,7 +14,7 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase/clientApp";
 import Alert from "@/components/Alert";
 import { useRouter } from "expo-router";
-import { globalStyles } from "@/common/style";
+import { style as globalStyles } from "@/styles/global";
 
 const AdminLogin = () => {
   const [email, setEmail] = useState("");

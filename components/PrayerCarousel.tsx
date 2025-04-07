@@ -1,5 +1,5 @@
 import React,{ useState, useEffect } from "react";
-import { globalStyles } from "@/common/style";
+import { style as globalStyles } from "@/styles/global";
 import { Text, View, StyleSheet, TouchableOpacity, ActivityIndicator, ImageBackground } from "react-native";
 import { useSharedValue } from "react-native-reanimated";
 import Carousel, {
@@ -165,9 +165,12 @@ const styles = StyleSheet.create({
     card: {
         backgroundColor: "white",
         marginBottom: 20,
-        borderRadius: 8,
+        borderRadius: 10,
         flexDirection: "column",
-        height: cardHeight // Needed for carousel, will break otherwise
+        height: cardHeight, // Needed for carousel, will break otherwise
+        borderWidth: 1,
+        borderColor: "#CDCBCB",
+        overflow: "hidden", 
     },
     errorText: {
         color: "red"
