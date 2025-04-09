@@ -8,34 +8,44 @@ import { style as globalStyles } from "@/styles/global";
 
 const Timeline = () => (
   <View style={styles.timelineContainer}>
-    <Text style={styles.timelineTitle}>Trip Timeline</Text>
+    <Text style={styles.timelineTitle}>📍 Trip Timeline</Text>
     <View style={styles.timelineBox}>
-      <ItineraryDay 
-        location="King Abdul-Aziz International Airport" 
-        description="Details about this location."
-        icon="airplane"
-        dates="4/16" />
-      <View style={styles.dividerLine} />
-
-      <ItineraryDay 
-        location="Jeddah" 
-        description="Details about this location." 
-        icon="beach"
-        dates="4/16-4/18" />
-      <View style={styles.dividerLine} />
-
-      <ItineraryDay 
-        location="Madina" 
-        description="Details about this location." 
-        icon="mosque"
-        dates="4/18-4/20" />
-      <View style={styles.dividerLine} />
-
-      <ItineraryDay 
-        location="Makkah" 
-        description="Details about this location."
-        icon="kaaba"
-        dates="4/20-4/26" />
+      {[
+        {
+          location: "King Abdul-Aziz International Airport",
+          description: "Arrival into Saudi Arabia begins here.",
+          icon: "airplane",
+          dates: "4/16",
+        },
+        {
+          location: "Jeddah",
+          description: "Rest at the Red Sea and begin your spiritual journey.",
+          icon: "beach",
+          dates: "4/16–4/18",
+        },
+        {
+          location: "Madina",
+          description: "Visit the Prophet’s Mosque and historical sites.",
+          icon: "mosque",
+          dates: "4/18–4/20",
+        },
+        {
+          location: "Makkah",
+          description: "Complete your Umrah and climb Jabal Noor.",
+          icon: "kaaba",
+          dates: "4/20–4/26",
+        },
+      ].map((day, index, arr) => (
+        <React.Fragment key={day.location}>
+          <ItineraryDay 
+            location={day.location} 
+            description={day.description} 
+            icon={day.icon} 
+            dates={day.dates} 
+          />
+          {index < arr.length - 1 && <View style={styles.dividerLine} />}
+        </React.Fragment>
+      ))}
     </View>
   </View>
 );
