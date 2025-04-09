@@ -1,45 +1,54 @@
 import React from 'react';
 import { View, Text, Image, ScrollView } from 'react-native';
-import { style as styles } from "@/styles/docs";
+import Icon from 'react-native-vector-icons/FontAwesome';
+import { style as styles } from '@/styles/docs';
 
 const JeddahStay: React.FC = () => {
   return (
-    <ScrollView>
+    <ScrollView contentContainerStyle={{ padding: 20, backgroundColor: '#fff' }}>
       <View style={styles.container}>
-        {/* Intro Section */}
-        <Text style={styles.header}>Stay in Jeddah</Text>
-        <Text style={styles.subHeader}>Learn more about your stay in Jeddah.</Text>
-        
-        <Image source={require('../../assets/images/jeddah.jpg')} style={styles.image} resizeMode="cover"/>
-        <Text style={styles.description}>
-          Jeddah, the **Gateway to Mecca**, is a vibrant coastal city along the Red Sea in Saudi Arabia. 
-          Known for its stunning waterfront, rich history, and modern attractions, Jeddah is a major 
-          entry point for Hajj and Umrah pilgrims. Visitors can explore landmarks like the King Fahd 
-          Fountain, Al-Balad (the historic old town), and the beautiful Jeddah Corniche.
+        {/* Header */}
+        <Text style={[styles.header, { marginBottom: 10 }]}>🌊 Stay in Jeddah</Text>
+        <Text style={[styles.subHeader, { marginBottom: 20 }]}>
+          The gateway to your journey — welcome to the Red Sea coast
         </Text>
 
-        {/* Accommodation Overview */}
-        <Text style={[styles.sectionHeader, { marginTop: 20 }]}>Accommodation</Text>
-        <Text style={styles.description}>
-          Jeddah offers a mix of luxury resorts, business hotels, and budget-friendly stays. Many 
-          high-end hotels offer stunning sea views and world-class hospitality. Below is one of 
-          the best 5-star hotels in Jeddah.
+        {/* Image */}
+        <Image
+          source={require('../../assets/images/jeddah.jpg')}
+          style={[styles.image, { borderRadius: 12, marginBottom: 20 }]}
+          resizeMode="cover"
+        />
+
+        {/* Intro Description */}
+        <Text style={[styles.description, { marginBottom: 20 }]}>
+          Jeddah, the vibrant coastal city along the Red Sea, is a key starting point for pilgrims 
+          visiting Makkah and Madinah. Known for its culture, hospitality, and scenic beauty, 
+          it's where your Al-Firdaus journey begins.
         </Text>
 
-        {/* Example of a 5-Star Hotel */}
-        <View style={styles.hotelContainer}>
-          <Text style={styles.sectionHeader}>The Ritz-Carlton, Jeddah</Text>
-          <Text style={styles.description}>
-            The Ritz-Carlton, Jeddah is a prestigious 5-star hotel that offers breathtaking views of 
-            the Red Sea, exceptional service, and luxurious accommodations:
-          </Text>
-          <View style={styles.bulletList}>
-            <Text style={styles.bulletItem}>• Elegant rooms and suites with Red Sea or city views</Text>
-            <Text style={styles.bulletItem}>• Fine dining restaurants offering international and Arabic cuisine</Text>
-            <Text style={styles.bulletItem}>• Spa, wellness center, and high-end fitness facilities</Text>
-            <Text style={styles.bulletItem}>• Close to Jeddah Corniche and popular landmarks</Text>
-            <Text style={styles.bulletItem}>• World-class business and conference facilities</Text>
-          </View>
+        {/* Hotel Info */}
+        <Text style={[styles.sectionHeader, { marginBottom: 10 }]}>🏨 Where You’ll Stay</Text>
+        <Text style={[styles.sectionHeader, { fontSize: 20, marginBottom: 10 }]}>
+          Narcissus Obhur Resort & Spa
+        </Text>
+        <Text style={[styles.description, { marginBottom: 15 }]}>
+          A beachfront escape along the Red Sea, this resort is known for its peaceful atmosphere 
+          and exclusive facilities, including:
+        </Text>
+        <View style={[styles.bulletList, { marginBottom: 20 }]}>
+          <Text style={styles.bulletItem}><Icon name="female" size={16} />  Fully-secluded women-only beach (summer only)</Text>
+          <Text style={styles.bulletItem}><Icon name="spa" size={16} />  Women-only outdoor pool & private spa</Text>
+          <Text style={styles.bulletItem}><Icon name="home" size={16} />  Private villas with outdoor pools or hot tubs</Text>
+          <Text style={styles.bulletItem}><Icon name="wifi" size={16} />  Free Wi-Fi and in-room amenities</Text>
+          <Text style={styles.bulletItem}><Icon name="car" size={16} />  Private parking and premium service</Text>
+        </View>
+
+        {/* Activities Section */}
+        <Text style={[styles.sectionHeader, { marginBottom: 10 }]}>📅 Key Activities in Jeddah</Text>
+        <View style={[styles.bulletList, { marginBottom: 30 }]}>
+          <Text style={styles.bulletItem}><Icon name="plane" size={16} />  Feb 14: Arrival Day — Meet & rest at the villa resort</Text>
+          <Text style={styles.bulletItem}><Icon name="sign-out" size={16} />  Feb 15: Checkout by 12 PM & depart to Madinah</Text>
         </View>
       </View>
     </ScrollView>
@@ -47,3 +56,4 @@ const JeddahStay: React.FC = () => {
 };
 
 export default JeddahStay;
+
