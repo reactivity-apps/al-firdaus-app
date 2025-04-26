@@ -1,13 +1,12 @@
 import { collection, getDocs, Timestamp } from "firebase/firestore";
 import React, { useCallback, useEffect, useState } from "react";
-import { View, Text, StyleSheet, ScrollView, RefreshControl } from "react-native";
+import { View, Text, StyleSheet, ScrollView, RefreshControl, Alert } from "react-native";
 import { useLocalSearchParams } from "expo-router";
-import { globalStyles } from "@/common/style";
+import { style as globalStyles } from "@/styles/global";
 import { db } from "@/firebase/clientApp";
 import { formatRelativeDate } from "@/common/utils";
 import Loading from "@/components/Loading";
 import Menu from "@/components/Menu";
-import Alert from "@/components/Alert";
 
 // Define the type for announcements
 interface Announcement {
@@ -28,10 +27,6 @@ export default function Index() {
   
   const [announcements, setAnnouncements] = useState<Array<Announcement>>([]);
   const [loading, setLoading] = useState(true);
-  const [alert, setAlert] = useState({
-      type: "",
-      message: ""
-    });
 
   const { message } = useLocalSearchParams<{ message?: string }>();
 
@@ -40,16 +35,10 @@ export default function Index() {
     if(message) {
       switch(message) {
         case "unauthorized-user":
-          setAlert({
-            type: "Error",
-            message: "You do not have access to this page. Please login to continue."
-          });
+          Alert.alert("Unauthorized access", "You do not have access to this page. Please login to continue.");
           break;
         case "user-logged-out":
-          setAlert({
-            type: "Success",
-            message: "You have been successfully logged!"
-          });
+          Alert.alert("Successful logout", "You have been successfully logged!");
           break;
       }
     }
@@ -87,9 +76,7 @@ export default function Index() {
      <ScrollView refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }>
-      <View style={globalStyles.container}>
-        <Alert alert={alert} />
-        
+      <View style={globalStyles.container}>        
         <Menu
           title="Navigation"
           content={[
@@ -137,6 +124,8 @@ const styles = StyleSheet.create({
   listContainer: {
     backgroundColor: "#FFF",
     borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#CDCBCB",
   },
   item: {
     flexDirection: "row",
@@ -145,7 +134,7 @@ const styles = StyleSheet.create({
   },
   itemContent: {
     flex: 1,
-    padding: 20,
+    padding: 15,
   },
   lastItem: {
     borderBottomWidth: 0,

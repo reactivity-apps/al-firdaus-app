@@ -1,5 +1,5 @@
 import React,{ useState, useEffect } from "react";
-import { globalStyles } from "@/common/style";
+import { style as globalStyles } from "@/styles/global";
 import { Text, View, StyleSheet, TouchableOpacity, ActivityIndicator, ImageBackground } from "react-native";
 import { useSharedValue } from "react-native-reanimated";
 import Carousel, {
@@ -12,11 +12,81 @@ import cache from "@/api/cache";
 import PrayerTimes from "./PrayerTimes";
 import { LinearGradient } from 'expo-linear-gradient';
 import { getImageForLocation } from "@/common/utils";
+import { fetchHaramWeatherDetails, fetchPrayerTimings } from "@/api/prayerDataApi";
 
 const cardHeight = 450; // Needed for carousel, will break otherwise
 
 // FIXME: Carousel loads on start without indicator
 function PrayerCarousel() {
+
+    // Loads and caches prayer data once a day
+    useEffect(() => {
+        const cachePrayerRelatedData = async () => {
+
+            // Check last cached data
+            const lastCacheTimeString = await cache.get('lastPrayerDataCacheTime');
+            const currentTime = new Date().getTime();
+            const oneDayInMs = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+            let shouldRefreshCache = true;
+            
+            // If cache data, check if more than a day
+            if (lastCacheTimeString) {
+            const lastCacheTime = parseInt(lastCacheTimeString);
+            shouldRefreshCache = (currentTime - lastCacheTime) >= oneDayInMs;
+            }
+            
+            // If less than a day, skip refresh
+            if (!shouldRefreshCache) {
+            console.log('Prayer data cache is less than a day old. Skipping refresh.');
+            return;
+            }
+            
+            console.log('Refreshing prayer data cache...');
+            
+            // Otherwise, proceed with fetching and caching data
+            for(const location of locations){
+            try {
+                const weatherData = await fetchHaramWeatherDetails(location.lat, location.long);
+                
+                if (!weatherData.coord) {
+                throw new Error(weatherData.message);
+                }
+                console.log(`Weather data fetched for ${location.name}`);
+                
+                // Cache the weather data
+                await cache.set(`${location.name}_weather`, JSON.stringify(weatherData))
+                .catch((err) => {
+                    console.log(`Error caching weather data for ${location.name}:`, err);
+                });
+            } catch (error) {
+                console.log(`Error fetching weather data for ${location.name}:`, error);
+            }
+        
+            try {
+                const prayerTimings = await fetchPrayerTimings(location.address);
+                if (!prayerTimings || prayerTimings.code !== 200) {
+                throw new Error(`Failed to fetch prayer timings for ${location.name}`);
+                }
+        
+                await cache.set(location.name, JSON.stringify(prayerTimings))
+                .catch(() => {
+                    throw Error();
+                });
+        
+            } catch (error) {
+                console.log(`Error caching data for ${location.name}:`, error);
+                await cache.set(location.name, "failed").catch(console.log);
+            } 
+            }
+            
+            // After successfully updating the cache, update the timestamp
+            await cache.set('lastPrayerDataCacheTime', currentTime.toString())
+            .catch(err => console.log('Error saving cache timestamp:', err));
+        };
+        
+        cachePrayerRelatedData();
+    }, []);
+
     const [containerWidth, setContainerWidth] = React.useState(0); // Track element width   
     const ref = React.useRef<ICarouselInstance>(null);
     const progress = useSharedValue<number>(0);
@@ -165,9 +235,12 @@ const styles = StyleSheet.create({
     card: {
         backgroundColor: "white",
         marginBottom: 20,
-        borderRadius: 8,
+        borderRadius: 10,
         flexDirection: "column",
-        height: cardHeight // Needed for carousel, will break otherwise
+        height: cardHeight, // Needed for carousel, will break otherwise
+        borderWidth: 1,
+        borderColor: "#CDCBCB",
+        overflow: "hidden", 
     },
     errorText: {
         color: "red"

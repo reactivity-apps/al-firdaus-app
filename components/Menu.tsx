@@ -1,7 +1,6 @@
 import React from "react";
-import Ionicons from "@expo/vector-icons/Ionicons";
-import { TouchableOpacity, Text, StyleSheet, View } from "react-native";
-import { Link } from "expo-router";
+import { Text, StyleSheet, View } from "react-native";
+import MenuItem from "./MenuItem"; // Import MenuItem component
 
 type MenuProps = {
   title: string;
@@ -14,31 +13,17 @@ type ItemProps = {
   showIcon?: boolean; // Optional boolean to toggle icon
 };
 
-const Item = ({ label, link, showIcon, isLast }: ItemProps & { isLast?: boolean }) => {
-  const itemStyle = isLast ? { ...styles.row, ...styles.lastRow } : styles.row;
-
-  const content = (
-    <TouchableOpacity style={itemStyle}>
-      <Text style={styles.label}>{label}</Text>
-      {showIcon && <Ionicons name="chevron-forward-outline" style={styles.icon} />}
-    </TouchableOpacity>
-  );
-
-  return link ? <Link href={link} asChild>{content}</Link> : content;
-};
-
-
 const Menu = ({ title, content }: MenuProps) => {
   return (
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>{title}</Text>
       <View style={styles.rowContainer}>
         {content.map((item, index) => (
-          <Item 
+          <MenuItem
             key={index}
-            label={item.label} 
-            link={item.link} 
-            showIcon={item.showIcon} 
+            label={item.label}
+            link={item.link}
+            showIcon={item.showIcon}
             isLast={index === content.length - 1} // Mark last item
           />
         ))}
@@ -46,8 +31,6 @@ const Menu = ({ title, content }: MenuProps) => {
     </View>
   );
 };
-
-export default Menu;
 
 const styles = StyleSheet.create({
   section: {
@@ -61,24 +44,10 @@ const styles = StyleSheet.create({
   rowContainer: {
     backgroundColor: "#FFFFFF",
     borderRadius: 8,
-  },
-  row: {
-    padding: 15,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    borderBottomWidth: 1,
-    borderBottomColor: "#CDCBCB",
-  },
-  label: {
-    fontSize: 16,
-    color: "#333",
-  },
-  icon: {
-    fontSize: 16,
-    color: "#888",
-  },
-  lastRow: {
-    borderBottomWidth: 0, // Removes border from the last row
+    borderWidth: 1,
+    borderColor: "#CDCBCB",
+    overflow: "hidden", 
   },
 });
+
+export default Menu;

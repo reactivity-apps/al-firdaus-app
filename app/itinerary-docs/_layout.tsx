@@ -1,19 +1,19 @@
 import React from "react";
-import { headerStyle } from "@/common/style";
+import { style as headerStyle } from "@/styles/header";
 import { Stack } from "expo-router";
 
-export default function DocsLayout() {
+export default function ItineraryDocsLayout() {
   return (
     <Stack>
-        <Stack.Screen name="makkah-screen" options={{ 
+        <Stack.Screen name="makkah-stay" options={{ 
             title: "Makkah",
             ...headerStyle
         }}/>
-        <Stack.Screen name="jeddah-screen" options={{ 
+        <Stack.Screen name="jeddah-stay" options={{ 
             title: "Jeddah",
             ...headerStyle
         }}/>
-        <Stack.Screen name="madinah-screen" options={{ 
+        <Stack.Screen name="madinah-stay" options={{ 
             title: "Madinah",
             ...headerStyle
         }}/>

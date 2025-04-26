@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import Menu from "@/components/Menu";
 import { Link } from "expo-router";
-import { globalStyles } from "@/common/style";
+import { style as globalStyles } from "@/styles/global";
 
 export default function Index() {
   return (

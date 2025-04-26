@@ -1,11 +1,11 @@
-"use strict";
 import { StyleSheet } from "react-native";
 
-const globalStyles = StyleSheet.create({
+export const style = StyleSheet.create({
     // Containers
     container: {
         flex: 1,
         padding: 20,
+        paddingBottom: 40
     },
 
     // Headers
@@ -36,6 +36,8 @@ const globalStyles = StyleSheet.create({
     signOutButton: {
         backgroundColor: "#FFFFFF",
         borderRadius: 8,
+        borderWidth: 1,
+        borderColor: "#CDCBCB",
         padding: 15,
         alignItems: "center",
     },
@@ -52,15 +54,3 @@ const globalStyles = StyleSheet.create({
         alignItems: "center",
     }
 });
-
-const headerStyle = {
-    headerStyle: {
-        backgroundColor: "#fff",
-    },
-    headerTintColor: "#000",
-    tabBarStyle: {
-        backgroundColor: "#fff",
-    },
-};
-
-export { globalStyles, headerStyle };

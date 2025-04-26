@@ -3,7 +3,7 @@ import { Stack, useRouter } from "expo-router";
 import { auth } from "@/firebase/clientApp";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { Text } from "react-native";
-import { headerStyle } from "@/common/style";
+import { style as headerStyle } from "@/styles/header";
 import Loading from "@/components/Loading";
 
 export default function AdminLayout() {
