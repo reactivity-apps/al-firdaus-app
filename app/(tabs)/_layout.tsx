@@ -7,7 +7,7 @@ export default function TabLayout() {
     <Tabs>
         {/* Main For You Page */}
         <Tabs.Screen 
-            name="for-you" 
+            name="index" 
             options={{ 
                 title: "For You",
                 tabBarIcon: ({ color, focused }) => (
