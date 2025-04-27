@@ -1,12 +1,12 @@
 import { collection, getDocs, Timestamp } from "firebase/firestore";
 import React, { useCallback, useEffect, useState } from "react";
-import { View, Text, StyleSheet, ScrollView, RefreshControl, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, ScrollView, RefreshControl, TouchableOpacity, Alert } from "react-native";
 import { globalStyles } from "@/styles/global";
 import { db } from "@/firebase/clientApp";
 import Loading from "@/components/Loading";
 import Menu from "@/components/Menu";
 import PrayerCarousel from "@/components/PrayerCarousel";
-import { Link } from "expo-router";
+import { Link, useLocalSearchParams } from "expo-router";
 import { formatRelativeDate } from "@/common/utils";
 import SignIn from "@/components/SignIn";
 import { auth } from "@/firebase/clientApp";
@@ -28,6 +28,24 @@ export default function ForYou() {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<User | null>(null);
   const [isSignedIn, setIsSignedIn] = useState(false);
+
+  const { message } = useLocalSearchParams<{ message?: string }>();
+
+  useEffect(() => {
+    if(message) {
+      switch(message) {
+        case "unauthorized-user":
+          Alert.alert("Unauthorized access", "You do not have access to this page. Please login to continue.");
+          break;
+        case "user-logged-out":
+          Alert.alert("Successful logout", "You have been successfully logged out!");
+          break;
+        case "new-user":
+          Alert.alert("Welcome", "Welcome to Al-Firdaus Umrah Guide!");
+          break;
+      }
+    }
+  }, [message]);
   
   // Check if user is logged in
   useEffect(() => {

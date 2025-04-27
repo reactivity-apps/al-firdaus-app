@@ -15,6 +15,7 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/firebase/clientApp";
 import { globalStyles } from "@/styles/global";
 import { Ionicons } from "@expo/vector-icons";
+import { Link } from "expo-router";
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
@@ -105,7 +106,7 @@ const SignIn = () => {
       <View style={globalStyles.container}>
         <Text style={globalStyles.header}>Sign In</Text>
         <Text style={globalStyles.subHeader}>
-          Access your account to explore features.
+          Access your account to explore personalized features.
         </Text>
 
         <KeyboardAvoidingView
@@ -184,10 +185,16 @@ const SignIn = () => {
                   Alert.alert("Info", "Forgot password not implemented yet.");
                 }}
               >
-                <Text style={styles.forgotPasswordText}>
+                <Text style={styles.linkText}>
                   Forgot Password?
                 </Text>
               </TouchableOpacity>
+            </View>
+            
+            <View style={styles.signUpLinkContainer}>
+              <Link href="/sign-up" asChild>
+                    <Text style={styles.linkText}>Don't have an account? Sign up</Text>
+              </Link>
             </View>
           </View>
         </KeyboardAvoidingView>
@@ -264,11 +271,24 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   forgotPasswordContainer: {
-    marginTop: 10,
+    marginTop: 15,
     alignSelf: "center",
   },
-  forgotPasswordText: {
+  linkText: {
     color: "#007AFF",
     fontSize: 14,
+    textDecorationLine: "underline"
   },
+  signUpLinkContainer: {
+    alignItems: "center",
+    backgroundColor: "white",
+    padding: 20,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#DDD",
+    width: "100%",
+    maxWidth: 400,
+    marginVertical: 10
+  },
+  
 });

@@ -32,8 +32,12 @@ export default function RootLayout() {
             title: "Prayer Times",
             ...headerStyles
           }} />
-             <Stack.Screen name="all-announcements" options={{
+          <Stack.Screen name="all-announcements" options={{
             title: "All Announcements",
+            ...headerStyles
+          }} />
+           <Stack.Screen name="sign-up" options={{
+            title: "Sign Up",
             ...headerStyles
           }} />
         </Stack>

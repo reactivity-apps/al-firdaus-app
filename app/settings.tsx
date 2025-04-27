@@ -12,7 +12,7 @@ export default function Settings() {
   const handleLogout = async () => {
     await signOut(auth)
     .then(() => {
-      router.replace("/");
+      router.replace("/?message=user-logged-out");
     })
     .catch((err) => {
       // Add error

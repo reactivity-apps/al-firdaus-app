@@ -5,8 +5,6 @@ import { globalStyles } from "@/styles/global";
 import { db } from "@/firebase/clientApp";
 import { formatRelativeDate } from "@/common/utils";
 import Loading from "@/components/Loading";
-import Menu from "@/components/Menu";
-import PrayerCarousel from "@/components/PrayerCarousel";
 
 // Define the type for announcements
 interface Announcement {
@@ -27,21 +25,6 @@ export default function AllAnnouncements() {
   
   const [announcements, setAnnouncements] = useState<Array<Announcement>>([]);
   const [loading, setLoading] = useState(true);
-
-  // const { message } = useLocalSearchParams<{ message?: string }>();
-
-  // useEffect(() => {
-  //   if(message) {
-  //     switch(message) {
-  //       case "unauthorized-user":
-  //         Alert.alert("Unauthorized access", "You do not have access to this page. Please login to continue.");
-  //         break;
-  //       case "user-logged-out":
-  //         Alert.alert("Successful logout", "You have been successfully logged!");
-  //         break;
-  //     }
-  //   }
-  // }, [message]);
 
   useEffect(() => {
     const getAnnouncements = async () => {
