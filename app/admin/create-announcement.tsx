@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator,
 import { addDoc, collection, getDocs } from "firebase/firestore"; 
 import { db } from "@/firebase/clientApp";
 import { get_today } from "@/common/utils";
-import { style as globalStyles } from "@/styles/global";
+import { globalStyles } from "@/styles/global";
 
 export default function CreateAnnouncement() {
   const [loading, setLoading] = useState(false);

@@ -11,7 +11,8 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
-  ScrollView
+  ScrollView,
+  ActivityIndicator
 } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
@@ -114,7 +115,7 @@ export default function EditAnnouncementModal({
                     disabled={isDeleting || deleteText !== announcement?.title?.toLowerCase()}
                   >
                     <Text style={styles.deleteButtonText}>
-                      {isDeleting ? 'Deleting...' : 'Delete Announcement'}
+                      {isDeleting ? <ActivityIndicator color="#FFF" /> : 'Delete Announcement'}
                     </Text>
                   </TouchableOpacity>
                 </View>

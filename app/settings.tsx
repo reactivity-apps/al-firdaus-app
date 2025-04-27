@@ -1,10 +1,25 @@
 import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import Menu from "@/components/Menu";
-import { Link } from "expo-router";
-import { style as globalStyles } from "@/styles/global";
+import { globalStyles } from "@/styles/global";
+import { useRouter } from "expo-router";
+import { signOut } from "firebase/auth";
+import { auth } from "@/firebase/clientApp";
 
-export default function Index() {
+export default function Settings() {
+  const router = useRouter();
+   
+  const handleLogout = async () => {
+    await signOut(auth)
+    .then(() => {
+      router.replace("/for-you");
+    })
+    .catch((err) => {
+      // Add error
+      console.log(`Logout failed: ${err}`);
+    })
+  };
+
   return (
     <View style={globalStyles.container}>
       <Text style={globalStyles.header}>Settings</Text>
@@ -18,11 +33,9 @@ export default function Index() {
         ]}
       />
 
-      <Link href="/" asChild>
-        <TouchableOpacity style={globalStyles.signOutButton}>
-          <Text style={globalStyles.signOutText}>Sign Out</Text>
-        </TouchableOpacity>
-      </Link>
+      <TouchableOpacity style={globalStyles.signOutButton} onPress={handleLogout}>
+        <Text style={globalStyles.signOutText}>Sign Out</Text>
+      </TouchableOpacity>
     </View>
   );
 }

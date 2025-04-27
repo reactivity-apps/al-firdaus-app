@@ -1,5 +1,5 @@
 import React from "react";
-import { style as headerStyle } from "@/styles/header";
+import { headerStyles } from "@/styles/header";
 import { Stack } from "expo-router";
 
 export default function ItineraryDocsLayout() {
@@ -7,15 +7,15 @@ export default function ItineraryDocsLayout() {
     <Stack>
         <Stack.Screen name="makkah-stay" options={{ 
             title: "Makkah",
-            ...headerStyle
+            ...headerStyles
         }}/>
         <Stack.Screen name="jeddah-stay" options={{ 
             title: "Jeddah",
-            ...headerStyle
+            ...headerStyles
         }}/>
         <Stack.Screen name="madinah-stay" options={{ 
             title: "Madinah",
-            ...headerStyle
+            ...headerStyles
         }}/>
 
     </Stack>

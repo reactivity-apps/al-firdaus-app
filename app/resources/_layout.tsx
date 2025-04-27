@@ -1,5 +1,5 @@
 import React from "react";
-import { style as headerStyle } from "@/styles/header";
+import { headerStyles } from "@/styles/header";
 import { Stack } from "expo-router";
 
 export default function ResourcesLayout() {
@@ -11,7 +11,7 @@ export default function ResourcesLayout() {
         }}/>
         <Stack.Screen name="essential-prep" options={{ 
             title: "Essential Preparations",
-            ...headerStyle
+            ...headerStyles
         }}/>
     </Stack>
   );

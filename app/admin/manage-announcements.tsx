@@ -20,7 +20,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 
 import { db } from "@/firebase/clientApp";
 import { formatRelativeDate } from "@/common/utils";
-import { style as globalStyles } from "@/styles/global";
+import { globalStyles } from "@/styles/global";
 import Loading from "@/components/Loading";
 import EditAnnouncementModal from "@/components/EditAnnouncementModal";
 import DeleteAnnouncementModal from "@/components/DeleteAnnouncementModal";

@@ -1,6 +1,6 @@
 import React from "react";
 import { ScrollView, Text, View } from "react-native";
-import { style as globalStyles } from "@/styles/global";
+import { globalStyles } from "@/styles/global";
 import Dropdown from "@/components/Dropdown";
 
 const EssentialPreparations = () => {

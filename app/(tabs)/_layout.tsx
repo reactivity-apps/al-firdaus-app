@@ -17,16 +17,6 @@ export default function TabLayout() {
             }} 
         />
         <Tabs.Screen 
-            name="index" 
-            options={{ 
-                title: "Announcements",
-                tabBarIcon: ({ color, focused }) => (
-                    <Ionicons name={focused ? 'list-circle' : 'list-circle-outline' } color={color} size={24} />
-                ),
-                tabBarLabel: "Announcements", 
-            }} 
-        />
-        <Tabs.Screen 
             name="itinerary" 
             options={{ 
                 title: "Itinerary",

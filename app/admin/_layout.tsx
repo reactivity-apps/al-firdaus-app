@@ -3,7 +3,7 @@ import { Stack, useRouter } from "expo-router";
 import { auth } from "@/firebase/clientApp";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { Text } from "react-native";
-import { style as headerStyle } from "@/styles/header";
+import { headerStyles } from "@/styles/header";
 import Loading from "@/components/Loading";
 
 export default function AdminLayout() {
@@ -35,15 +35,15 @@ export default function AdminLayout() {
         <Stack initialRouteName="index">
             <Stack.Screen name="index" options={{
                 title: "Admin",
-                ...headerStyle
+                ...headerStyles
             }} />
             <Stack.Screen name="create-announcement" options={{
                 title: "Create Announcements",
-                ...headerStyle
+                ...headerStyles
             }} />
             <Stack.Screen name="manage-announcements" options={{
                 title: "Manage Announcements",
-                ...headerStyle
+                ...headerStyles
             }} />
         </Stack>
     );

@@ -4,7 +4,7 @@ import { ScrollView } from "react-native";
 import { Link } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons, MaterialCommunityIcons, FontAwesome5 } from '@expo/vector-icons';
-import { style as globalStyles } from "@/styles/global";
+import { globalStyles } from "@/styles/global";
 
 const Timeline = () => (
   <View style={styles.timelineContainer}>

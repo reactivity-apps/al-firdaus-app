@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 
-export const style = StyleSheet.create({
+export const docStyles = StyleSheet.create({
     container: {
       flex: 1,
       padding: 20,

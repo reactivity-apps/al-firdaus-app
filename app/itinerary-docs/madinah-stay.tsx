@@ -1,17 +1,17 @@
 import React from 'react';
 import { View, Text, Image, ScrollView } from 'react-native';
-import { style as styles } from "@/styles/docs";
+import { docStyles } from "@/styles/docs";
 
 const MadinahStay: React.FC = () => {
   return (
     <ScrollView>
-      <View style={styles.container}>
+      <View style={docStyles.container}>
         {/* Intro Section */}
-        <Text style={styles.header}>Stay in Madinah</Text>
-        <Text style={styles.subHeader}>Learn more about your stay in Madina al-Munawara.</Text>
+        <Text style={docStyles.header}>Stay in Madinah</Text>
+        <Text style={docStyles.subHeader}>Learn more about your stay in Madina al-Munawara.</Text>
         
-        <Image source={require('../../assets/images/madina.jpg')} style={styles.image} resizeMode="cover"/>
-        <Text style={styles.description}>
+        <Image source={require('../../assets/images/madina.jpg')} style={docStyles.image} resizeMode="cover"/>
+        <Text style={docStyles.description}>
           Madinah (Medina), known as the “City of the Prophet,” is the second holiest city in Islam, 
           located in western Saudi Arabia. It is home to Al-Masjid an-Nabawi, the Prophet Muhammad's 
           mosque, which contains his tomb. Pilgrims visiting for Hajj or Umrah often travel here to 
@@ -19,26 +19,26 @@ const MadinahStay: React.FC = () => {
         </Text>
 
         {/* Accommodation Overview */}
-        <Text style={[styles.sectionHeader, { marginTop: 20 }]}>Accommodations</Text>
-        <Text style={styles.description}>
+        <Text style={[docStyles.sectionHeader, { marginTop: 20 }]}>Accommodations</Text>
+        <Text style={docStyles.description}>
           Madinah offers a wide range of accommodations, from budget hotels to luxurious five-star 
           stays. Many hotels are located near Al-Masjid an-Nabawi for easy access to prayer services.
           Below is one of the top-rated 5-star hotels in Madinah.
         </Text>
 
         {/* Example of a 5-Star Hotel */}
-        <View style={styles.hotelContainer}>
-          <Text style={styles.sectionHeader}>Shaza Al Madina</Text>
-          <Text style={styles.description}>
+        <View style={docStyles.hotelContainer}>
+          <Text style={docStyles.sectionHeader}>Shaza Al Madina</Text>
+          <Text style={docStyles.description}>
             Shaza Al Madina is a luxury 5-star hotel located just a short walk from Al-Masjid an-Nabawi.
             Known for its elegant interiors and excellent hospitality, the hotel offers:
           </Text>
-          <View style={styles.bulletList}>
-            <Text style={styles.bulletItem}>• Spacious rooms with Arabian and Andalusian-inspired designs</Text>
-            <Text style={styles.bulletItem}>• A selection of fine dining restaurants with Middle Eastern cuisine</Text>
-            <Text style={styles.bulletItem}>• Easy access to Al-Masjid an-Nabawi for prayer</Text>
-            <Text style={styles.bulletItem}>• Exclusive spa and wellness facilities for relaxation</Text>
-            <Text style={styles.bulletItem}>• Dedicated prayer areas and serene ambiance</Text>
+          <View style={docStyles.bulletList}>
+            <Text style={docStyles.bulletItem}>• Spacious rooms with Arabian and Andalusian-inspired designs</Text>
+            <Text style={docStyles.bulletItem}>• A selection of fine dining restaurants with Middle Eastern cuisine</Text>
+            <Text style={docStyles.bulletItem}>• Easy access to Al-Masjid an-Nabawi for prayer</Text>
+            <Text style={docStyles.bulletItem}>• Exclusive spa and wellness facilities for relaxation</Text>
+            <Text style={docStyles.bulletItem}>• Dedicated prayer areas and serene ambiance</Text>
           </View>
         </View>
       </View>

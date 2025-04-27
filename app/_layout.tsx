@@ -1,7 +1,7 @@
 import React from "react";
 import { Stack } from "expo-router";
 import { StatusBar } from 'expo-status-bar';
-import { style as headerStyle } from "@/styles/header";
+import { headerStyles } from "@/styles/header";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
@@ -23,17 +23,18 @@ export default function RootLayout() {
             headerShown: false
           }} />
           <Stack.Screen name="admin" options={{ headerShown: false }} />
-          <Stack.Screen name="admin-login" options={{
-            title: "Admin Login",
-            ...headerStyle
-          }} />
+
           <Stack.Screen name="settings" options={{
             title: "Settings",
-            ...headerStyle
+            ...headerStyles
           }} />
           <Stack.Screen name="extended-prayer-view" options={{
             title: "Prayer Times",
-            ...headerStyle
+            ...headerStyles
+          }} />
+             <Stack.Screen name="all-announcements" options={{
+            title: "All Announcements",
+            ...headerStyles
           }} />
         </Stack>
         <StatusBar style="dark" />

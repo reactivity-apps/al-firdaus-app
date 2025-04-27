@@ -11,7 +11,8 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
-  ScrollView
+  ScrollView,
+  ActivityIndicator
 } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
@@ -122,7 +123,7 @@ export default function EditAnnouncementModal({
                     disabled={isSaving}
                   >
                     <Text style={styles.saveButtonText}>
-                      {isSaving ? 'Saving...' : 'Save Changes'}
+                      {isSaving ? <ActivityIndicator color="#FFF" /> : 'Save Changes'}
                     </Text>
                   </TouchableOpacity>
                 </View>
