@@ -1,4 +1,4 @@
-import { collection, getDocs, Timestamp } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, Timestamp } from "firebase/firestore";
 import React, { useCallback, useEffect, useState } from "react";
 import { View, Text, StyleSheet, ScrollView, RefreshControl, TouchableOpacity, Alert } from "react-native";
 import { globalStyles } from "@/styles/global";
@@ -27,6 +27,7 @@ export default function ForYou() {
   const [announcements, setAnnouncements] = useState<Array<Announcement>>([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<User | null>(null);
+  const [userStatus, setUserStatus] = useState<"user" | "admin">("user");
   const [isSignedIn, setIsSignedIn] = useState(false);
 
   const { message } = useLocalSearchParams<{ message?: string }>();
@@ -35,7 +36,7 @@ export default function ForYou() {
     if(message) {
       switch(message) {
         case "unauthorized-user":
-          Alert.alert("Unauthorized access", "You do not have access to this page. Please login to continue.");
+          Alert.alert("Unauthorized access", "You do not have access to this page.");
           break;
         case "user-logged-out":
           Alert.alert("Successful logout", "You have been successfully logged out!");
@@ -58,9 +59,25 @@ export default function ForYou() {
   }, []);
 
   useEffect(() => {
+    const fetchUserStatus = async () => {
       if (!loading && user) {
-          setIsSignedIn(true)
+        setIsSignedIn(true);
+  
+        try {
+          const statusDoc = await getDoc(doc(db, "statuses", user.uid));
+  
+          if (statusDoc.exists()) {
+            setUserStatus(statusDoc.data().status);
+          } else {
+            console.log("No status document found for user.");
+          }
+        } catch (error) {
+          console.error("Error fetching user status:", error);
+        }
       }
+    };
+  
+    fetchUserStatus();
   }, [user, loading]);
 
   // handle page refresh
@@ -113,7 +130,9 @@ export default function ForYou() {
           title="Navigation"
           content={[
             { label: "Settings", link: "/settings", showIcon: true },
-            { label: "Admin Controls", link: "/admin", showIcon: true },
+            ...(userStatus === "admin"
+              ? [{ label: "Admin Controls", link: "/admin", showIcon: true }]
+              : []),
           ]}
         />
 

@@ -12,10 +12,11 @@ import {
   Alert,
 } from "react-native";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { auth } from "@/firebase/clientApp";
+import { auth, db } from "@/firebase/clientApp";
 import { globalStyles } from "@/styles/global";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { doc, setDoc } from "firebase/firestore";
 
 const SignUp = () => {
   const [fullName, setFullName] = useState("");
@@ -70,80 +71,83 @@ const SignUp = () => {
     return Object.values(newErrors).every(err => err === "");
   };
   
-
   const handleSignUp = async () => {
     setFormSubmitted(true);
     const isValid = validateForm();
-    
     if (!isValid) return;
-    
     setLoading(true);
+
     try {
-        const userCred = await createUserWithEmailAndPassword(auth, email, password);
-        await updateProfile(userCred.user, { displayName: fullName });
-        router.replace("/?message=new-user");
+      const userCred = await createUserWithEmailAndPassword(auth, email, password);
+      // Update user profile with name, and add user status to firestore
+      await updateProfile(userCred.user, { displayName: fullName })
+        .then(() => {
+          setDoc(doc(db,"statuses",userCred.user.uid), { status:"user" });
+        });
+
+      router.replace("/?message=new-user");
     } catch (error: any) {
-        switch (error.code) {
-            case "auth/network-request-failed":
+      switch (error.code) {
+          case "auth/network-request-failed":
             Alert.alert("Error", "Network request failed. Please try again!");
             break;
 
-            case "auth/invalid-email":
+          case "auth/invalid-email":
             Alert.alert(
                 "Error",
                 "Invalid email format. Please enter a valid email, i.e, name@email.com."
             );
             break;
 
-            case "auth/user-not-found":
+          case "auth/user-not-found":
             Alert.alert(
                 "Error",
                 "No user found with this email. Please check and try again."
             );
             break;
 
-            case "auth/wrong-password":
+          case "auth/wrong-password":
             Alert.alert("Error", "Incorrect password. Please try again.");
             break;
 
-            case "auth/user-disabled":
+          case "auth/user-disabled":
             Alert.alert(
                 "Error",
                 "This user account has been disabled. Contact support for help."
             );
             break;
 
-            case "auth/invalid-id-token":
+          case "auth/invalid-id-token":
             Alert.alert(
                 "Error",
                 "Invalid authentication token. Please try logging in again."
             );
             break;
 
-            case "auth/too-many-requests":
+          case "auth/too-many-requests":
             Alert.alert("Error", "Too many failed attempts. Try again later.");
             break;
 
-            case "auth/operation-not-allowed":
+          case "auth/operation-not-allowed":
             Alert.alert(
                 "Error",
                 "This sign-in method is currently disabled. Contact support."
             );
             break;
 
-            case "auth/invalid-credential":
+          case "auth/invalid-credential":
             Alert.alert(
                 "Error",
                 "Invalid credentials. Please check your email and password and try again."
             );
             break;
 
-            default:
+          default:
             Alert.alert(
                 "Error",
                 "An unknown error occurred. Please try again."
             );
-        }     
+      }     
     } finally {
         setLoading(false);
     }
