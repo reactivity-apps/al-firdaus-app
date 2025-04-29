@@ -21,12 +21,31 @@ const SignIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({
+    email: "",
+    password: "",
+  });
+
+  const [formSubmitted, setFormSubmitted] = useState(false);
+
+  const validateForm = () => {
+    const newErrors = {
+      email: email.trim() ? "" : "Email is required.",
+      password: password.trim() ? "" : "Password is required."
+    };
+
+    setErrors(newErrors);
+    
+    return !Object.values(newErrors).some(error => error !== "");
+  };
+
 
   const handleLogin = async () => {
-    if (!email || !password) {
-      Alert.alert("Error", "Please enter both email and password.");
-      return;
-    }
+    setFormSubmitted(true);
+    const isValid = validateForm();
+    
+    if (!isValid) return;
+
     setLoading(true);
     try {
       await signInWithEmailAndPassword(auth, email, password);
@@ -117,33 +136,44 @@ const SignIn = () => {
             <View style={styles.card}>
               <Text style={styles.header}>Sign In</Text>
 
-              <View style={styles.inputContainer}>
-                <Text style={styles.label}>Email Address</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Enter your email"
-                  placeholderTextColor="grey"
-                  value={email}
-                  onChangeText={setEmail}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  autoComplete="email"
-                />
-              </View>
+         <View style={styles.inputContainer}>
+              <Text style={styles.label}>Email Address</Text>
+              <TextInput
+                style={[
+                  styles.input,
+                  formSubmitted && errors.email && styles.inputError,
+                ]}
+                placeholder="Enter email here"
+                placeholderTextColor="grey"
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoComplete="email"
+              />
+              {formSubmitted && errors.email ? (
+                <Text style={styles.errorText}>{errors.email}</Text>
+              ) : null}
+            </View>
 
-              <View style={styles.inputContainer}>
-                <Text style={styles.label}>Password</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Enter your password"
-                  placeholderTextColor="grey"
-                  secureTextEntry
-                  value={password}
-                  onChangeText={setPassword}
-                  autoCapitalize="none"
-                  autoComplete="password"
-                />
-              </View>
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Password</Text>
+              <TextInput
+                style={[
+                  styles.input,
+                  formSubmitted && errors.password && styles.inputError,
+                ]}
+                placeholder="Enter password here"
+                placeholderTextColor="grey"
+                secureTextEntry
+                value={password}
+                onChangeText={setPassword}
+                autoCapitalize="none"
+              />
+              {formSubmitted && errors.password ? (
+                <Text style={styles.errorText}>{errors.password}</Text>
+              ) : null}
+            </View>
 
               <TouchableOpacity
                 style={[globalStyles.button]}
@@ -175,7 +205,7 @@ const SignIn = () => {
                   style={{ marginRight: 8 }}
                 />
                 <Text style={styles.googleButtonText}>
-                  Sign in with Google
+                  Log in with Google
                 </Text>
               </TouchableOpacity>
               
@@ -224,21 +254,27 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   inputContainer: {
-    width: "100%",
-    marginBottom: 10,
+    marginBottom: 12,
   },
   label: {
     fontSize: 14,
-    marginBottom: 5,
-    color: "#888",
+    color: "#555",
+    marginBottom: 4,
   },
   input: {
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: "#CCC",
     borderRadius: 5,
     padding: 10,
     fontSize: 16,
-    width: "100%",
+  },
+  inputError: {
+    borderColor: "red",
+  },
+  errorText: {
+    marginTop: 4,
+    color: "red",
+    fontSize: 12,
   },
   dividerContainer: {
     flexDirection: "row",

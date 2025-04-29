@@ -34,22 +34,42 @@ const SignUp = () => {
   const router = useRouter();
 
   const validateForm = () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const MIN_PW_LEN = 7;          // > 6 characters
+  
+    const emailError =
+      !email.trim()
+        ? "Email is required."
+        : !emailRegex.test(email.trim())
+        ? "Invalid email format."
+        : "";
+  
+    const passwordError =
+      !password.trim()
+        ? "Password is required."
+        : password.length < MIN_PW_LEN
+        ? `Password must be at least ${MIN_PW_LEN} characters.`
+        : "";
+  
+    const confirmPasswordError =
+      !confirmPassword.trim()
+        ? "Confirmation password is required."
+        : password !== confirmPassword
+        ? "Passwords do not match."
+        : "";
+  
     const newErrors = {
       fullName: fullName.trim() ? "" : "Full name is required.",
-      email: email.trim() ? "" : "Email is required.",
-      password: password.trim() ? "" : "Password is required.",
-      confirmPassword: confirmPassword.trim() 
-        ? password !== confirmPassword 
-          ? "Passwords do not match." 
-          : "" 
-        : "Confirmation password is required."
+      email: emailError,
+      password: passwordError,
+      confirmPassword: confirmPasswordError,
     };
-
+  
     setErrors(newErrors);
-    
-    // Check if any errors exist
-    return !Object.values(newErrors).some(error => error !== "");
+  
+    return Object.values(newErrors).every(err => err === "");
   };
+  
 
   const handleSignUp = async () => {
     setFormSubmitted(true);
@@ -60,93 +80,73 @@ const SignUp = () => {
     setLoading(true);
     try {
         const userCred = await createUserWithEmailAndPassword(auth, email, password);
-        // Set displayName to fullName
         await updateProfile(userCred.user, { displayName: fullName });
         router.replace("/?message=new-user");
-
-        // Reset form after successful submission
-        resetForm();
     } catch (error: any) {
-        Alert.alert("Error", error.message);
+        switch (error.code) {
+            case "auth/network-request-failed":
+            Alert.alert("Error", "Network request failed. Please try again!");
+            break;
 
-        // switch (error.code) {
-        //     case "auth/network-request-failed":
-        //     Alert.alert("Error", "Network request failed. Please try again!");
-        //     break;
+            case "auth/invalid-email":
+            Alert.alert(
+                "Error",
+                "Invalid email format. Please enter a valid email, i.e, name@email.com."
+            );
+            break;
 
-        //     case "auth/invalid-email":
-        //     Alert.alert(
-        //         "Error",
-        //         "Invalid email format. Please enter a valid email, i.e, name@email.com."
-        //     );
-        //     break;
+            case "auth/user-not-found":
+            Alert.alert(
+                "Error",
+                "No user found with this email. Please check and try again."
+            );
+            break;
 
-        //     case "auth/user-not-found":
-        //     Alert.alert(
-        //         "Error",
-        //         "No user found with this email. Please check and try again."
-        //     );
-        //     break;
+            case "auth/wrong-password":
+            Alert.alert("Error", "Incorrect password. Please try again.");
+            break;
 
-        //     case "auth/wrong-password":
-        //     Alert.alert("Error", "Incorrect password. Please try again.");
-        //     break;
+            case "auth/user-disabled":
+            Alert.alert(
+                "Error",
+                "This user account has been disabled. Contact support for help."
+            );
+            break;
 
-        //     case "auth/user-disabled":
-        //     Alert.alert(
-        //         "Error",
-        //         "This user account has been disabled. Contact support for help."
-        //     );
-        //     break;
+            case "auth/invalid-id-token":
+            Alert.alert(
+                "Error",
+                "Invalid authentication token. Please try logging in again."
+            );
+            break;
 
-        //     case "auth/invalid-id-token":
-        //     Alert.alert(
-        //         "Error",
-        //         "Invalid authentication token. Please try logging in again."
-        //     );
-        //     break;
+            case "auth/too-many-requests":
+            Alert.alert("Error", "Too many failed attempts. Try again later.");
+            break;
 
-        //     case "auth/too-many-requests":
-        //     Alert.alert("Error", "Too many failed attempts. Try again later.");
-        //     break;
+            case "auth/operation-not-allowed":
+            Alert.alert(
+                "Error",
+                "This sign-in method is currently disabled. Contact support."
+            );
+            break;
 
-        //     case "auth/operation-not-allowed":
-        //     Alert.alert(
-        //         "Error",
-        //         "This sign-in method is currently disabled. Contact support."
-        //     );
-        //     break;
+            case "auth/invalid-credential":
+            Alert.alert(
+                "Error",
+                "Invalid credentials. Please check your email and password and try again."
+            );
+            break;
 
-        //     case "auth/invalid-credential":
-        //     Alert.alert(
-        //         "Error",
-        //         "Invalid credentials. Please check your email and password and try again."
-        //     );
-        //     break;
-
-        //     default:
-        //     Alert.alert(
-        //         "Error",
-        //         "An unknown error occurred. Please try again."
-        //     );
-        // }     
+            default:
+            Alert.alert(
+                "Error",
+                "An unknown error occurred. Please try again."
+            );
+        }     
     } finally {
         setLoading(false);
     }
-  };
-
-  const resetForm = () => {
-    setFullName("");
-    setEmail("");
-    setPassword("");
-    setConfirmPassword("");
-    setErrors({
-      fullName: "",
-      email: "",
-      password: "",
-      confirmPassword: ""
-    });
-    setFormSubmitted(false);
   };
 
   const handleGoogleSignIn = async () => {
@@ -273,7 +273,7 @@ const SignUp = () => {
                 style={{ marginRight: 8 }}
               />
               <Text style={styles.googleButtonText}>
-                Sign in with Google
+                Sign up with Google
               </Text>
             </TouchableOpacity>
           </View>
