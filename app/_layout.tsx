@@ -26,7 +26,7 @@ export default function RootLayout() {
 
           <Stack.Screen name="settings" options={{
             title: "Settings",
-            ...headerStyles
+            headerShown: false
           }} />
           <Stack.Screen name="extended-prayer-view" options={{
             title: "Prayer Times",
