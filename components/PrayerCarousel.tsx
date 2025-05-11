@@ -18,11 +18,11 @@ const cardHeight = 450; // Needed for carousel, will break otherwise
 
 // FIXME: Carousel loads on start without indicator
 function PrayerCarousel() {
+    const [isDataLoaded, setIsDataLoaded] = useState(false);
 
     // Loads and caches prayer data once a day
     useEffect(() => {
         const cachePrayerRelatedData = async () => {
-
             // Check last cached data
             const lastCacheTimeString = await cache.get('lastPrayerDataCacheTime');
             const currentTime = new Date().getTime();
@@ -31,57 +31,60 @@ function PrayerCarousel() {
             
             // If cache data, check if more than a day
             if (lastCacheTimeString) {
-            const lastCacheTime = parseInt(lastCacheTimeString);
-            shouldRefreshCache = (currentTime - lastCacheTime) >= oneDayInMs;
+                const lastCacheTime = parseInt(lastCacheTimeString);
+                shouldRefreshCache = (currentTime - lastCacheTime) >= oneDayInMs;
             }
             
             // If less than a day, skip refresh
             if (!shouldRefreshCache) {
-            console.log('Prayer data cache is less than a day old. Skipping refresh.');
-            return;
+                console.log('Prayer data cache is less than a day old. Skipping refresh.');
+                setIsDataLoaded(true);
+                return;
             }
             
             console.log('Refreshing prayer data cache...');
             
             // Otherwise, proceed with fetching and caching data
             for(const location of locations){
-            try {
-                const weatherData = await fetchHaramWeatherDetails(location.lat, location.long);
-                
-                if (!weatherData.coord) {
-                throw new Error(weatherData.message);
-                }
-                console.log(`Weather data fetched for ${location.name}`);
-                
-                // Cache the weather data
-                await cache.set(`${location.name}_weather`, JSON.stringify(weatherData))
-                .catch((err) => {
-                    console.log(`Error caching weather data for ${location.name}:`, err);
-                });
-            } catch (error) {
-                console.log(`Error fetching weather data for ${location.name}:`, error);
-            }
-        
-            try {
-                const prayerTimings = await fetchPrayerTimings(location.address);
-                if (!prayerTimings || prayerTimings.code !== 200) {
-                throw new Error(`Failed to fetch prayer timings for ${location.name}`);
+                try {
+                    const weatherData = await fetchHaramWeatherDetails(location.lat, location.long);
+                    
+                    if (!weatherData.coord) {
+                    throw new Error(weatherData.message);
+                    }
+                    console.log(`Weather data fetched for ${location.name}`);
+                    
+                    // Cache the weather data
+                    await cache.set(`${location.name}_weather`, JSON.stringify(weatherData))
+                    .catch((err) => {
+                        console.log(`Error caching weather data for ${location.name}:`, err);
+                    });
+                } catch (error) {
+                    console.log(`Error fetching weather data for ${location.name}:`, error);
                 }
         
-                await cache.set(location.name, JSON.stringify(prayerTimings))
-                .catch(() => {
-                    throw Error();
-                });
-        
-            } catch (error) {
-                console.log(`Error caching data for ${location.name}:`, error);
-                await cache.set(location.name, "failed").catch(console.log);
-            } 
+                try {
+                    const prayerTimings = await fetchPrayerTimings(location.address);
+                    if (!prayerTimings || prayerTimings.code !== 200) {
+                    throw new Error(`Failed to fetch prayer timings for ${location.name}`);
+                    }
+            
+                    await cache.set(location.name, JSON.stringify(prayerTimings))
+                    .catch(() => {
+                        throw Error();
+                    });
+            
+                } catch (error) {
+                    console.log(`Error caching data for ${location.name}:`, error);
+                    await cache.set(location.name, "failed").catch(console.log);
+                } 
             }
             
             // After successfully updating the cache, update the timestamp
             await cache.set('lastPrayerDataCacheTime', currentTime.toString())
-            .catch(err => console.log('Error saving cache timestamp:', err));
+                .catch(err => console.log('Error saving cache timestamp:', err));
+
+            setIsDataLoaded(true);
         };
         
         cachePrayerRelatedData();
@@ -114,7 +117,7 @@ function PrayerCarousel() {
                     height={cardHeight} // Maintain height
                     data={locations}
                     onProgressChange={progress}
-                    renderItem={({ item, index }) => <PrayerCard location={item} />}
+                    renderItem={({ item, index }) => <PrayerCard location={item} isDataLoaded={isDataLoaded} />}
                     loop={false}
                     style={{ alignSelf: "center" }}
                 />
@@ -132,7 +135,7 @@ function PrayerCarousel() {
     );
 }
 
-const PrayerCard = ({ location }: { location: Location }) => {
+const PrayerCard = ({ location, isDataLoaded }: { location: Location, isDataLoaded: boolean }) => {
     const [prayerData, setPrayerData] = useState<PrayerDataResponse | null>(null);
     const [timings, setTimings] = useState<PrayerTimings | null>(null);
     const [loading, setLoading] = useState(false);
@@ -160,7 +163,7 @@ const PrayerCard = ({ location }: { location: Location }) => {
         }
 
         getCityPrayerData(location.name);
-    },[location]);
+    },[location, isDataLoaded]);
 
     const imageSource = getImageForLocation(location.name);
 

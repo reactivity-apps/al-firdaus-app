@@ -13,11 +13,11 @@ const Resources = () => {
         <Menu
             title="Essential Resources"
             content={[
-                { label: "Ziyarat Locations (Info & Maps)", link: "/", showIcon: true },
-                { label: "Useful Duas", link: "/", showIcon: true },
+                { label: "Ziyarat Locations (Info & Maps)", link: "/ziyarat", showIcon: true },
+                { label: "Useful Duas", link: "/duas", showIcon: true },
                 { label: "Umrah Guide", link: "/umrah-guide", showIcon: true },
                 { label: "Essential Preparations", link: "/../resources/essential-prep", showIcon: true },
-                { label: "Trip-Specific FAQs", link: "/", showIcon: true },
+                { label: "Trip-Specific FAQs", link: "/faqs", showIcon: true },
             ]}
         />
 
