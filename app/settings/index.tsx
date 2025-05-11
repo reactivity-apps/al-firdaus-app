@@ -45,7 +45,7 @@ export default function Settings() {
         <Menu
           title="User Account"
           content={[
-            { label: "Account Details", link: "/account/account-detiails", showIcon: true },
+            { label: "Account Details", link: "/settings/account-details", showIcon: true },
             { label: "Edit Account Information", link: "/account/edit-account", showIcon: true },
             { label: "Delete Account", link: "/account/delete-account", showIcon: true },
         

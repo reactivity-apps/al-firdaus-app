@@ -13,6 +13,10 @@ export default function SettingsLayout() {
             title: "Location Details",
             ...headerStyles
         }} />
+        <Stack.Screen name="account-details" options={{
+            title: "Account Details",
+            ...headerStyles
+        }} />
     </Stack>
   );
 }
