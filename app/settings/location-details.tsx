@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import cache from "@/api/cache";
-import { countryCityData } from "@/api/countryCityData"; // Adjust path as needed
+import { countryCityData } from "@/api/countryCityData"; 
 
 type CityCountry = {
   city: string;
@@ -20,41 +20,55 @@ type CityCountry = {
   iso2: string;
 };
 
+const getUniqueCities = (): CityCountry[] => {
+    const seen = new Set<string>();
+    return countryCityData.flatMap((entry) =>
+        entry.cities
+            .map((city) => ({
+                city,
+                country: entry.country,
+                iso2: entry.iso2,
+            }))
+            .filter((item) => {
+                const key = `${item.city.toLowerCase()},${item.country.toLowerCase()},${item.iso2}`;
+                if (seen.has(key)) return false;
+                seen.add(key);
+                return true;
+            })
+    );
+   };
+  
 const LocationDetails = () => {
     const [query, setQuery] = useState("");
     const [loading, setLoading] = useState(false);
+    const [currentLocation, setCurrentLocation] = useState<CityCountry | null>(null);
     const [cities, setCities] = useState<CityCountry[]>([]);
-
     const [filtering, setFiltering] = useState(false);
     const [filteredCities, setFilteredCities] = useState<CityCountry[]>([]);
 
-    // grab cities object from api
+    // Grab countryCity object 
+    // TODO: Remove filter list, use api that has city, state, country
     useEffect(() => {
-        setLoading(true);
-        const seen = new Set<string>();
-        const cities: CityCountry[] = countryCityData.flatMap((entry) =>
-            entry.cities
-                .map((city) => ({
-                    city,
-                    country: entry.country,
-                    iso2: entry.iso2,
-                }))
-                .filter((item) => {
-                    const key = `${item.city.toLowerCase()},${item.country.toLowerCase()},${item.iso2}`;
-                    if (seen.has(key)) return false;
-                    seen.add(key);
-                    return true;
-                })
-        );
+        const getCurrentLocation = async () => {
+            const location = await cache.get("location");
+            if(location){
+                setCurrentLocation(JSON.parse(location) as CityCountry);
+            } else {
+                setCurrentLocation(null);
+            }
+        }
 
-        setCities(cities);
+        setLoading(true);
+        const countryCities = getUniqueCities();
+        getCurrentLocation();
+        setCities(countryCities);
         setLoading(false);
-    }, []);
+    },[]);
 
     useEffect(() => {
         if (query.length < 2) {
             setFilteredCities([]);
-            setFiltering(false); // make sure to reset loading state
+            setFiltering(false); 
             return;
         }
 
@@ -72,6 +86,7 @@ const LocationDetails = () => {
     const handleLocationSelect = async (location: CityCountry) => {
         try {
             await cache.set("location", JSON.stringify(location));
+            setCurrentLocation(location);
             console.log("Location cached:", location);
             if (Platform.OS === "web") {
                 alert(`Successfully set location to ${location.city}.`);
@@ -95,17 +110,17 @@ const LocationDetails = () => {
                 <Text style={styles.sectionTitle}>Location Details</Text>
                 <TextInput
                     style={styles.input}
-                    placeholder="Search for a city..."
+                    placeholder={
+                        (currentLocation) ? 
+                            `Current location: ${currentLocation.city}, ${currentLocation.iso2}. Search for a new city...` :
+                             "Search for a new city..."
+                        }
                     placeholderTextColor="grey"
                     value={query}
                     onChangeText={setQuery}
                 />
                 <View style={styles.rowContainer}>
-                    {loading ? (
-                        <View style={styles.centerContent}>
-                            <ActivityIndicator size="small" color="black" />
-                        </View>
-                    ) : filtering ? (
+                    {(loading || filtering) ? (
                         <View style={styles.centerContent}>
                             <ActivityIndicator size="small" color="black" />
                         </View>
