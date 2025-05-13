@@ -12,100 +12,128 @@ import {
 } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import cache from "@/api/cache";
+import { countryCityData } from "@/api/countryCityData"; // Adjust path as needed
 
 type CityCountry = {
   city: string;
-  region: string;
-  countryCode: string;
+  country: string;
+  iso2: string;
 };
 
-// TODO: add API for country data
-const staticCities: CityCountry[] = [
-  { city: "New York", region: "New York", countryCode: "US" },
-  { city: "Los Angeles", region: "California", countryCode: "US" },
-  { city: "Toronto", region: "Ontario", countryCode: "CA" },
-  { city: "Paris", region: "Île-de-France", countryCode: "FR" },
-  { city: "Tokyo", region: "Tokyo", countryCode: "JP" },
-  { city: "London", region: "England", countryCode: "GB" },
-  { city: "Cairo", region: "Cairo", countryCode: "EG" },
-  { city: "Berlin", region: "Berlin", countryCode: "DE" },
-  { city: "Columbus", region: "Ohio", countryCode: "US" },
-
-];
-
 const LocationDetails = () => {
-  const [query, setQuery] = useState("");
-  const [loading, setLoading] = useState(false); // Will be used for api
+    const [query, setQuery] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [cities, setCities] = useState<CityCountry[]>([]);
 
-  const filtered = staticCities.filter((item) =>
-    `${item.city}, ${item.region}, ${item.countryCode}`
-      .toLowerCase()
-      .includes(query.toLowerCase())
-  );
+    const [filtering, setFiltering] = useState(false);
+    const [filteredCities, setFilteredCities] = useState<CityCountry[]>([]);
 
-  const handleLocationSelect = async (location: CityCountry) => {
-    try {
-      await cache.set("location", JSON.stringify(location));
-      
-      console.log("Location cached:", location);
-      if(Platform.OS === "web"){
-        alert(`Successfully set location to ${location.city}.`)
-      } else {
-        Alert.alert("Success", `Successfully set location to ${location.city}.`);
-      }
-    } catch (error) {
-      console.log("Failed to cache location:", error);
-      if(Platform.OS === "web"){
-        alert(`Failed to set location: ${error}.`)
-      } else {
-        Alert.alert("Error", `Failed to set location: ${error}.`);
-      }
-    }
-  };
+    // grab cities object from api
+    useEffect(() => {
+        setLoading(true);
+        const seen = new Set<string>();
+        const cities: CityCountry[] = countryCityData.flatMap((entry) =>
+            entry.cities
+                .map((city) => ({
+                    city,
+                    country: entry.country,
+                    iso2: entry.iso2,
+                }))
+                .filter((item) => {
+                    const key = `${item.city.toLowerCase()},${item.country.toLowerCase()},${item.iso2}`;
+                    if (seen.has(key)) return false;
+                    seen.add(key);
+                    return true;
+                })
+        );
+
+        setCities(cities);
+        setLoading(false);
+    }, []);
+
+    useEffect(() => {
+        if (query.length < 2) {
+            setFilteredCities([]);
+            setFiltering(false); // make sure to reset loading state
+            return;
+        }
+
+        setFiltering(true);
+        const filtered = cities.filter((item) =>
+            `${item.city}, ${item.country}, ${item.iso2}`
+                .toLowerCase()
+                .includes(query.toLowerCase())
+        );
+
+        setFilteredCities(filtered);
+        setFiltering(false);
+    }, [query, cities]);
   
+    const handleLocationSelect = async (location: CityCountry) => {
+        try {
+            await cache.set("location", JSON.stringify(location));
+            console.log("Location cached:", location);
+            if (Platform.OS === "web") {
+                alert(`Successfully set location to ${location.city}.`);
+            } else {
+                Alert.alert("Success", `Successfully set location to ${location.city}.`);
+            }
+        } catch (error) {
+            console.log("Failed to cache location:", error);
+            if (Platform.OS === "web") {
+                alert(`Failed to set location: ${error}`);
+            } else {
+                Alert.alert("Error", `Failed to set location: ${error}`);
+            }
+        }
+    };
 
-  return (
-    <ScrollView>
-      <View style={globalStyles.container}>
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Location Details</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Search for a city..."
-            placeholderTextColor="grey"
-            value={query}
-            onChangeText={setQuery}
-          />
-          <View style={styles.rowContainer}>
-            {loading ? (
-              <View style={styles.centerContent}>
-                <ActivityIndicator size="small" color="black" />
-              </View>
-            ) : filtered.length !== 0 && query.length >= 2 ? (
-              filtered.map((item, index) => (
-                <TouchableOpacity
-                    onPress={() => handleLocationSelect(item)}
-                    key={`${item.city}-${item.countryCode}`}
-                    style={[
-                    styles.row,
-                    index === filtered.length - 1 && styles.lastRow,
-                    ]}
-                >
-                    <Text style={styles.label}>
-                    {item.city}, {item.region}, {item.countryCode}
-                    </Text>
-                </TouchableOpacity>
-              ))
-            ) : query.length >= 2 ? (
-              <View style={styles.row}>
-                <Text style={styles.label}>No results found</Text>
-              </View>
-            ) : null}
-          </View>
+    return (
+        <ScrollView>
+        <View style={globalStyles.container}>
+            <View style={styles.section}>
+                <Text style={styles.sectionTitle}>Location Details</Text>
+                <TextInput
+                    style={styles.input}
+                    placeholder="Search for a city..."
+                    placeholderTextColor="grey"
+                    value={query}
+                    onChangeText={setQuery}
+                />
+                <View style={styles.rowContainer}>
+                    {loading ? (
+                        <View style={styles.centerContent}>
+                            <ActivityIndicator size="small" color="black" />
+                        </View>
+                    ) : filtering ? (
+                        <View style={styles.centerContent}>
+                            <ActivityIndicator size="small" color="black" />
+                        </View>
+                    ) : filteredCities.length !== 0 && query.length >= 2 ? (
+                        filteredCities.map((item, index) => (
+                            <TouchableOpacity
+                                onPress={() => handleLocationSelect(item)}
+                                key={`${item.city}-${item.iso2}`}
+                                style={[
+                                    styles.row,
+                                    index === filteredCities.length - 1 && styles.lastRow,
+                                ]}
+                            >
+                                <Text style={styles.label}>
+                                    {item.city}, {item.country}, {item.iso2}
+                                </Text>
+                            </TouchableOpacity>
+                        ))
+                    ) : query.length >= 2 ? (
+                        <View style={[styles.row, styles.lastRow]}>
+                            <Text style={styles.label}>No results found</Text>
+                        </View>
+                    ) : null}
+                </View>
+            </View>
         </View>
-      </View>
-    </ScrollView>
-  );
+        </ScrollView>
+    );
 };
 
 export default LocationDetails;
