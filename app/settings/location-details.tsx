@@ -105,16 +105,21 @@ const LocationDetails = () => {
 
     return (
         <ScrollView>
-        <View style={globalStyles.container}>
-            <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Location Details</Text>
+            <View style={globalStyles.container}>
+                <Text style={globalStyles.header}>Location Details</Text>
+                <Text style={globalStyles.subHeader}>
+                    
+                    Set your location preferences.
+                    {(currentLocation) ? 
+                        ` Current location is ${currentLocation.city}, ${currentLocation.iso2}.` : ""
+                    }
+                </Text>
+                
+                
+                <Text style={styles.sectionTitle}>Search Locations</Text>
                 <TextInput
                     style={styles.input}
-                    placeholder={
-                        (currentLocation) ? 
-                            `Current location: ${currentLocation.city}, ${currentLocation.iso2}. Search for a new city...` :
-                             "Search for a new city..."
-                        }
+                    placeholder="Search for a city..."
                     placeholderTextColor="grey"
                     value={query}
                     onChangeText={setQuery}
@@ -146,7 +151,6 @@ const LocationDetails = () => {
                     ) : null}
                 </View>
             </View>
-        </View>
         </ScrollView>
     );
 };
@@ -154,9 +158,6 @@ const LocationDetails = () => {
 export default LocationDetails;
 
 const styles = StyleSheet.create({
-  section: {
-    marginBottom: 20,
-  },
   sectionTitle: {
     fontSize: 15,
     color: "gray",
