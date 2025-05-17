@@ -13,8 +13,12 @@ export default function SettingsLayout() {
             title: "Location Details",
             ...headerStyles
         }} />
-         <Stack.Screen name="juristic-method" options={{
+        <Stack.Screen name="juristic-method" options={{
             title: "Juristic Method",
+            ...headerStyles
+        }} />
+        <Stack.Screen name="system-theme" options={{
+            title: "System Theme",
             ...headerStyles
         }} />
         <Stack.Screen name="account-details" options={{
