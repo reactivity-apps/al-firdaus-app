@@ -119,7 +119,7 @@ const LocationDetails = () => {
                 <Text style={styles.sectionTitle}>Search Locations</Text>
                 <TextInput
                     style={styles.input}
-                    placeholder="Location preferences currenty disabled."
+                    placeholder="Location preferences are currently disabled."
                     placeholderTextColor="grey"
                     value={query}
                     onChangeText={setQuery}
