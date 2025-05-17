@@ -119,10 +119,11 @@ const LocationDetails = () => {
                 <Text style={styles.sectionTitle}>Search Locations</Text>
                 <TextInput
                     style={styles.input}
-                    placeholder="Search for a city..."
+                    placeholder="Location preferences currenty disabled."
                     placeholderTextColor="grey"
                     value={query}
                     onChangeText={setQuery}
+                    editable={false}
                 />
                 <View style={styles.rowContainer}>
                     {(loading || filtering) ? (
