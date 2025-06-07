@@ -34,14 +34,7 @@ export default function Settings() {
         
           ]}
         />
-
-        <Menu
-          title="App Configuration"
-          content={[
-            { label: "System Theme", link: "settings/system-theme", showIcon: true },        
-          ]}
-        />
-
+        
         <Menu
           title="User Account"
           content={[

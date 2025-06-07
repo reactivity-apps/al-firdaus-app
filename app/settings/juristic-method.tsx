@@ -34,7 +34,8 @@ const JuristicMethod = () => {
                     if (schoolName) {
                         setJuristicMethod(schoolName);
                     } else {
-                        console.log("Unknown method number:", parsed);
+                        setJuristicMethod("Shafi (Default)");
+                        console.log("No method set, using default");
                     }
                 }
             } catch (error) {
