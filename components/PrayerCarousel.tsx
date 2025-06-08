@@ -19,88 +19,95 @@ const cardHeight = 450; // Needed for carousel, will break otherwise
 // FIXME: Carousel loads on start without indicator
 function PrayerCarousel() {
     const [isDataLoaded, setIsDataLoaded] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
-    // Loads and caches prayer data once a day
     useEffect(() => {
         const cachePrayerRelatedData = async () => {
-            // Check last cached data
-            const lastCacheTimeString = await cache.get('lastPrayerDataCacheTime');
-            const currentTime = new Date().getTime();
-            const oneDayInMs = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
-            let shouldRefreshCache = true;
-            
-            // If cache data, check if more than a day
-            if (lastCacheTimeString) {
-                const lastCacheTime = parseInt(lastCacheTimeString);
-                shouldRefreshCache = (currentTime - lastCacheTime) >= oneDayInMs;
-            }
-            
-            // If less than a day, skip refresh
-            if (!shouldRefreshCache) {
-                console.log('Prayer data cache is less than a day old. Skipping refresh.');
-                setIsDataLoaded(true);
-                return;
-            }
-            
-            console.log('Refreshing prayer data cache...');
-            
-            // Otherwise, proceed with fetching and caching data
-            for(const location of locations){
-                try {
-                    const weatherData = await fetchHaramWeatherDetails(location.lat, location.long);
-                    
-                    if (!weatherData.coord) {
-                    throw new Error(weatherData.message);
-                    }
-                    console.log(`Weather data fetched for ${location.name}`);
-                    
-                    // Cache the weather data
-                    await cache.set(`${location.name}_weather`, JSON.stringify(weatherData))
-                    .catch((err) => {
-                        console.log(`Error caching weather data for ${location.name}:`, err);
-                    });
-                } catch (error) {
-                    console.log(`Error fetching weather data for ${location.name}:`, error);
-                }
-        
-                try {
-                    const prayerTimings = await fetchPrayerTimings(location.address);
-                    if (!prayerTimings || prayerTimings.code !== 200) {
-                    throw new Error(`Failed to fetch prayer timings for ${location.name}`);
-                    }
-            
-                    await cache.set(location.name, JSON.stringify(prayerTimings))
-                    .catch(() => {
-                        throw Error();
-                    });
-            
-                } catch (error) {
-                    console.log(`Error caching data for ${location.name}:`, error);
-                    await cache.set(location.name, "failed").catch(console.log);
-                } 
-            }
-            
-            // After successfully updating the cache, update the timestamp
-            await cache.set('lastPrayerDataCacheTime', currentTime.toString())
-                .catch(err => console.log('Error saving cache timestamp:', err));
 
-            setIsDataLoaded(true);
+            try {
+                // Check last cached data
+                const lastCacheTimeString = await cache.get('lastPrayerDataCacheTime');
+                const currentTime = new Date().getTime();
+                const oneDayInMs = 24 * 60 * 60 * 1000;
+                let shouldRefreshCache = true;
+                
+                if (lastCacheTimeString) {
+                    const lastCacheTime = parseInt(lastCacheTimeString);
+                    shouldRefreshCache = (currentTime - lastCacheTime) >= oneDayInMs;
+                }
+
+                
+                if (!shouldRefreshCache) {
+                    console.log('Prayer data cache is less than a day old. Skipping refresh.');
+                    setIsDataLoaded(true);
+                    setIsLoading(false);
+                    return;
+                }
+                
+                console.log('Refreshing prayer data cache...');
+                
+                // Fetch and cache data for all locations in parallel
+                await Promise.all(locations.map(async (location) => {
+                    try {
+                        // Fetch both weather and prayer data in parallel
+                        const [weatherData, prayerTimings] = await Promise.all([
+                            fetchHaramWeatherDetails(location.lat, location.long),
+                            fetchPrayerTimings(location.address)
+                        ]);
+                        
+                        if (!weatherData.coord) {
+                            throw new Error(weatherData.message);
+                        }
+                        
+                        await cache.set(`${location.name}_weather`, JSON.stringify(weatherData));
+                        
+                        if (!prayerTimings || prayerTimings.code !== 200) {
+                            throw new Error(`Failed to fetch prayer timings for ${location.name}`);
+                        }
+                        
+                        await cache.set(location.name, JSON.stringify(prayerTimings));
+                        
+                    } catch (error) {
+                        console.log(`Error processing data for ${location.name}:`, error);
+                        await cache.set(location.name, "failed").catch(console.log);
+                    }
+                }));
+                
+                // After successfully updating the cache, update the timestamp
+                await cache.set('lastPrayerDataCacheTime', currentTime.toString())
+                    .catch(err => console.log('Error saving cache timestamp:', err));
+                
+            } catch (error) {
+                console.log('Error in cachePrayerRelatedData:', error);
+            } finally {
+                setIsDataLoaded(true);
+                setIsLoading(false);
+            }
         };
         
         cachePrayerRelatedData();
     }, []);
 
-    const [containerWidth, setContainerWidth] = React.useState(0); // Track element width   
+    const [containerWidth, setContainerWidth] = useState(0); // Track element width   
     const ref = React.useRef<ICarouselInstance>(null);
     const progress = useSharedValue<number>(0);
 
     const onPressPagination = (index: number) => {
         ref.current?.scrollTo({
-        count: index - progress.value,
-        animated: true,
+            count: index - progress.value,
+            animated: true,
         });
     };
-
+    
+    if (isLoading) {
+        return (
+            <View style={[styles.container, styles.loadingContainer]}>
+                <ActivityIndicator size="large" color="#000" />
+                <Text style={styles.loadingText}>Loading prayer times...</Text>
+            </View>
+        );
+    }
+    
     return (
         <View 
             style={styles.container}
@@ -320,6 +327,20 @@ const styles = StyleSheet.create({
     },
     buffer: {
         marginVertical: 5
-    }
+    },
+    loadingContainer: {
+        height: cardHeight,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'white',
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: "#CDCBCB",
+    },
+    loadingText: {
+        marginTop: 10,
+        fontSize: 16,
+        color: '#666',
+    },
 });
 
