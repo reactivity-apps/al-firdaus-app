@@ -29,7 +29,6 @@ export default function Settings() {
         <Menu
           title="Prayer Details"
           content={[
-            { label: "Location Details", link: "settings/location-details", showIcon: true },
             { label: "Juristic Method", link: "settings/juristic-method", showIcon: true },
         
           ]}
@@ -39,8 +38,7 @@ export default function Settings() {
           title="User Account"
           content={[
             { label: "Account Details", link: "/settings/account-details", showIcon: true },
-            { label: "Edit Account Information", link: "/account/edit-account", showIcon: true },
-            { label: "Delete Account", link: "/account/delete-account", showIcon: true },
+            { label: "Edit Account Information", link: "/settings/edit-account", showIcon: true },
         
           ]}
         />

@@ -52,5 +52,10 @@ export const globalStyles = StyleSheet.create({
         borderRadius: 8,
         padding: 15,
         alignItems: "center",
-    }
+    },
+    outlinedButtonText: {
+        color: "#000",
+        fontSize: 16,
+        fontWeight: "600",
+    },
 });

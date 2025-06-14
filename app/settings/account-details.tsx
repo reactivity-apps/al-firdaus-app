@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
-  TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
   ScrollView,
@@ -10,24 +9,26 @@ import {
 } from "react-native";
 import { auth, db } from "@/firebase/clientApp";
 import { globalStyles } from "@/styles/global";
-import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
 import { doc, getDoc } from "firebase/firestore";
 
+interface UserData {
+  fullName: string;
+  email: string;
+  createdAt: string;
+  lastSignIn: string;
+  providerId: string;
+}
+
 const AccountSettings = () => {
-  const [userData, setUserData] = useState({
+  const [userData, setUserData] = useState<UserData>({
     fullName: "",
     email: "",
     createdAt: "",
     lastSignIn: "",
-    providerId: "password" // Default provider
+    providerId: "password"
   });
-  const [userStatus, setUserStatus] = useState("");
+  const [userStatus, setUserStatus] = useState("User");
   const [loading, setLoading] = useState(true);
-  const [showPassword, setShowPassword] = useState(false);
-  const [password, setPassword] = useState("MySecurePassword123"); // Example password - in a real app, you'd need a different approach
-
-  const router = useRouter();
 
   // Fetch user data on component mount
   useEffect(() => {
@@ -36,7 +37,7 @@ const AccountSettings = () => {
         const currentUser = auth.currentUser;
         
         if (!currentUser) {
-          router.replace("/sign-in");
+          setLoading(false);
           return;
         }
 
@@ -57,7 +58,6 @@ const AccountSettings = () => {
           }
         } catch (error) {
           console.error("Error fetching user status:", error);
-          // Default status if error
           setUserStatus("user");
         }
 
@@ -71,10 +71,10 @@ const AccountSettings = () => {
     };
 
     fetchUserData();
-  }, [router]);
+  }, []);
 
   // Format date in a readable format
-  const formatDate = (dateString) => {
+  const formatDate = (dateString: string) => {
     if (!dateString) return "N/A";
     return new Date(dateString).toLocaleString();
   };
@@ -82,11 +82,6 @@ const AccountSettings = () => {
   // Helper to get initial for avatar
   const getInitial = () => {
     return userData.fullName.charAt(0).toUpperCase() || 'U';
-  };
-
-  // Toggle password visibility
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
   };
 
   if (loading) {
@@ -115,7 +110,7 @@ const AccountSettings = () => {
               </View>
             </View>
             <View style={styles.profileInfo}>
-              <Text style={styles.profileName}>{userData.fullName}</Text>
+              <Text style={styles.profileName}>{userData.fullName || "Unknown"}</Text>
               <Text style={styles.profileEmail}>{userData.email}</Text>
               <View style={styles.statusBadge}>
                 <Text style={styles.statusText}>{userStatus}</Text>
@@ -126,45 +121,26 @@ const AccountSettings = () => {
           {/* Account Details Section */}
           <View style={styles.sectionContainer}>
             <Text style={styles.sectionTitle}>Account Information</Text>
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Full Name</Text>
-              <Text style={styles.infoValue}>{userData.fullName || "Not set"}</Text>
-            </View>
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Email</Text>
-              <Text style={styles.infoValue}>{userData.email}</Text>
-            </View>
             
-            {/* Password Field with Show/Hide Toggle */}
-            {userData.providerId === "password" && (
-              <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>Password</Text>
-                <View style={styles.passwordContainer}>
-                  <Text style={styles.infoValue}>
-                    {showPassword ? password : "••••••••••••••"}
-                  </Text>
-                  <TouchableOpacity 
-                    onPress={togglePasswordVisibility}
-                    style={styles.passwordToggle}
-                  >
-                    <Ionicons 
-                      name={showPassword ? "eye-off-outline" : "eye-outline"} 
-                      size={20} 
-                      color="#007AFF" 
-                    />
-                  </TouchableOpacity>
-                </View>
+              <View style={styles.row}>
+                <Text style={styles.label}>Full Name</Text>
+                <Text style={styles.value}>{userData.fullName || "Not set"}</Text>
               </View>
-            )}
-            
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Account Created</Text>
-              <Text style={styles.infoValue}>{formatDate(userData.createdAt)}</Text>
-            </View>
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Last Sign In</Text>
-              <Text style={styles.infoValue}>{formatDate(userData.lastSignIn)}</Text>
-            </View>
+
+              <View style={styles.row}>
+                <Text style={styles.label}>Email</Text>
+                <Text style={styles.value}>{userData.email}</Text>
+              </View>
+
+              <View style={styles.row}>
+                <Text style={styles.label}>Account Created</Text>
+                <Text style={styles.value}>{formatDate(userData.createdAt)}</Text>
+              </View>
+
+              <View style={styles.row}>
+                <Text style={styles.label}>Last Sign In</Text>
+                <Text style={styles.value}>{formatDate(userData.lastSignIn)}</Text>
+              </View>
           </View>
         </View>
       </View>
@@ -184,7 +160,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   card: {
-    padding: 20,
     backgroundColor: "#fff",
     borderRadius: 8,
     borderWidth: 1,
@@ -197,8 +172,7 @@ const styles = StyleSheet.create({
   profileHeader: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 20,
-    paddingBottom: 15,
+    padding: 20,
     borderBottomWidth: 1,
     borderBottomColor: "#EFEFEF",
   },
@@ -245,36 +219,29 @@ const styles = StyleSheet.create({
     textTransform: "capitalize",
   },
   sectionContainer: {
-    marginTop: 15,
-    paddingTop: 15,
-    borderTopWidth: 1,
-    borderTopColor: "#EFEFEF",
+    padding: 15,
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: "600",
-    marginBottom: 12,
+    marginBottom: 15,
   },
-  infoRow: {
+  row: {
+    paddingVertical: 10,
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 8,
-    paddingVertical: 4,
+    alignItems: "flex-start",
+    flexWrap: "wrap",
   },
-  infoLabel: {
-    color: "#666",
+  label: {
+    fontSize: 16,
+    color: "#333",
+    flex: 1,
+  },
+  value: {
     fontSize: 14,
-  },
-  infoValue: {
-    fontWeight: "500",
-    fontSize: 14,
-  },
-  passwordContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  passwordToggle: {
-    marginLeft: 10,
-    padding: 4,
+    color: "#888",
+    flex: 1,
+    textAlign: "right"
   }
 });

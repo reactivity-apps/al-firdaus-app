@@ -9,20 +9,16 @@ export default function SettingsLayout() {
             title: "Settings",
             ...headerStyles
         }} />
-        <Stack.Screen name="location-details" options={{
-            title: "Location Details",
-            ...headerStyles
-        }} />
         <Stack.Screen name="juristic-method" options={{
             title: "Juristic Method",
             ...headerStyles
         }} />
-        <Stack.Screen name="system-theme" options={{
-            title: "System Theme",
-            ...headerStyles
-        }} />
         <Stack.Screen name="account-details" options={{
             title: "Account Details",
+            ...headerStyles
+        }} />
+        <Stack.Screen name="edit-account" options={{
+            title: "Edit Account",
             ...headerStyles
         }} />
     </Stack>
