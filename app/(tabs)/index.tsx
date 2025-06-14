@@ -44,6 +44,9 @@ export default function ForYou() {
         case "new-user":
           Alert.alert("Welcome", "Welcome to Al-Firdaus Umrah Guide!");
           break;
+        case "account-deleted":
+          Alert.alert("Account Deleted", "Your account has been successfully deleted.");
+          break;
       }
     }
   }, [message]);

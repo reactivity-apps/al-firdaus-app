@@ -1,10 +1,10 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { TouchableOpacity, Text, StyleSheet } from "react-native";
+import { TouchableOpacity, Text, StyleSheet, View } from "react-native";
 import { Link } from "expo-router";
 
 type MenuItemProps = {
-  label: string;
+  label: string | ReactNode;
   link?: string;
   showIcon?: boolean;
   isLast?: boolean;
@@ -15,7 +15,11 @@ const MenuItem = ({ label, link, showIcon, isLast }: MenuItemProps) => {
 
   const content = (
     <TouchableOpacity style={itemStyle}>
-      <Text style={styles.label}>{label}</Text>
+      {typeof label === 'string' ? (
+        <Text style={styles.label}>{label}</Text>
+      ) : (
+        <View style={styles.labelContainer}>{label}</View>
+      )}
       {showIcon && <Ionicons name="chevron-forward-outline" style={styles.icon} />}
     </TouchableOpacity>
   );
@@ -35,6 +39,9 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     color: "#333",
+  },
+  labelContainer: {
+    flex: 1,
   },
   icon: {
     fontSize: 16,

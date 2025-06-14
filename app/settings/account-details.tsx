@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -6,10 +6,14 @@ import {
   ActivityIndicator,
   ScrollView,
   Alert,
+  TouchableOpacity,
+  RefreshControl,
 } from "react-native";
 import { auth, db } from "@/firebase/clientApp";
 import { globalStyles } from "@/styles/global";
 import { doc, getDoc } from "firebase/firestore";
+import { Ionicons } from "@expo/vector-icons";
+import { sendEmailVerification } from "firebase/auth";
 
 interface UserData {
   fullName: string;
@@ -17,6 +21,7 @@ interface UserData {
   createdAt: string;
   lastSignIn: string;
   providerId: string;
+  emailVerified: boolean;
 }
 
 const AccountSettings = () => {
@@ -25,51 +30,80 @@ const AccountSettings = () => {
     email: "",
     createdAt: "",
     lastSignIn: "",
-    providerId: "password"
+    providerId: "password",
+    emailVerified: false
   });
   const [userStatus, setUserStatus] = useState("User");
   const [loading, setLoading] = useState(true);
+  const [sendingVerification, setSendingVerification] = useState(false);
+  const [cooldownTimer, setCooldownTimer] = useState(0);
+  const [refreshing, setRefreshing] = useState(false);
+
+  // Add cooldown timer effect
+  useEffect(() => {
+    let interval: ReturnType<typeof setInterval>;
+    if (cooldownTimer > 0) {
+      interval = setInterval(() => {
+        setCooldownTimer((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [cooldownTimer]);
+
+  const fetchUserData = async () => {
+    try {
+      const currentUser = auth.currentUser;
+      
+      if (!currentUser) {
+        setLoading(false);
+        return;
+      }
+
+      // Force reload user to get latest verification status
+      await currentUser.reload();
+      const updatedUser = auth.currentUser;
+
+      // First get data from Firebase Auth
+      const userInfo = {
+        fullName: updatedUser?.displayName || "",
+        email: updatedUser?.email || "",
+        createdAt: updatedUser?.metadata.creationTime || "",
+        lastSignIn: updatedUser?.metadata.lastSignInTime || "",
+        providerId: updatedUser?.providerData[0]?.providerId || "password",
+        emailVerified: updatedUser?.emailVerified || false
+      };
+
+      // Then try to get user status from Firestore
+      try {
+        const statusDoc = await getDoc(doc(db, "statuses", updatedUser?.uid || ""));
+        if (statusDoc.exists()) {
+          setUserStatus(statusDoc.data().status || "user");
+        }
+      } catch (error) {
+        console.error("Error fetching user status:", error);
+        setUserStatus("user");
+      }
+
+      setUserData(userInfo);
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      Alert.alert("Error", "Failed to load account information");
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
 
   // Fetch user data on component mount
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const currentUser = auth.currentUser;
-        
-        if (!currentUser) {
-          setLoading(false);
-          return;
-        }
+    fetchUserData();
+  }, []);
 
-        // First get data from Firebase Auth
-        const userInfo = {
-          fullName: currentUser.displayName || "",
-          email: currentUser.email || "",
-          createdAt: currentUser.metadata.creationTime || "",
-          lastSignIn: currentUser.metadata.lastSignInTime || "",
-          providerId: currentUser.providerData[0]?.providerId || "password",
-        };
-
-        // Then try to get user status from Firestore
-        try {
-          const statusDoc = await getDoc(doc(db, "statuses", currentUser.uid));
-          if (statusDoc.exists()) {
-            setUserStatus(statusDoc.data().status || "user");
-          }
-        } catch (error) {
-          console.error("Error fetching user status:", error);
-          setUserStatus("user");
-        }
-
-        setUserData(userInfo);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-        Alert.alert("Error", "Failed to load account information");
-        setLoading(false);
-      }
-    };
-
+  // handle page refresh
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
     fetchUserData();
   }, []);
 
@@ -84,6 +118,28 @@ const AccountSettings = () => {
     return userData.fullName.charAt(0).toUpperCase() || 'U';
   };
 
+  const handleResendVerification = async () => {
+    if (!auth.currentUser || cooldownTimer > 0) return;
+    
+    setSendingVerification(true);
+    try {
+      await sendEmailVerification(auth.currentUser);
+      setCooldownTimer(60); // Start 60 second cooldown
+      Alert.alert(
+        "Verification Email Sent",
+        "Please check your email for the verification link."
+      );
+    } catch (error: any) {
+      console.error("Error sending verification email:", error);
+      Alert.alert(
+        "Error",
+        error.message || "Failed to send verification email. Please try again."
+      );
+    } finally {
+      setSendingVerification(false);
+    }
+  };
+
   if (loading) {
     return (
       <View style={[globalStyles.container, styles.centered]}>
@@ -94,7 +150,12 @@ const AccountSettings = () => {
   }
 
   return (
-    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+    <ScrollView 
+      contentContainerStyle={{ flexGrow: 1 }}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+    >
       <View style={globalStyles.container}>
         <Text style={globalStyles.header}>Account Details</Text>
         <Text style={globalStyles.subHeader}>
@@ -112,8 +173,39 @@ const AccountSettings = () => {
             <View style={styles.profileInfo}>
               <Text style={styles.profileName}>{userData.fullName || "Unknown"}</Text>
               <Text style={styles.profileEmail}>{userData.email}</Text>
-              <View style={styles.statusBadge}>
-                <Text style={styles.statusText}>{userStatus}</Text>
+              <View style={styles.badgeContainer}>
+                <View style={styles.statusBadge}>
+                  <Text style={styles.statusText}>{userStatus}</Text>
+                </View>
+                {userData.emailVerified ? (
+                  <View style={styles.verifiedBadge}>
+                    <Ionicons name="checkmark-circle" size={12} color="#34C759" />
+                    <Text style={styles.verifiedText}>Email verified</Text>
+                  </View>
+                ) : (
+                  <View style={styles.verificationContainer}>
+                    <View style={styles.verificationBadge}>
+                      <Ionicons name="warning" size={12} color="#FF3B30" />
+                      <Text style={styles.verificationText}>Email not verified</Text>
+                    </View>
+                    <TouchableOpacity 
+                      onPress={handleResendVerification}
+                      disabled={sendingVerification || cooldownTimer > 0}
+                      style={styles.resendLink}
+                    >
+                      <Text style={[
+                        styles.resendText,
+                        (sendingVerification || cooldownTimer > 0) && styles.resendTextDisabled
+                      ]}>
+                        {sendingVerification 
+                          ? "Sending..." 
+                          : cooldownTimer > 0 
+                            ? `Resend in ${cooldownTimer}s`
+                            : "Resend verification email"}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
               </View>
             </View>
           </View>
@@ -205,6 +297,11 @@ const styles = StyleSheet.create({
     color: "#666",
     marginBottom: 6,
   },
+  badgeContainer: {
+    flexDirection: "row",
+    gap: 8,
+    flexWrap: "wrap",
+  },
   statusBadge: {
     backgroundColor: "#E8E8E8",
     paddingHorizontal: 10,
@@ -217,6 +314,50 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "500",
     textTransform: "capitalize",
+  },
+  verificationContainer: {
+    flexDirection: "column",
+    gap: 4,
+  },
+  verificationBadge: {
+    backgroundColor: "#FFE5E5",
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+    borderRadius: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
+  verificationText: {
+    color: "#FF3B30",
+    fontSize: 12,
+    fontWeight: "500",
+  },
+  verifiedBadge: {
+    backgroundColor: "#E5F9E5",
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+    borderRadius: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
+  verifiedText: {
+    color: "#34C759",
+    fontSize: 12,
+    fontWeight: "500",
+  },
+  resendLink: {
+    marginLeft: 2,
+  },
+  resendText: {
+    color: "#007AFF",
+    fontSize: 12,
+    textDecorationLine: "underline",
+  },
+  resendTextDisabled: {
+    color: "#999",
+    textDecorationLine: "none",
   },
   sectionContainer: {
     padding: 15,
