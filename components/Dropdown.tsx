@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, ReactNode } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Animated } from "react-native";
 import { Ionicons } from "@expo/vector-icons"; // Import Ionicons
 import MenuItem from "./MenuItem"; 
@@ -8,7 +8,7 @@ type DropdownProps = {
   items: {
     title: string;
     content: {
-      label: string;
+      label: string | ReactNode;
       link?: string;
       showIcon?: boolean;
     }[];

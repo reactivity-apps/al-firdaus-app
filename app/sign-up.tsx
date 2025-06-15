@@ -11,7 +11,7 @@ import {
   KeyboardAvoidingView,
   Alert,
 } from "react-native";
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { createUserWithEmailAndPassword, updateProfile, sendEmailVerification } from "firebase/auth";
 import { auth, db } from "@/firebase/clientApp";
 import { globalStyles } from "@/styles/global";
 import { Ionicons } from "@expo/vector-icons";
@@ -79,13 +79,26 @@ const SignUp = () => {
 
     try {
       const userCred = await createUserWithEmailAndPassword(auth, email, password);
+      
+      // Send verification email
+      await sendEmailVerification(userCred.user);
+      
       // Update user profile with name, and add user status to firestore
       await updateProfile(userCred.user, { displayName: fullName })
         .then(() => {
           setDoc(doc(db,"statuses",userCred.user.uid), { status:"user" });
         });
 
-      router.replace("/?message=new-user");
+      Alert.alert(
+        "Verification Email Sent",
+        "Please check your email to verify your account.",
+        [
+          {
+            text: "OK",
+            onPress: () => router.replace("/?message=new-user")
+          }
+        ]
+      );
     } catch (error: any) {
       switch (error.code) {
           case "auth/network-request-failed":
