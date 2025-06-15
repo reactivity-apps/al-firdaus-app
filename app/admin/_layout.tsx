@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Stack, useRouter } from "expo-router";
 import { auth } from "@/firebase/clientApp";
 import { onAuthStateChanged, User } from "firebase/auth";
-import { Text } from "react-native";
 import { headerStyles } from "@/styles/header";
 import Loading from "@/components/Loading";
 

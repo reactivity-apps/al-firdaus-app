@@ -7,6 +7,20 @@ import { globalStyles } from '@/styles/global';
 export default function ViewUsers() {
     const { users, loading, error } = useUsers();
 
+    const userItems = users.map(user => ({
+        label: `${user.status === 'admin' ? ' 👑' : ''} ${user.fullName}`,
+        subtext: (
+            <>
+                Email: {user.email}
+                {'\n'}
+                Status: {user.status ? user.status.charAt(0).toUpperCase() + user.status.slice(1) : 'User'}
+                {'\n'}
+                Last login: {new Date(user.createdAt).toLocaleString()}
+            </>
+        ),
+        link: `/admin/user/${user.id}`
+    }));
+
     if (loading) {
         return (
             <View style={[globalStyles.container, styles.centerContent]}>
@@ -14,67 +28,31 @@ export default function ViewUsers() {
             </View>
         );
     }
-
-    if (error) {
-        return (
-            <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-                <View style={globalStyles.container}>
-                    <Text style={globalStyles.header}>User Management</Text>
-                    <Text style={globalStyles.subHeader}>
-                        View all users in the system.
-                    </Text>
-                    <View style={styles.emptyContainer}>
-                        <Text style={styles.emptyText}>Something went wrong</Text>
-                        <Text style={styles.emptySubText}>{error || 'Unknown error'}</Text>
-                    </View>
-                </View>
-            </ScrollView>
-        );
-    }
-
-    if (users.length === 0) {
-        return (
-            <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-                <View style={globalStyles.container}>
-                    <Text style={globalStyles.header}>User Management</Text>
-                    <Text style={globalStyles.subHeader}>
-                        View all users in the system.
-                    </Text>
-                    <View style={styles.emptyContainer}>
-                        <Text style={styles.emptyText}>No users found</Text>
-                        <Text style={styles.emptySubText}>There are currently no users registered yet.</Text>
-                    </View>
-                </View>
-            </ScrollView>
-        );
-    }
-
-    const userItems = users.map(user => ({
-        label: user.fullName,
-        subtext: (
-            <>
-                {user.email}
-                {'\n'}
-                {user.emailVerified ? '✓ Email Verified' : '⚠ Email Not Verified'}
-                {'\n'}
-                Last login: {new Date(user.lastLoginAt).toLocaleString()}
-            </>
-        ),
-        link: `/admin/user/${user.id}`
-    }));
-
+    
     return (
         <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
             <View style={globalStyles.container}>
                 <Text style={globalStyles.header}>User Management</Text>
                 <Text style={globalStyles.subHeader}>
-                    View and manage all users in the system. Click on a user to view their details and manage their account.
+                    View all users in the system.
                 </Text>
 
-                <List 
-                    title="All Users" 
-                    items={userItems}
-                />
+                {error ? (
+                    <View style={styles.emptyContainer}>
+                        <Text style={styles.emptyText}>Something went wrong</Text>
+                        <Text style={styles.emptySubText}>{error || 'Unknown error.'}</Text>
+                    </View>
+                ) : users.length === 0 ? (
+                    <View style={styles.emptyContainer}>
+                        <Text style={styles.emptyText}>No users found</Text>
+                        <Text style={styles.emptySubText}>There are currently no users registered yet.</Text>
+                    </View>
+                ) : (
+                    <List 
+                        title="All Users" 
+                        items={userItems}
+                    />
+                )}
             </View>
         </ScrollView>
     );
@@ -84,11 +62,6 @@ const styles = StyleSheet.create({
     centerContent: {
         justifyContent: 'center',
         alignItems: 'center',
-    },
-    errorText: {
-        color: 'red',
-        textAlign: 'center',
-        fontSize: 16,
     },
     emptyContainer: {
         backgroundColor: '#FFF',

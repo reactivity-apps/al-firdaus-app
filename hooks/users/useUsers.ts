@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '@/firebase/clientApp';
 
 export interface User {
     id: string;
     email: string;
     fullName: string;
-    emailVerified: boolean;
     createdAt: string;
-    lastLoginAt: string;
+    status: string;
 }
 
 export const useUsers = () => {
@@ -15,29 +16,43 @@ export const useUsers = () => {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        // Mock data for development
-        const mockUsers: User[] = [
-            {
-                id: '1',
-                email: 'user1@example.com',
-                fullName: 'John Doe',
-                emailVerified: true,
-                createdAt: new Date().toISOString(),
-                lastLoginAt: new Date().toISOString()
-            },
-            {
-                id: '2',
-                email: 'user2@example.com',
-                fullName: 'Jane Smith',
-                emailVerified: false,
-                createdAt: new Date().toISOString(),
-                lastLoginAt: new Date().toISOString()
-            }
-        ];
+        const fetchUsers = async () => {
+            try {
+                setLoading(true);
+                const snapshot = await getDocs(collection(db, 'users'));
+                
+                const usersList = snapshot.docs.map((docSnapshot) => {
+                    const userData = docSnapshot.data();
+                    
+                    const user: User = {
+                        id: docSnapshot.id,
+                        email: userData.email || 'Not set',
+                        fullName: userData.fullName || userData.displayName || 'Not set',
+                        createdAt: userData.createdAt?.toDate?.()?.toISOString() || userData.createdAt || new Date().toISOString(),
+                        status: userData.status || 'user'
+                    };
 
-        setUsers(mockUsers);
-        setLoading(false);
+                    return user;
+                });
+
+                // Sort users by status (admin > user), then by name
+                const sortedUsers = usersList.sort((a, b) => {
+                    if (a.status === 'admin' && b.status !== 'admin') return -1;
+                    if (a.status !== 'admin' && b.status === 'admin') return 1;
+                    return a.fullName.localeCompare(b.fullName);
+                });
+
+                setUsers(sortedUsers);
+            } catch (err) {
+                console.error('Error fetching users:', err);
+                setError(err instanceof Error ? err.message : 'Failed to fetch users');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchUsers();
     }, []);
 
     return { users, loading, error };
-}; 
+};

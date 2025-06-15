@@ -67,10 +67,10 @@ export default function ForYou() {
         setIsSignedIn(true);
   
         try {
-          const statusDoc = await getDoc(doc(db, "statuses", user.uid));
+          const usersDoc = await getDoc(doc(db, "users", user.uid));
   
-          if (statusDoc.exists()) {
-            setUserStatus(statusDoc.data().status);
+          if (usersDoc.exists()) {
+            setUserStatus(usersDoc.data().status);
           } else {
             console.log("No status document found for user.");
           }

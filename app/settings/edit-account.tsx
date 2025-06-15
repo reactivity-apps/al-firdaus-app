@@ -13,26 +13,11 @@ import {
 } from "react-native";
 import { auth } from "@/firebase/clientApp";
 import { globalStyles } from "@/styles/global";
-import { 
-  updateProfile, 
-  updateEmail, 
-  updatePassword, 
-  EmailAuthProvider, 
-  reauthenticateWithCredential, 
-  deleteUser 
-} from "firebase/auth";
 import { useRouter } from "expo-router";
 import Dropdown from "@/components/Dropdown";
-
-interface FormErrors {
-  fullName?: string;
-  email?: string;
-  currentPassword?: string;
-  newPassword?: string;
-}
+import { useAccount } from "@/hooks/settings/useEditAccount";
 
 const EditAccount = () => {
-  const router = useRouter();
   const [loading, setLoading] = useState(true);
   
   // Form states
@@ -42,14 +27,17 @@ const EditAccount = () => {
   const [newPassword, setNewPassword] = useState("");
   const [deleteConfirmation, setDeleteConfirmation] = useState("");
   
-  // Section loading states
-  const [savingName, setSavingName] = useState(false);
-  const [savingEmail, setSavingEmail] = useState(false);
-  const [savingPassword, setSavingPassword] = useState(false);
-  const [deleting, setDeleting] = useState(false);
-
-  // Form errors
-  const [errors, setErrors] = useState<FormErrors>({});
+  const {
+    savingName,
+    savingEmail,
+    savingPassword,
+    deleting,
+    errors,
+    handleUpdateName,
+    handleUpdateEmail,
+    handleUpdatePassword,
+    handleDeleteAccount
+  } = useAccount();
 
   // Fetch user data on component mount
   useEffect(() => {
@@ -74,151 +62,31 @@ const EditAccount = () => {
     fetchUserData();
   }, []);
 
-  const validateName = () => {
-    if (!fullName.trim()) {
-      setErrors(prev => ({ ...prev, fullName: "Name is required" }));
-      return false;
-    }
-    setErrors(prev => ({ ...prev, fullName: undefined }));
-    return true;
-  };
-
-  const validateEmail = () => {
-    if (!email.trim()) {
-      setErrors(prev => ({ ...prev, email: "Email is required" }));
-      return false;
-    }
-    if (!currentPassword.trim()) {
-      setErrors(prev => ({ ...prev, currentPassword: "Current password is required to change email" }));
-      return false;
-    }
-    setErrors(prev => ({ ...prev, email: undefined, currentPassword: undefined }));
-    return true;
-  };
-
-  const validatePassword = () => {
-    if (!currentPassword.trim()) {
-      setErrors(prev => ({ ...prev, currentPassword: "Current password is required" }));
-      return false;
-    }
-    if (!newPassword.trim()) {
-      setErrors(prev => ({ ...prev, newPassword: "New password is required" }));
-      return false;
-    }
-    if (newPassword.length < 6) {
-      setErrors(prev => ({ ...prev, newPassword: "Password must be at least 6 characters" }));
-      return false;
-    }
-    setErrors(prev => ({ ...prev, currentPassword: undefined, newPassword: undefined }));
-    return true;
-  };
-
-  const handleUpdateName = async () => {
-    if (!auth.currentUser) return;
-    if (!validateName()) return;
-
-    setSavingName(true);
-    try {
-      await updateProfile(auth.currentUser, {
-        displayName: fullName
-      });
-      Alert.alert("Success", "Name updated successfully");
-    } catch (error: any) {
-      console.error("Error updating name:", error);
-      Alert.alert("Error", error.message || "Failed to update name");
-    } finally {
-      setSavingName(false);
+  const onUpdateName = async () => {
+    const success = await handleUpdateName(fullName);
+    if (success) {
+      setFullName("");
     }
   };
 
-  const handleUpdateEmail = async () => {
-    if (!auth.currentUser) return;
-    if (!validateEmail()) return;
-
-    setSavingEmail(true);
-    try {
-      const credential = EmailAuthProvider.credential(
-        auth.currentUser.email!,
-        currentPassword
-      );
-      await reauthenticateWithCredential(auth.currentUser, credential);
-      await updateEmail(auth.currentUser, email);
-      Alert.alert("Success", "Email updated successfully");
+  const onUpdateEmail = async () => {
+    const success = await handleUpdateEmail(email, currentPassword);
+    if (success) {
+      setEmail("");
       setCurrentPassword("");
-      setEmail(""); // Clear the email field after successful update
-    } catch (error: any) {
-      console.error("Error updating email:", error);
-      if (error.code === "auth/wrong-password") {
-        Alert.alert("Error", "Incorrect password");
-      } else if (error.code === "auth/email-already-in-use") {
-        Alert.alert("Error", "This email is already in use by another account");
-      } else {
-        Alert.alert("Error", error.message || "Failed to update email");
-      }
-    } finally {
-      setSavingEmail(false);
     }
   };
 
-  const handleUpdatePassword = async () => {
-    if (!auth.currentUser) return;
-    if (!validatePassword()) return;
-
-    setSavingPassword(true);
-    try {
-      const credential = EmailAuthProvider.credential(
-        auth.currentUser.email!,
-        currentPassword
-      );
-      await reauthenticateWithCredential(auth.currentUser, credential);
-      await updatePassword(auth.currentUser, newPassword);
-      Alert.alert("Success", "Password updated successfully");
+  const onUpdatePassword = async () => {
+    const success = await handleUpdatePassword(currentPassword, newPassword);
+    if (success) {
       setCurrentPassword("");
       setNewPassword("");
-    } catch (error: any) {
-      console.error("Error updating password:", error);
-      if (error.code === "auth/wrong-password") {
-        Alert.alert("Error", "Incorrect current password");
-      } else {
-        Alert.alert("Error", error.message || "Failed to update password");
-      }
-    } finally {
-      setSavingPassword(false);
     }
   };
 
-  const handleDeleteAccount = async () => {
-    if (!auth.currentUser) return;
-    
-    if (deleteConfirmation.toLowerCase() !== "delete my account") {
-      Alert.alert("Error", 'Please type "delete my account" to confirm');
-      return;
-    }
-
-    if (!currentPassword) {
-      Alert.alert("Error", "Please enter your current password");
-      return;
-    }
-
-    setDeleting(true);
-    try {
-      const credential = EmailAuthProvider.credential(
-        auth.currentUser.email!,
-        currentPassword
-      );
-      await reauthenticateWithCredential(auth.currentUser, credential);
-      await deleteUser(auth.currentUser);
-      router.replace("/?message=account-deleted");
-    } catch (error: any) {
-      console.error("Error deleting account:", error);
-      if (error.code === "auth/wrong-password") {
-        Alert.alert("Error", "Incorrect password");
-      } else {
-        Alert.alert("Error", error.message || "Failed to delete account");
-      }
-    } finally {
-      setDeleting(false);
-    }
+  const onDeleteAccount = async () => {
+    await handleDeleteAccount(currentPassword, deleteConfirmation);
   };
 
   if (loading) {
@@ -252,7 +120,7 @@ const EditAccount = () => {
               </View>
               <TouchableOpacity
                 style={[globalStyles.outlinedButton, savingName && styles.disabledButton]}
-                onPress={handleUpdateName}
+                onPress={onUpdateName}
                 disabled={savingName}
               >
                 <Text style={globalStyles.outlinedButtonText}>
@@ -343,7 +211,7 @@ const EditAccount = () => {
               </View>
               <TouchableOpacity
                 style={[globalStyles.outlinedButton, savingPassword && styles.disabledButton]}
-                onPress={handleUpdatePassword}
+                onPress={onUpdatePassword}
                 disabled={savingPassword}
               >
                 <Text style={globalStyles.outlinedButtonText}>
@@ -391,7 +259,7 @@ const EditAccount = () => {
                 style={[styles.deleteButton, 
                   (deleteConfirmation.toLowerCase() !== "delete my account" || !currentPassword) && styles.deleteButtonDisabled
                 ]} 
-                onPress={handleDeleteAccount}
+                onPress={onDeleteAccount}
                 disabled={deleting || deleteConfirmation.toLowerCase() !== "delete my account" || !currentPassword}
               >
                 <Text style={styles.deleteButtonText}>
