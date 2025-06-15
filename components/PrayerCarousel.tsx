@@ -1,4 +1,4 @@
-import React,{ useState, useEffect } from "react";
+import React,{ useState, useRef } from "react";
 import { globalStyles } from "@/styles/global";
 import { Text, View, StyleSheet, TouchableOpacity, ActivityIndicator, ImageBackground } from "react-native";
 import { useSharedValue } from "react-native-reanimated";
@@ -6,172 +6,18 @@ import Carousel, {
   ICarouselInstance,
   Pagination,
 } from "react-native-reanimated-carousel";
-import { PrayerDataResponse, Location, locations, PrayerTimings } from "@/types/prayer";
+import { Location, locations } from "@/types/prayer";
 import { Link } from "expo-router";
-import cache from "@/api/cache";
 import PrayerTimes from "./PrayerTimes";
 import { LinearGradient } from 'expo-linear-gradient';
 import { getImageForLocation } from "@/common/utils";
-import { fetchHaramWeatherDetails, fetchPrayerTimings } from "@/api/prayerDataApi";
+import { usePrayerDataCache } from "@/hooks/prayerDataCache";
+import { useCityPrayerData } from '@/hooks/useCityPrayerData';
 
 const cardHeight = 450; // Needed for carousel, will break otherwise
 
-// FIXME: Carousel loads on start without indicator
-function PrayerCarousel() {
-    const [isDataLoaded, setIsDataLoaded] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
-
-    useEffect(() => {
-        const cachePrayerRelatedData = async () => {
-
-            try {
-                // Check last cached data
-                const lastCacheTimeString = await cache.get('lastPrayerDataCacheTime');
-                const currentTime = new Date().getTime();
-                const oneDayInMs = 24 * 60 * 60 * 1000;
-                let shouldRefreshCache = true;
-                
-                if (lastCacheTimeString) {
-                    const lastCacheTime = parseInt(lastCacheTimeString);
-                    shouldRefreshCache = (currentTime - lastCacheTime) >= oneDayInMs;
-                }
-
-                
-                if (!shouldRefreshCache) {
-                    console.log('Prayer data cache is less than a day old. Skipping refresh.');
-                    setIsDataLoaded(true);
-                    setIsLoading(false);
-                    return;
-                }
-                
-                console.log('Refreshing prayer data cache...');
-                
-                // Fetch and cache data for all locations in parallel
-                await Promise.all(locations.map(async (location) => {
-                    try {
-                        // Fetch both weather and prayer data in parallel
-                        const [weatherData, prayerTimings] = await Promise.all([
-                            fetchHaramWeatherDetails(location.lat, location.long),
-                            fetchPrayerTimings(location.address)
-                        ]);
-                        
-                        if (!weatherData.coord) {
-                            throw new Error(weatherData.message);
-                        }
-                        
-                        await cache.set(`${location.name}_weather`, JSON.stringify(weatherData));
-                        
-                        if (!prayerTimings || prayerTimings.code !== 200) {
-                            throw new Error(`Failed to fetch prayer timings for ${location.name}`);
-                        }
-                        
-                        await cache.set(location.name, JSON.stringify(prayerTimings));
-                        
-                    } catch (error) {
-                        console.log(`Error processing data for ${location.name}:`, error);
-                        await cache.set(location.name, "failed").catch(console.log);
-                    }
-                }));
-                
-                // After successfully updating the cache, update the timestamp
-                await cache.set('lastPrayerDataCacheTime', currentTime.toString())
-                    .catch(err => console.log('Error saving cache timestamp:', err));
-                
-            } catch (error) {
-                console.log('Error in cachePrayerRelatedData:', error);
-            } finally {
-                setIsDataLoaded(true);
-                setIsLoading(false);
-            }
-        };
-        
-        cachePrayerRelatedData();
-    }, []);
-
-    const [containerWidth, setContainerWidth] = useState(0); // Track element width   
-    const ref = React.useRef<ICarouselInstance>(null);
-    const progress = useSharedValue<number>(0);
-
-    const onPressPagination = (index: number) => {
-        ref.current?.scrollTo({
-            count: index - progress.value,
-            animated: true,
-        });
-    };
-    
-    if (isLoading) {
-        return (
-            <View style={[styles.container, styles.loadingContainer]}>
-                <ActivityIndicator size="large" color="#000" />
-                <Text style={styles.loadingText}>Loading prayer times...</Text>
-            </View>
-        );
-    }
-    
-    return (
-        <View 
-            style={styles.container}
-            onLayout={(event) => {
-                const { width } = event.nativeEvent.layout;
-                setContainerWidth(width); // Use width of container to set carousel width
-            }}
-        >
-            {containerWidth > 0 && (
-                <>
-                <Carousel
-                    ref={ref}
-                    width={containerWidth} 
-                    height={cardHeight} // Maintain height
-                    data={locations}
-                    onProgressChange={progress}
-                    renderItem={({ item, index }) => <PrayerCard location={item} isDataLoaded={isDataLoaded} />}
-                    loop={false}
-                    style={{ alignSelf: "center" }}
-                />
-
-                <Pagination.Basic
-                    progress={progress}
-                    data={locations}
-                    dotStyle={styles.dot}
-                    containerStyle={styles.paginationContainer}
-                    onPress={onPressPagination}
-                />
-                </>
-            )}
-        </View>
-    );
-}
-
 const PrayerCard = ({ location, isDataLoaded }: { location: Location, isDataLoaded: boolean }) => {
-    const [prayerData, setPrayerData] = useState<PrayerDataResponse | null>(null);
-    const [timings, setTimings] = useState<PrayerTimings | null>(null);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(false);
-
-    useEffect(() => {
-        const getCityPrayerData = async (city: string) => {
-            try {
-                setLoading(true);
-                const value = await cache.get(city);
-                if(value !== undefined) {
-                    const data: PrayerDataResponse = JSON.parse(value);
-                    setPrayerData(data)
-                    setTimings(data.data.timings);
-                } else {
-                    console.log(`Cached data for ${city} does not exists!`);
-                    setError(true);
-                }
-            } catch (error) {
-                setError(true); 
-                console.log(`Failed to retrive cached data for ${city}:`, error);
-            } finally {
-                setLoading(false);
-            }
-        }
-
-        getCityPrayerData(location.name);
-    },[location, isDataLoaded]);
-
+    const { prayerData, timings, loading, error } = useCityPrayerData(location.name, isDataLoaded);
     const imageSource = getImageForLocation(location.name);
 
     return (
@@ -209,10 +55,7 @@ const PrayerCard = ({ location, isDataLoaded }: { location: Location, isDataLoad
                 ) : !error ? (
                     <>
                         <PrayerTimes timings={timings!} />
-
-                        {/* Needed for spacing */}
                         <View style={styles.buffer}></View>
-
                         <Link href={`/extended-prayer-view?city=${location.name}&address=${location.address}`} asChild>
                             <TouchableOpacity style={globalStyles.outlinedButton}>
                                 <Text>See More Information</Text>
@@ -226,6 +69,62 @@ const PrayerCard = ({ location, isDataLoaded }: { location: Location, isDataLoad
         </View>
     );
 };
+
+const PrayerCarousel = () => {
+    const { isDataLoaded, isLoading } = usePrayerDataCache();
+    const [containerWidth, setContainerWidth] = useState(0);
+    const ref = useRef<ICarouselInstance>(null);
+    const progress = useSharedValue<number>(0);
+
+    const onPressPagination = (index: number) => {
+        ref.current?.scrollTo({
+            count: index - progress.value,
+            animated: true,
+        });
+    };
+    
+    if (isLoading) {
+        return (
+            <View style={[styles.container, styles.loadingContainer]}>
+                <ActivityIndicator size="large" color="#000" />
+                <Text style={styles.loadingText}>Loading prayer times...</Text>
+            </View>
+        );
+    }
+    
+    return (
+        <View 
+            style={styles.container}
+            onLayout={(event) => {
+                const { width } = event.nativeEvent.layout;
+                setContainerWidth(width);
+            }}
+        >
+            {containerWidth > 0 && (
+                <>
+                <Carousel
+                    ref={ref}
+                    width={containerWidth} 
+                    height={cardHeight}
+                    data={locations}
+                    onProgressChange={progress}
+                    renderItem={({ item, index }) => <PrayerCard location={item} isDataLoaded={isDataLoaded} />}
+                    loop={false}
+                    style={{ alignSelf: "center" }}
+                />
+
+                <Pagination.Basic
+                    progress={progress}
+                    data={locations}
+                    dotStyle={styles.dot}
+                    containerStyle={styles.paginationContainer}
+                    onPress={onPressPagination}
+                />
+                </>
+            )}
+        </View>
+    );
+}
 
 export default PrayerCarousel;
 
@@ -274,8 +173,7 @@ const styles = StyleSheet.create({
         flexDirection: "row", // Arrange children horizontally
         justifyContent: "space-between", // Push children to opposite sides
         alignItems: "flex-start", // Align children to the top
-        padding: 15,
-        paddingTop: 15,
+        padding: 6
     },
     locationName: {
         fontSize: 34,
@@ -285,7 +183,6 @@ const styles = StyleSheet.create({
         textShadowOffset: { width: 1, height: 1 },
         textShadowRadius: 3,
         alignSelf: "flex-end", 
-
     },
     dateGroup: {
         alignItems: "flex-end", // Ensures text is aligned to the right
