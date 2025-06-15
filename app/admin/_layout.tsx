@@ -45,6 +45,10 @@ export default function AdminLayout() {
                 title: "Manage Announcements",
                 ...headerStyles
             }} />
+            <Stack.Screen name="view-users" options={{
+                title: "View Users",
+                ...headerStyles
+            }} />
         </Stack>
     );
 }

@@ -19,6 +19,13 @@ export default function Index() {
       
         ]}
       />
+
+      <Menu
+        title="Manage Users"
+        content={[
+          { label: "View All Users", link: "/admin/view-users", showIcon: true },
+        ]}
+      />
     </View>
   );
 }
