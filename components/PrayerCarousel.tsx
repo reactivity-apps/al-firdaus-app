@@ -11,7 +11,7 @@ import { Link } from "expo-router";
 import PrayerTimes from "./PrayerTimes";
 import { LinearGradient } from 'expo-linear-gradient';
 import { getImageForLocation } from "@/common/utils";
-import { usePrayerDataCache } from "@/hooks/prayer/prayerDataCache";
+import { usePrayerDataCache } from "@/hooks/prayer/usePrayerDataCache";
 import { useCityPrayerData } from '@/hooks/prayer/useCityPrayerData';
 
 const cardHeight = 450; // Needed for carousel, will break otherwise

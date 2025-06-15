@@ -13,9 +13,8 @@ import {
 } from "react-native";
 import { auth } from "@/firebase/clientApp";
 import { globalStyles } from "@/styles/global";
-import { useRouter } from "expo-router";
 import Dropdown from "@/components/Dropdown";
-import { useAccount } from "@/hooks/settings/useEditAccount";
+import { useEditAccount } from "@/hooks/settings/useEditAccount";
 
 const EditAccount = () => {
   const [loading, setLoading] = useState(true);
@@ -37,7 +36,7 @@ const EditAccount = () => {
     handleUpdateEmail,
     handleUpdatePassword,
     handleDeleteAccount
-  } = useAccount();
+  } = useEditAccount();
 
   // Fetch user data on component mount
   useEffect(() => {

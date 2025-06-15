@@ -19,7 +19,7 @@ interface FormErrors {
   newPassword?: string;
 }
 
-export const useAccount = () => {
+export const useEditAccount = () => {
   const [loading, setLoading] = useState(true);
   const [savingName, setSavingName] = useState(false);
   const [savingEmail, setSavingEmail] = useState(false);

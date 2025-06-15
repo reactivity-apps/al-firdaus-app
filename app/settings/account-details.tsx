@@ -77,7 +77,7 @@ const AccountSettings = () => {
 
       // Then try to get user status from Firestore
       try {
-        const statusDoc = await getDoc(doc(db, "statuses", updatedUser?.uid || ""));
+        const statusDoc = await getDoc(doc(db, "users", updatedUser?.uid || ""));
         if (statusDoc.exists()) {
           setUserStatus(statusDoc.data().status || "user");
         }
@@ -106,12 +106,6 @@ const AccountSettings = () => {
     setRefreshing(true);
     fetchUserData();
   }, []);
-
-  // Format date in a readable format
-  const formatDate = (dateString: string) => {
-    if (!dateString) return "N/A";
-    return new Date(dateString).toLocaleString();
-  };
 
   // Helper to get initial for avatar
   const getInitial = () => {
@@ -226,12 +220,12 @@ const AccountSettings = () => {
 
               <View style={styles.row}>
                 <Text style={styles.label}>Account Created</Text>
-                <Text style={styles.value}>{formatDate(userData.createdAt)}</Text>
+                <Text style={styles.value}>{new Date(userData.createdAt).toLocaleString()}</Text>
               </View>
 
               <View style={styles.row}>
                 <Text style={styles.label}>Last Sign In</Text>
-                <Text style={styles.value}>{formatDate(userData.lastSignIn)}</Text>
+                <Text style={styles.value}>{new Date(userData.createdAt).toLocaleString()}</Text>
               </View>
           </View>
         </View>
