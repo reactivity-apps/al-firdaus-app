@@ -13,6 +13,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { getImageForLocation } from "@/common/utils";
 import { usePrayerDataCache } from "@/hooks/prayer/usePrayerDataCache";
 import { useCityPrayerData } from '@/hooks/prayer/useCityPrayerData';
+import Error from "@/components/Error";
 
 const cardHeight = 450; // Needed for carousel, will break otherwise
 
@@ -71,7 +72,7 @@ const PrayerCard = ({ location, isDataLoaded }: { location: Location, isDataLoad
 };
 
 const PrayerCarousel = () => {
-    const { isDataLoaded, isLoading } = usePrayerDataCache();
+    const { isDataLoaded, loading, error } = usePrayerDataCache();
     const [containerWidth, setContainerWidth] = useState(0);
     const ref = useRef<ICarouselInstance>(null);
     const progress = useSharedValue<number>(0);
@@ -83,7 +84,7 @@ const PrayerCarousel = () => {
         });
     };
     
-    if (isLoading) {
+    if (loading) {
         return (
             <View style={[styles.container, styles.loadingContainer]}>
                 <ActivityIndicator size="large" color="#000" />
@@ -100,7 +101,9 @@ const PrayerCarousel = () => {
                 setContainerWidth(width);
             }}
         >
-            {containerWidth > 0 && (
+            {error ?
+                <Error error={error} />
+            : containerWidth > 0 && (
                 <>
                 <Carousel
                     ref={ref}

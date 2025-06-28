@@ -5,11 +5,13 @@ import cache from "@/api/cache";
 
 export const usePrayerDataCache = () => {
     const [isDataLoaded, setIsDataLoaded] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         const cachePrayerRelatedData = async () => {
             try {
+                setError(null);
                 // Check last cached data
                 const lastCacheTimeString = await cache.get('lastPrayerDataCacheTime');
                 const currentTime = new Date().getTime();
@@ -24,7 +26,7 @@ export const usePrayerDataCache = () => {
                 if (!shouldRefreshCache) {
                     console.log('Prayer data cache is less than a day old. Skipping refresh.');
                     setIsDataLoaded(true);
-                    setIsLoading(false);
+                    setLoading(false);
                     return;
                 }
                 
@@ -63,14 +65,15 @@ export const usePrayerDataCache = () => {
                 
             } catch (error) {
                 console.log('Error in cachePrayerRelatedData:', error);
+                setError(error instanceof Error ? error.message : 'An error occurred');
             } finally {
                 setIsDataLoaded(true);
-                setIsLoading(false);
+                setLoading(false);
             }
         };
         
         cachePrayerRelatedData();
     }, []);
 
-    return { isDataLoaded, isLoading };
+    return { isDataLoaded, loading, error };
 };
