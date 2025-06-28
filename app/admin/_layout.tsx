@@ -1,31 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Stack, useRouter } from "expo-router";
-import { auth } from "@/firebase/clientApp";
-import { onAuthStateChanged, User } from "firebase/auth";
 import { headerStyles } from "@/styles/header";
 import Loading from "@/components/Loading";
+import { useUser } from "@/contexts/UserContext";
 
 export default function AdminLayout() {
-    const [loading, setLoading] = useState(true);
-    const [user, setUser] = useState<User | null>(null);
-
     const router = useRouter();
-
-    // Check if user is logged in
-    useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
-            setUser(user);
-            setLoading(false);
-        });
-
-        return () => unsubscribe();
-    }, []);
+    const {user, status, loading} = useUser();
 
     useEffect(() => {
-        if (!loading && !user) {
+        if (!loading && (!user || status !== "admin")) {
             router.replace("/?message=unauthorized-user");
         }
-    }, [user, loading, router]);
+    }, [user, loading, status, router]);
 
 
     if(loading) return <Loading />;

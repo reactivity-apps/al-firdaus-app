@@ -1,8 +1,6 @@
-import { doc, getDoc } from "firebase/firestore";
 import React, { useCallback, useEffect, useState } from "react";
 import { View, Text, StyleSheet, ScrollView, RefreshControl, TouchableOpacity, Alert } from "react-native";
 import { globalStyles } from "@/styles/global";
-import { db } from "@/firebase/clientApp";
 import Error from "@/components/Error";
 import Loading from "@/components/Loading";
 import Menu from "@/components/Menu";
@@ -10,9 +8,8 @@ import PrayerCarousel from "@/components/PrayerCarousel";
 import { Link, useLocalSearchParams } from "expo-router";
 import { formatRelativeDate } from "@/common/utils";
 import SignIn from "@/components/SignIn";
-import { auth } from "@/firebase/clientApp";
-import { onAuthStateChanged, User } from "firebase/auth";
 import { useAnnouncements } from "@/hooks/useAnnouncements";
+import { useUser } from "@/contexts/UserContext";
 
 const INITIAL_DISPLAY_COUNT = 5;
 
@@ -20,9 +17,8 @@ export default function ForYou() {
   // Pull up to refresh
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<User | null>(null);
-  const [userStatus, setUserStatus] = useState<"user" | "admin">("user");
-  const [isSignedIn, setIsSignedIn] = useState(false);
+
+  const { user, status, loading: userLoading } = useUser();
 
   const { message } = useLocalSearchParams<{ message?: string }>();
 
@@ -44,38 +40,6 @@ export default function ForYou() {
       }
     }
   }, [message]);
-  
-  // Check if user is logged in
-  useEffect(() => {
-      const unsubscribe = onAuthStateChanged(auth, (user) => {
-          setUser(user);
-          setLoading(false);
-      });
-
-      return () => unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    const fetchUserStatus = async () => {
-      if (!loading && user) {
-        setIsSignedIn(true);
-  
-        try {
-          const usersDoc = await getDoc(doc(db, "users", user.uid));
-  
-          if (usersDoc.exists()) {
-            setUserStatus(usersDoc.data().status);
-          } else {
-            console.log("No status document found for user.");
-          }
-        } catch (error) {
-          console.error("Error fetching user status:", error);
-        }
-      }
-    };
-  
-    fetchUserStatus();
-  }, [user, loading]);
 
   // handle page refresh
   const onRefresh = useCallback(() => {
@@ -85,13 +49,13 @@ export default function ForYou() {
       }, 1000);
   }, []);
 
+  // Get all announcements and limit to 5
   const { announcements, error } = useAnnouncements(refreshing, setLoading);
-
   const displayedAnnouncements = announcements.slice(0, INITIAL_DISPLAY_COUNT);
   const hasMoreAnnouncements = announcements.length > INITIAL_DISPLAY_COUNT;
 
-  if (loading) return <Loading />;
-  if(!isSignedIn) return <SignIn />;
+  if (loading || userLoading) return <Loading />;
+  if(!user) return <SignIn />;
   
   return (
     <ScrollView 
@@ -105,7 +69,7 @@ export default function ForYou() {
           title="Navigation"
           content={[
             { label: "Settings", link: "/settings", showIcon: true },
-            ...(userStatus === "admin"
+            ...(status === "admin"
               ? [{ label: "Admin Controls", link: "/admin", showIcon: true }]
               : []),
           ]}
