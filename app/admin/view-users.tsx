@@ -3,6 +3,7 @@ import { View, StyleSheet, ActivityIndicator, Text, ScrollView } from 'react-nat
 import { useUsers } from '@/hooks/users/useUsers';
 import List from '@/components/List';
 import { globalStyles } from '@/styles/global';
+import { capitalizeFirstLetter } from '@/common/utils';
 
 export default function ViewUsers() {
     const { users, loading, error } = useUsers();
@@ -13,7 +14,7 @@ export default function ViewUsers() {
             <>
                 Email: {user.email}
                 {'\n'}
-                Status: {user.status ? user.status.charAt(0).toUpperCase() + user.status.slice(1) : 'User'}
+                Status: {user.status ? capitalizeFirstLetter(user.status) : 'User'}
                 {'\n'}
                 Last login: {new Date(user.createdAt).toLocaleString()}
             </>

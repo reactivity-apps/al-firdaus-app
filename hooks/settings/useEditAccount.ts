@@ -106,6 +106,10 @@ export const useEditAccount = () => {
       );
       await reauthenticateWithCredential(auth.currentUser, credential);
       await updateEmail(auth.currentUser, email);
+      // Update email in Firestore as well
+      await updateDoc(doc(db, "users", auth.currentUser.uid), {
+        email: email
+      });
       Alert.alert("Success", "Email updated successfully");
       return true;
     } catch (error: any) {
