@@ -1,10 +1,10 @@
 import React from 'react';
 import {View, StyleSheet, Text} from 'react-native';
 
-const Error = ({error}: {error: string}) => (
+const Error = ({error}: {error: string | null}) => (
     <View style={styles.container}>
         <Text style={styles.text}>Something went wrong</Text>
-        <Text style={styles.subText}>{error || 'Unknown error. Please try again!'}</Text>
+        <Text style={styles.subText}>{error || "Unknown error occurred. Please try again!"}</Text>
     </View>
 );
 

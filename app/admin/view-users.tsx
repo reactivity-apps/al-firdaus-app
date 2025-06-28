@@ -2,6 +2,7 @@ import React from 'react';
 import { View, StyleSheet, ActivityIndicator, Text, ScrollView } from 'react-native';
 import { useUsers } from '@/hooks/users/useUsers';
 import List from '@/components/List';
+import Error from '@/components/Error';
 import { globalStyles } from '@/styles/global';
 import { capitalizeFirstLetter } from '@/common/utils';
 
@@ -39,10 +40,7 @@ export default function ViewUsers() {
                 </Text>
 
                 {error ? (
-                    <View style={styles.emptyContainer}>
-                        <Text style={styles.emptyText}>Something went wrong</Text>
-                        <Text style={styles.emptySubText}>{error || 'Unknown error.'}</Text>
-                    </View>
+                    <Error error={error} />
                 ) : users.length === 0 ? (
                     <View style={styles.emptyContainer}>
                         <Text style={styles.emptyText}>No users found</Text>
