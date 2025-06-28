@@ -1,4 +1,4 @@
-import { collection, doc, getDoc, getDocs, Timestamp } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import React, { useCallback, useEffect, useState } from "react";
 import { View, Text, StyleSheet, ScrollView, RefreshControl, TouchableOpacity, Alert } from "react-native";
 import { globalStyles } from "@/styles/global";
@@ -11,20 +11,14 @@ import { formatRelativeDate } from "@/common/utils";
 import SignIn from "@/components/SignIn";
 import { auth } from "@/firebase/clientApp";
 import { onAuthStateChanged, User } from "firebase/auth";
+import { useAnnouncements } from "@/hooks/useAnnouncements";
 
-// Define the type for announcements
-interface Announcement {
-  title: string;
-  message: string;
-  date: Timestamp;
-}
 
 const INITIAL_DISPLAY_COUNT = 5;
 
 export default function ForYou() {
   // Pull up to refresh
   const [refreshing, setRefreshing] = useState(false);
-  const [announcements, setAnnouncements] = useState<Array<Announcement>>([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<User | null>(null);
   const [userStatus, setUserStatus] = useState<"user" | "admin">("user");
@@ -91,29 +85,7 @@ export default function ForYou() {
       }, 1000);
   }, []);
 
-  // TODO: Add caching
-  useEffect(() => {
-    const getAnnouncements = async () => {
-      try {
-        const data = await getDocs(collection(db, "announcements"));
-        const announcementsList: Array<Announcement> = data.docs.map((item) => ({
-          title: item.get("title"),
-          message: item.get("message"),
-          date: item.get("createdAt"),
-        }));
-        
-        announcementsList.sort((a, b) => b.date.toDate().getTime() - a.date.toDate().getTime());
-
-        setAnnouncements(announcementsList);
-      } catch (error) {
-        console.log(`Error fetching announcements: ${error}`);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    getAnnouncements();
-  }, [refreshing]);
+  const { announcements } = useAnnouncements(refreshing);
 
   const displayedAnnouncements = announcements.slice(0, INITIAL_DISPLAY_COUNT);
   const hasMoreAnnouncements = announcements.length > INITIAL_DISPLAY_COUNT;

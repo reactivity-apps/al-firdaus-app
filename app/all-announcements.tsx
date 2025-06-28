@@ -1,87 +1,52 @@
-import { collection, getDocs, Timestamp } from "firebase/firestore";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { View, Text, StyleSheet, ScrollView, RefreshControl } from "react-native";
 import { globalStyles } from "@/styles/global";
-import { db } from "@/firebase/clientApp";
 import { formatRelativeDate } from "@/common/utils";
 import Loading from "@/components/Loading";
-
-// Define the type for announcements
-interface Announcement {
-  title: string;
-  message: string;
-  date: Timestamp;
-}
+import { useAnnouncements } from "@/hooks/useAnnouncements";
 
 export default function AllAnnouncements() {
-   // Pull up to refresh
-    const [refreshing, setRefreshing] = useState(false);
-    const onRefresh = useCallback(() => {
-        setRefreshing(true);
-        setTimeout(() => {
-            setRefreshing(false);
-        }, 1000);
-    }, []);
-  
-  const [announcements, setAnnouncements] = useState<Array<Announcement>>([]);
-  const [loading, setLoading] = useState(true);
+  // Pull up to refresh
+  const [refreshing, setRefreshing] = useState(false);
+  const onRefresh = useCallback(() => {
+      setRefreshing(true);
+      setTimeout(() => {
+          setRefreshing(false);
+      }, 1000);
+  }, []);
 
-  useEffect(() => {
-    const getAnnouncements = async () => {
-      try {
-        const data = await getDocs(collection(db, "announcements"));
-        const announcementsList: Array<Announcement> = data.docs.map((item) => ({
-          title: item.get("title"),
-          message: item.get("message"),
-          date: item.get("createdAt"),
-        }));
-        
-        announcementsList.sort((a, b) => b.date.toDate().getTime() - a.date.toDate().getTime());
-
-        setAnnouncements(announcementsList);
-      } catch (error) {
-        console.log(`Error fetching announcements: ${error}`);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    getAnnouncements();
-  }, [refreshing]);
-
+  const { announcements, loading } = useAnnouncements(refreshing);
 
   if(loading) return <Loading />;
-  
-  // TODO: Add error display
-  
+    
   return (
      <ScrollView refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }>
-        <View style={globalStyles.container}>        
+        <View style={globalStyles.container}>       
             {announcements.length > 0 ? (
-            <>
-                <Text style={styles.listTitle}>All Announcements</Text>
-                <View style={styles.listContainer}>
-                {announcements.map((item, index) => {
-                    const isLast = index === announcements.length - 1;
-                    return (
-                        <View key={index} style={[styles.item, isLast && styles.lastItem]}>
-                        <View style={styles.itemContent}>
-                            <View style={styles.itemHeader}>
-                            <Text style={styles.itemTime}>Posted {formatRelativeDate(item.date)}</Text>
-                            <Text style={styles.itemTitle}>{item.title}</Text>
-                            </View>
-                            <Text style={styles.itemMessage}>{item.message}</Text>
-                        </View>
-                        </View>
-                    );
-                    })}
-                </View>
-                <Text style={styles.footerText}>End of announcements! 🎉</Text>
-            </>
+              <>
+                  <Text style={styles.listTitle}>All Announcements</Text>
+                  <View style={styles.listContainer}>
+                  {announcements.map((item, index) => {
+                      const isLast = index === announcements.length - 1;
+                      return (
+                          <View key={index} style={[styles.item, isLast && styles.lastItem]}>
+                          <View style={styles.itemContent}>
+                              <View style={styles.itemHeader}>
+                              <Text style={styles.itemTime}>Posted {formatRelativeDate(item.date)}</Text>
+                              <Text style={styles.itemTitle}>{item.title}</Text>
+                              </View>
+                              <Text style={styles.itemMessage}>{item.message}</Text>
+                          </View>
+                          </View>
+                      );
+                      })}
+                  </View>
+                  <Text style={styles.footerText}>End of announcements! 🎉</Text>
+              </>
             ) : (
-            <Text style={styles.footerText}>No announcements yet!</Text>
+              <Text style={styles.footerText}>No announcements yet!</Text>
             )}
         </View>
     </ScrollView>
