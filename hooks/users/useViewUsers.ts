@@ -10,7 +10,7 @@ export interface User {
     status: string;
 }
 
-export const useUsers = () => {
+export const useViewUsers = () => {
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
