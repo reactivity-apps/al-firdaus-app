@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { View, Text, StyleSheet, ScrollView, RefreshControl, TouchableOpacity, Alert } from "react-native";
 import { globalStyles } from "@/styles/global";
 import { db } from "@/firebase/clientApp";
+import Error from "@/components/Error";
 import Loading from "@/components/Loading";
 import Menu from "@/components/Menu";
 import PrayerCarousel from "@/components/PrayerCarousel";
@@ -12,7 +13,6 @@ import SignIn from "@/components/SignIn";
 import { auth } from "@/firebase/clientApp";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { useAnnouncements } from "@/hooks/useAnnouncements";
-
 
 const INITIAL_DISPLAY_COUNT = 5;
 
@@ -85,7 +85,7 @@ export default function ForYou() {
       }, 1000);
   }, []);
 
-  const { announcements } = useAnnouncements(refreshing);
+  const { announcements, error } = useAnnouncements(refreshing, setLoading);
 
   const displayedAnnouncements = announcements.slice(0, INITIAL_DISPLAY_COUNT);
   const hasMoreAnnouncements = announcements.length > INITIAL_DISPLAY_COUNT;
@@ -123,7 +123,9 @@ export default function ForYou() {
           ]}
         />
     
-        {announcements.length > 0 ? (
+        {error.status ? 
+          <Error error={error.message} />  
+        : announcements.length > 0 ? (
           <>
             <Text style={styles.listTitle}>Recent Announcements</Text>
             <View style={styles.listContainer}>

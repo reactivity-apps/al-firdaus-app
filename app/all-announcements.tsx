@@ -4,8 +4,11 @@ import { globalStyles } from "@/styles/global";
 import { formatRelativeDate } from "@/common/utils";
 import Loading from "@/components/Loading";
 import { useAnnouncements } from "@/hooks/useAnnouncements";
+import Error from "@/components/Error";
 
 export default function AllAnnouncements() {
+  const [loading, setLoading] = useState(true);
+
   // Pull up to refresh
   const [refreshing, setRefreshing] = useState(false);
   const onRefresh = useCallback(() => {
@@ -15,7 +18,7 @@ export default function AllAnnouncements() {
       }, 1000);
   }, []);
 
-  const { announcements, loading } = useAnnouncements(refreshing);
+  const { announcements, error } = useAnnouncements(refreshing, setLoading);
 
   if(loading) return <Loading />;
     
@@ -24,7 +27,9 @@ export default function AllAnnouncements() {
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }>
         <View style={globalStyles.container}>       
-            {announcements.length > 0 ? (
+            {error.status ? 
+              <Error error={error.message} />
+            : announcements.length > 0 ? (
               <>
                   <Text style={styles.listTitle}>All Announcements</Text>
                   <View style={styles.listContainer}>

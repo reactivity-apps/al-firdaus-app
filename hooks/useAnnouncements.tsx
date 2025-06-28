@@ -10,13 +10,18 @@ interface Announcement {
     date: Timestamp;
   }
 
-export const useAnnouncements = (refreshing: boolean) => {
+export const useAnnouncements = (refreshing: boolean, setLoading?: (loading: boolean) => void) => {
     const [announcements, setAnnouncements] = useState<Array<Announcement>>([]);
-    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState({
+        status: false, 
+        message: ""
+    });
 
     useEffect(() => {
         const getAnnouncements = async () => {
         try {
+            if (setLoading) setLoading(true);
+            
             const data = await getDocs(collection(db, "announcements"));
             const announcementsList: Array<Announcement> = data.docs.map((item) => ({
             title: item.get("title"),
@@ -29,13 +34,17 @@ export const useAnnouncements = (refreshing: boolean) => {
             setAnnouncements(announcementsList);
         } catch (error) {
             console.log(`Error fetching announcements: ${error}`);
+            setError({
+                status: true,
+                message: error as string
+            });
         } finally {
-            setLoading(false);
+            if (setLoading) setLoading(false);
         }
         };
 
         getAnnouncements();
-    }, [refreshing]);
+    }, [refreshing, setLoading]);
 
-    return { announcements, loading }
+    return { announcements, error }
 }
