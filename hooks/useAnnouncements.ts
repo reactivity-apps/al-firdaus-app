@@ -36,7 +36,7 @@ export const useAnnouncements = (refreshing: boolean, setLoading?: (loading: boo
             console.log(`Error fetching announcements: ${error}`);
             setError({
                 status: true,
-                message: error as string
+                message: error instanceof Error ? error.message : String(error)
             });
         } finally {
             if (setLoading) setLoading(false);

@@ -20,7 +20,13 @@ const SignUp = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   
-  const { loading, errors, formSubmitted, handleSignUp, handleGoogleSignIn } = useSignUp();
+  const { 
+    loading, 
+    errors, 
+    formSubmitted, 
+    handleSignUp, 
+    handleGoogleSignIn 
+  } = useSignUp();
 
   const onSubmit = () => {
     handleSignUp({

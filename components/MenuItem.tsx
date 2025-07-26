@@ -24,7 +24,7 @@ const MenuItem = ({ label, link, showIcon, isLast }: MenuItemProps) => {
     </TouchableOpacity>
   );
 
-  return link ? <Link href={link} asChild>{content}</Link> : content;
+  return link ? <Link href={link as any} asChild>{content}</Link> : content;
 };
 
 const styles = StyleSheet.create({

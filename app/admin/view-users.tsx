@@ -1,13 +1,13 @@
 import React from 'react';
 import { View, StyleSheet, ActivityIndicator, Text, ScrollView } from 'react-native';
-import { useUsers } from '@/hooks/users/useUsers';
+import { useViewUsers } from '@/hooks/users/useViewUsers';
 import List from '@/components/List';
 import Error from '@/components/Error';
 import { globalStyles } from '@/styles/global';
 import { capitalizeFirstLetter } from '@/common/utils';
 
 export default function ViewUsers() {
-    const { users, loading, error } = useUsers();
+    const { users, loading, error } = useViewUsers();
 
     const userItems = users.map(user => ({
         label: `${user.status === 'admin' ? ' 👑' : ''} ${user.fullName}`,

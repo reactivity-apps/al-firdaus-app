@@ -8,9 +8,9 @@ type ListProps = {
 
 type ListItemProps = {
   label: string;
-  subtext?: any; // Subtext positioned to the right
-  link?: string; // Optional link prop
-  isLoading?: boolean; // New prop to control loading state at item level
+  subtext?: any;
+  link?: string; 
+  isLoading?: boolean; 
 };
 
 const ListItem = ({ label, subtext, isLast, isLoading }: ListItemProps & { isLast?: boolean }) => {

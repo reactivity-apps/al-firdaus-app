@@ -75,7 +75,7 @@ const ItineraryDay = ({ location, description, icon, dates }: { location: string
 };
 
 const StayDetails = ({ title, days, link, image }: { title: string, days: string, link: string, image: any }) => (
-  <Link href={link} asChild>
+  <Link href={link as any} asChild>
     <TouchableOpacity style={styles.stayContainer} activeOpacity={0.7}>
       <View style={styles.stayImageWrapper}>
         <Image source={image} style={styles.stayImage} />
